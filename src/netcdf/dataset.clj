@@ -55,3 +55,6 @@
 
 (defmethod datatype GridDataset [dataset variable]
   (. dataset findGridDatatype variable))
+
+(defn valid-times [dataset]
+  (sort (.getDates (GridAsPointDataset. (.getGrids dataset)))))

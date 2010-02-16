@@ -31,3 +31,8 @@
   (let [datatype (datatype (open-grid-dataset *dataset-uri*) *variable*)]
     (is (isa? (class datatype) ucar.nc2.dt.grid.GeoGrid))))
 
+(deftest test-valid-times
+  (let [valid-times (valid-times (open-grid-dataset *dataset-uri*))]
+    (is (every? #(isa? (class %) java.util.Date) valid-times))))
+
+
