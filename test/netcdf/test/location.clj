@@ -1,0 +1,107 @@
+(ns netcdf.test.location
+  (:use clojure.test netcdf.location))
+
+(def *berlin* (make-location 52.523 13.411))
+(def *paris* (make-location 48.857 2.351))
+(def *vienna* (make-location 48.209 16.373))
+
+(deftest test-make-location
+  (let [location (make-location 52.523 13.411)]
+    (is (= (:latitude location) 52.523))
+    (is (= (:longitude location) 13.411))
+    (is (= (:altitude location) 0.0)))
+  (let [location (make-location 52.523 13.411 10.3)]
+    (is (= (:latitude location) 52.523))
+    (is (= (:longitude location) 13.411))
+    (is (= (:altitude location) 10.3))))
+
+(deftest test-location?
+  (is (location? (make-location 1 2)))
+  (is (not (location? nil)))
+  (is (not (location? {:latitude nil :longitude 2})))
+  (is (not (location? {:latitude nil :longitude 2}))))
+
+(deftest test-parse-location
+  (let [location (parse-location "52.52 13.41")]
+    (is (= (:latitude location) 52.52))
+    (is (= (:longitude location) 13.41))
+    (is (= (:altitude location) 0.0)))
+  (let [location (parse-location "52.52,13.41")]
+    (is (= (:latitude location) 52.52))
+    (is (= (:longitude location) 13.41))
+    (is (= (:altitude location) 0.0)))
+  (let [location (parse-location "52.52,13.41")]
+    (is (= (:latitude location) 52.52))
+    (is (= (:longitude location) 13.41))
+    (is (= (:altitude location) 0.0)))
+  (let [location (parse-location "52.52\t13.41")]
+    (is (= (:latitude location) 52.52))
+    (is (= (:longitude location) 13.41))
+    (is (= (:altitude location) 0.0))))
+
+(deftest test-destination-point
+  (let [location (destination-point *berlin* 30 100)]
+    (is (= (:latitude location) 53.298866294161215))
+    (is (= (:longitude location) 14.16092284183496))))
+
+(deftest test-distance
+  (is (= (distance *berlin* *berlin*) 0.0))
+  (is (= (distance *berlin* *paris*) 880.2565917803378)))
+
+(deftest test-north?
+  (is (north? *berlin* *paris*))
+  (is (north? *paris* *vienna*))
+  (is (not (north? *berlin* *berlin*)))
+  (is (not (north? (make-location (dec (:latitude *berlin*)) (:longitude *berlin*)) *berlin*)))
+  (is (north? (make-location (inc (:latitude *berlin*)) (:longitude *berlin*)) *berlin*)))
+
+(deftest test-east?
+  (is (east? *berlin* *paris*))
+  (is (east? *vienna* *berlin*))
+  (is (not (east? *berlin* *berlin*)))
+  (is (not (east? (make-location (:latitude *berlin*) (dec (:longitude *berlin*))) *berlin*)))
+  (is (east? (make-location (:latitude *berlin*) (inc (:longitude *berlin*))) *berlin*)))
+
+(deftest test-south?
+  (is (south? *paris* *berlin*))
+  (is (south? *vienna* *berlin*))
+  (is (not (south? *berlin* *berlin*)))
+  (is (not (south? (make-location (inc (:latitude *berlin*)) (:longitude *berlin*)) *berlin*)))
+  (is (south? (make-location (dec (:latitude *berlin*)) (:longitude *berlin*)) *berlin*)))
+
+(deftest test-west?
+  (is (west? *paris* *berlin*))
+  (is (west? *paris* *vienna* ))
+  (is (not (west? *berlin* *berlin*)))
+  (is (not (west? (make-location (:latitude *berlin*) (inc (:longitude *berlin*))) *berlin*)))
+  (is (west? (make-location (:latitude *berlin*) (dec (:longitude *berlin*))) *berlin*)))
+
+(deftest test-north-east?
+  (is (north-east? *berlin* *paris*))
+  (is (not (north-east? *paris* *berlin*)))
+  (is (not (north-east? *berlin* *berlin*))))
+
+(deftest test-south-east?
+  (is (south-east? *vienna* *berlin*))
+  (is (not (south-east? *berlin* *vienna*)))
+  (is (not (south-east? *berlin* *berlin*))))
+
+(deftest test-south-west?
+  (is (south-west? *paris* *berlin*))
+  (is (not (south-west? *berlin* *paris*)))
+  (is (not (south-west? *vienna* *berlin*))))
+
+(deftest test-north-west?
+  (is (north-west? *paris* *vienna*))
+  (is (not (north-west? *vienna* *paris*)))
+  (is (not (north-west? *paris* *paris*))))
+
+(deftest test-latitude-distance
+  (is (= (latitude-distance *berlin* *berlin*) 0))
+  (is (= (latitude-distance *berlin* *paris*) -3.666000000000004))
+  (is (= (latitude-distance *paris* *berlin*) 3.666000000000004)))
+
+(deftest test-longitude-distance
+  (is (= (longitude-distance *berlin* *berlin*) 0))
+  (is (= (longitude-distance *berlin* *paris*) -11.059999999999999))
+  (is (= (longitude-distance *paris* *berlin* ) 11.059999999999999)))
