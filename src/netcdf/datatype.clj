@@ -3,16 +3,24 @@
   (:use netcdf.location)
   (:require [netcdf.dataset :as dataset]))
 
+(defstruct datatype :dataset-uri :variable :service)
 (defstruct record :actual-location :distance :unit :valid-time :value :variable)
 
 (defn- read-data [datatype valid-time location]
-  (let [dataset (GridAsPointDataset. [datatype])]
+  (let [datatype (:service datatype) dataset (GridAsPointDataset. [datatype])]
     (if (and (:altitude location) (. dataset hasVert datatype (:altitude location)))
       (. dataset readData datatype valid-time (:altitude location) (:latitude location) (:longitude location))
       (. dataset readData datatype valid-time (:latitude location) (:longitude location)))))
 
-(defn open-datatype [dataset-uri variable]
-  (dataset/datatype (dataset/open-grid-dataset dataset-uri) variable))
+(defn make-datatype [dataset-uri variable]
+  (struct datatype dataset-uri variable))
+
+(defn datatype-open? [datatype]
+  (not (nil? (:service datatype))))
+
+(defn open-datatype [datatype]
+  (let [dataset (dataset/open-grid-dataset (dataset/make-dataset (:dataset-uri datatype)))]
+    (assoc datatype :service (. (:service dataset) findGridDatatype (:variable datatype)))))
 
 (defn read-datatype [datatype valid-time location]
   (if location
@@ -22,10 +30,13 @@
         :actual-location actual-location
         :distance (distance location actual-location)
         :requested-location location
-        :unit (.getUnitsString datatype)
+        :unit (.getUnitsString (:service datatype))
         :valid-time valid-time
         :value (.dataValue data)
-        :variable (.getName datatype)))))
+        :variable (:variable datatype)))))
 
 (defn valid-times [datatype]
-  (.. (.getCoordinateSystem datatype) getTimeAxis1D getTimeDates))
+  (if (datatype-open? datatype)
+    (.. (.getCoordinateSystem (:service datatype)) getTimeAxis1D getTimeDates)
+    (valid-times (open-datatype datatype))))
+
