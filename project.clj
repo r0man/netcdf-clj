@@ -1,4 +1,4 @@
-(defproject netcdf "0.1-SNAPSHOT"
+(defproject netcdf-clj "0.0.1-SNAPSHOT"
   :description "Clojure NetCDF Library."
   :url "http://github.com/r0man/netcdf-clj"
   :dependencies [[commons-httpclient "3.1"]
