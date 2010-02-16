@@ -1,6 +1,7 @@
 (ns netcdf.datatype
   (:import ucar.nc2.dt.grid.GridAsPointDataset)
-  (:use netcdf.location))
+  (:use netcdf.location)
+  (:require [netcdf.dataset :as dataset]))
 
 (defstruct record :actual-location :distance :unit :valid-time :value :variable)
 
@@ -9,6 +10,9 @@
     (if (and (:altitude location) (. dataset hasVert datatype (:altitude location)))
       (. dataset readData datatype valid-time (:altitude location) (:latitude location) (:longitude location))
       (. dataset readData datatype valid-time (:latitude location) (:longitude location)))))
+
+(defn open-datatype [dataset-uri variable]
+  (dataset/datatype (dataset/open-grid-dataset dataset-uri) variable))
 
 (defn read-datatype [datatype valid-time location]
   (if location

@@ -1,12 +1,15 @@
 (ns netcdf.test.datatype
-  (:use clojure.test netcdf.datatype netcdf.location)
-  (:require [netcdf.dataset :as dataset]))
+  (:use clojure.test netcdf.datatype netcdf.location))
 
-(def *dataset* (dataset/open-grid-dataset "/home/roman/.weather/20100215/nww3.06.nc"))
-(def *valid-time* (first (dataset/valid-times *dataset*)))
+(def *dataset-uri* "/home/roman/.weather/20100215/nww3.06.nc")
 (def *variable* "htsgwsfc")
 
-(def *datatype* (dataset/datatype *dataset* *variable*))
+(def *datatype* (open-datatype *dataset-uri* *variable*))
+(def *valid-time* (first (valid-times *datatype*)))
+
+(deftest test-open-datatype
+  (let [datatype (open-datatype *dataset-uri* *variable*)]
+    (is (= (class datatype) ucar.nc2.dt.grid.GeoGrid))))
 
 (deftest test-read-dataset
   (let [location (make-location 0 0)
