@@ -39,6 +39,12 @@
     (is (= (:valid-time record) valid-time))
     (is (= (:variable record) *variable*))))
 
+(deftest test-read-datatype
+  (let [datatype (open-datatype (make-example-datatype))
+        valid-time (first (valid-times datatype))
+        records (read-datatype datatype valid-time)]
+    (is (> (count records) 0))))
+
 (deftest test-valid-times-with-closed-datatype
   (let [valid-times (valid-times *datatype*)]
     (is (> (count valid-times) 0))

@@ -44,6 +44,15 @@
         :value (.dataValue data)
         :variable (:variable datatype)))))
 
+(defn read-datatype
+  "Read the whole NetCDF datatype for the given time."
+  [datatype valid-time & options]
+  (let [options (apply hash-map options)
+        lat-range (range -90 90 1)
+        lon-range (range -180 180 1)]
+    (for [latitude lat-range longitude lon-range]
+      (read-at-location datatype valid-time (make-location latitude longitude)))))
+
 (defn valid-times
   "Returns the valid times in the NetCDF datatype."
   [datatype]

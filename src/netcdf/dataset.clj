@@ -45,7 +45,7 @@
     (assoc dataset :service(. NetcdfDataset open (:uri dataset)))))
 
 (defn close-dataset
-  "Close the given dataset."
+  "Close the NetCDF dataset."
   [dataset]
   (if-let [service (:service dataset)]
     (.close service)))
