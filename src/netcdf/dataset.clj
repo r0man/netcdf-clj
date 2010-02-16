@@ -44,17 +44,8 @@
   (if-let [service (:service dataset)]
     (.close service)))
 
-(defn copy-dataset
-  "Copy the NetCDF dataset from source to target."
-  [source target variables]
-  (with-open [dataset (:service (open-dataset (make-dataset source)))]
-    (with-file-writer writer target
-      (write-global-attributes dataset writer)
-      (write-dimensions dataset writer)
-      (write-variables dataset writer variables))))
-
 (defn dataset-open?
-  "Returns true if the dataset is open, else false."
+  "Returns true if the NetCDF dataset is open, else false."
   [dataset]
   (not (nil? (:service dataset))))
 
@@ -71,3 +62,12 @@
 (defn valid-times
   "Returns the valid times in the NetCDF dataset."
   [dataset] (sort (.getDates (GridAsPointDataset. (.getGrids (:service dataset))))))
+
+(defn copy-dataset
+  "Copy the NetCDF dataset from source to target."
+  ([source target variables]
+     (with-open [dataset (:service (open-dataset (make-dataset source)))]
+       (with-file-writer writer target
+         (write-global-attributes dataset writer)
+         (write-dimensions dataset writer)
+         (write-variables dataset writer variables)))))
