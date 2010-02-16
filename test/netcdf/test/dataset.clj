@@ -17,6 +17,11 @@
     (is (= (:uri dataset) *dataset-uri*))
     (is (= (class (:service dataset)) ucar.nc2.NetcdfFile))))
 
+(deftest test-dataset-open?
+  (let [dataset (make-example-dataset)]
+    (is (not (dataset-open? dataset-open?)))
+    (is (dataset-open? (open-dataset dataset)))))
+
 (deftest test-open-grid-dataset
   (let [dataset (open-grid-dataset (make-example-dataset))]
     (is (= (:uri dataset) *dataset-uri*))

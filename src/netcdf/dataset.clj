@@ -51,6 +51,9 @@
       (write-dimensions dataset writer)
       (write-variables dataset writer variables))))
 
+(defn dataset-open? [dataset]
+  (not (nil? (:service dataset))))
+
 (defn datatype [dataset variable]
   (. (:service dataset) findGridDatatype variable))
 
