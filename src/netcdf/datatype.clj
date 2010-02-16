@@ -12,10 +12,11 @@
 
 (defn read-dataset [datatype valid-time location]
   (if location
-    (let [data (read-data datatype valid-time location)]
+    (let [data (read-data datatype valid-time location)
+          actual-location (make-location (.lat data) (.lon data) (.z data))]
       (struct-map record
-        :actual-location (make-location (.lat data) (.lon data) (.z data))
-        :distance (distance location (make-location (.lat data) (.lon data) (.z data)))
+        :actual-location actual-location
+        :distance (distance location actual-location)
         :requested-location location
         :unit (.getUnitsString datatype)
         :valid-time valid-time
