@@ -42,13 +42,6 @@
       (write-dimensions dataset writer)
       (write-variables dataset writer variables))))
 
-(defmulti datatypes
-  "Returns all datatypes in the NetCDF dataset."
-  class)
-
-(defmethod datatypes GridDataset [dataset]
-  (.getGrids dataset))
-
 (defmulti datatype
   "Returns the datatype in the NetCDF dataset."
   (fn [dataset variables] (class dataset)))
@@ -56,5 +49,13 @@
 (defmethod datatype GridDataset [dataset variable]
   (. dataset findGridDatatype variable))
 
-(defn valid-times [dataset]
-  (sort (.getDates (GridAsPointDataset. (.getGrids dataset)))))
+(defmulti datatypes
+  "Returns all datatypes in the NetCDF dataset."
+  class)
+
+(defmethod datatypes GridDataset [dataset]
+  (.getGrids dataset))
+
+(defn valid-times
+  "Returns the valid times in the NetCDF dataset."
+  [dataset] (sort (.getDates (GridAsPointDataset. (.getGrids dataset)))))
