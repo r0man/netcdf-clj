@@ -28,6 +28,11 @@
   [uri]
   (struct dataset uri nil))
 
+(defn dataset-open?
+  "Returns true if the NetCDF dataset is open, else false."
+  [dataset]
+  (not (nil? (:service dataset))))
+
 (defn open-grid-dataset
   "Open the NetCDF dataset as a grid dataset."
   [dataset]
@@ -36,18 +41,14 @@
 (defn open-dataset
   "Open the NetCDF dataset."
   [dataset]
-  (assoc dataset :service(. NetcdfDataset open (:uri dataset))))
+  (if-not (dataset-open? dataset)
+    (assoc dataset :service(. NetcdfDataset open (:uri dataset)))))
 
 (defn close-dataset
   "Close the given dataset."
   [dataset]
   (if-let [service (:service dataset)]
     (.close service)))
-
-(defn dataset-open?
-  "Returns true if the NetCDF dataset is open, else false."
-  [dataset]
-  (not (nil? (:service dataset))))
 
 (defn datatype
   "Returns the datatype in the NetCDF dataset for the variable."

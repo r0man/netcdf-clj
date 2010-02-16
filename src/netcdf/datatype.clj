@@ -25,10 +25,11 @@
 (defn open-datatype
   "Open the NetCDF datatype."
   [datatype]
-  (let [dataset (dataset/open-grid-dataset (dataset/make-dataset (:dataset-uri datatype)))]
-    (assoc datatype :service (. (:service dataset) findGridDatatype (:variable datatype)))))
+  (if-not (datatype-open? datatype)
+    (let [dataset (dataset/open-grid-dataset (dataset/make-dataset (:dataset-uri datatype)))]
+      (assoc datatype :service (. (:service dataset) findGridDatatype (:variable datatype))))))
 
-(defn read-datatype
+(defn read-at-location
   "Read the NetCDF datatype for the given time and location."
   [datatype valid-time location]
   (if location
@@ -49,4 +50,3 @@
   (if (datatype-open? datatype)
     (.. (.getCoordinateSystem (:service datatype)) getTimeAxis1D getTimeDates)
     (valid-times (open-datatype datatype))))
-

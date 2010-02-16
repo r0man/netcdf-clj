@@ -28,11 +28,11 @@
     (is (not (datatype-open? datatype-open?)))
     (is (datatype-open? (open-datatype datatype)))))
 
-(deftest test-read-datatype
+(deftest test-read-at-location
   (let [datatype (open-datatype (make-example-datatype))
         valid-time (first (valid-times datatype))
         location (make-location 0 0)
-        record (read-datatype datatype valid-time location)]
+        record (read-at-location datatype valid-time location)]
     (is (= (:actual-location record) (make-location 0 0 0)))
     (is (= (:distance record) 0))
     (is (= (:requested-location record) location))
