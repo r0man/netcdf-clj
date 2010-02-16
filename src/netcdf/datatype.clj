@@ -10,7 +10,7 @@
       (. dataset readData datatype valid-time (:altitude location) (:latitude location) (:longitude location))
       (. dataset readData datatype valid-time (:latitude location) (:longitude location)))))
 
-(defn read-dataset [datatype valid-time location]
+(defn read-datatype [datatype valid-time location]
   (if location
     (let [data (read-data datatype valid-time location)
           actual-location (make-location (.lat data) (.lon data) (.z data))]
@@ -22,3 +22,6 @@
         :valid-time valid-time
         :value (.dataValue data)
         :variable (.getName datatype)))))
+
+(defn valid-times [datatype]
+  (.. (.getCoordinateSystem datatype) getTimeAxis1D getTimeDates))

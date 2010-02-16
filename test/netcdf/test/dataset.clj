@@ -33,4 +33,5 @@
 
 (deftest test-valid-times
   (let [valid-times (valid-times (open-grid-dataset *dataset-uri*))]
+    (is (> (count valid-times) 0))
     (is (every? #(isa? (class %) java.util.Date) valid-times))))
