@@ -9,7 +9,7 @@
   (let [location (make-location 52.523 13.411)]
     (is (= (:latitude location) 52.523))
     (is (= (:longitude location) 13.411))
-    (is (= (:altitude location) 0.0)))
+    (is (nil? (:altitude location))))
   (let [location (make-location 52.523 13.411 10.3)]
     (is (= (:latitude location) 52.523))
     (is (= (:longitude location) 13.411))
@@ -25,19 +25,19 @@
   (let [location (parse-location "52.52 13.41")]
     (is (= (:latitude location) 52.52))
     (is (= (:longitude location) 13.41))
-    (is (= (:altitude location) 0.0)))
+    (is (nil? (:altitude location))))
   (let [location (parse-location "52.52,13.41")]
     (is (= (:latitude location) 52.52))
     (is (= (:longitude location) 13.41))
-    (is (= (:altitude location) 0.0)))
+    (is (nil? (:altitude location))))
   (let [location (parse-location "52.52,13.41")]
     (is (= (:latitude location) 52.52))
     (is (= (:longitude location) 13.41))
-    (is (= (:altitude location) 0.0)))
+    (is (= (:altitude location) nil)))
   (let [location (parse-location "52.52\t13.41")]
     (is (= (:latitude location) 52.52))
     (is (= (:longitude location) 13.41))
-    (is (= (:altitude location) 0.0))))
+    (is (nil? (:altitude location)))))
 
 (deftest test-destination-point
   (let [location (destination-point *berlin* 30 100)]

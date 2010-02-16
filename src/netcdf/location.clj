@@ -11,7 +11,7 @@
 (defn make-location
   ([latitude longitude]
      "Make a location with the given latitude and longitude."
-     (make-location latitude longitude 0.0))
+     (make-location latitude longitude nil))
   ([latitude longitude altitude]
      "Make a location with the given latitude, longitude and altitude."
      (struct location latitude longitude altitude)))
