@@ -4,18 +4,28 @@
 (def *dataset-uri* "/home/roman/.weather/20100215/nww3.06.nc")
 (def *variable* "htsgwsfc")
 
+(defn make-example-dataset []
+  (make-dataset *dataset-uri*))
+
+(deftest test-make-dataset
+  (let [dataset (make-example-dataset)]
+    (is (= (:uri dataset) *dataset-uri*))
+    (is (nil? (:service dataset)))))
+
 (deftest test-open-dataset
-  (let [dataset (open-dataset *dataset-uri*)]
-    (is (= (class dataset) ucar.nc2.NetcdfFile))))
+  (let [dataset (open-dataset (make-example-dataset))]
+    (is (= (:uri dataset) *dataset-uri*))
+    (is (= (class (:service dataset)) ucar.nc2.NetcdfFile))))
 
 (deftest test-open-grid-dataset
-  (let [dataset (open-grid-dataset *dataset-uri*)]
-    (is (= (class dataset) ucar.nc2.dt.grid.GridDataset))))
+  (let [dataset (open-grid-dataset (make-example-dataset))]
+    (is (= (:uri dataset) *dataset-uri*))
+    (is (= (class (:service dataset)) ucar.nc2.dt.grid.GridDataset))))
 
 (deftest test-close-datatset
-  (let [dataset (open-dataset *dataset-uri*)]
+  (let [dataset (open-dataset (make-example-dataset))]
     (close-dataset dataset))
-  (let [dataset (open-grid-dataset *dataset-uri*)]
+  (let [dataset (open-grid-dataset (make-example-dataset))]
     (close-dataset dataset)))
 
 (deftest test-copy-dataset
@@ -24,14 +34,14 @@
     (is (= (.exists (java.io.File. target)) true))))
 
 (deftest test-datatypes
-  (let [datatypes (datatypes (open-grid-dataset *dataset-uri*))]
+  (let [datatypes (datatypes (open-grid-dataset (make-example-dataset)))]
     (is (every? #(isa? (class %) ucar.nc2.dt.grid.GeoGrid) datatypes))))
 
 (deftest test-datatype
-  (let [datatype (datatype (open-grid-dataset *dataset-uri*) *variable*)]
+  (let [datatype (datatype (open-grid-dataset (make-example-dataset)) *variable*)]
     (is (isa? (class datatype) ucar.nc2.dt.grid.GeoGrid))))
 
 (deftest test-valid-times
-  (let [valid-times (valid-times (open-grid-dataset *dataset-uri*))]
+  (let [valid-times (valid-times (open-grid-dataset (make-example-dataset)))]
     (is (> (count valid-times) 0))
     (is (every? #(isa? (class %) java.util.Date) valid-times))))
