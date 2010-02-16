@@ -52,12 +52,14 @@
 (defn datatype
   "Returns the datatype in the NetCDF dataset for the variable."
   [dataset variable]
-  (. (:service dataset) findGridDatatype variable))
+  (if-let [service (. (:service dataset) findGridDatatype variable)]
+    {:dataset-uri (:uri dataset) :variable variable :service service}))
 
 (defn datatypes
   "Returns all datatypes in the NetCDF dataset."
   [dataset]
-  (.getGrids (:service dataset)))
+  (map (fn [datatype] {:dataset-uri (:uri dataset) :variable (.getName datatype) :service datatype})
+       (.getGrids (:service dataset))))
 
 (defn valid-times
   "Returns the valid times in the NetCDF dataset."

@@ -45,11 +45,14 @@
 
 (deftest test-datatype
   (let [datatype (datatype (open-grid-dataset (make-example-dataset)) *variable*)]
-    (is (isa? (class datatype) ucar.nc2.dt.grid.GeoGrid))))
+    (is (= (:dataset-uri datatype) *dataset-uri*))
+    (is (= (:variable datatype) *variable*))
+    (is (isa? (class (:service datatype)) ucar.nc2.dt.grid.GeoGrid))))
 
 (deftest test-datatypes
   (let [datatypes (datatypes (open-grid-dataset (make-example-dataset)))]
-    (is (every? #(isa? (class %) ucar.nc2.dt.grid.GeoGrid) datatypes))))
+    (is (> (count datatypes) 0))
+    (is (every? #(isa? (class (:service %)) ucar.nc2.dt.grid.GeoGrid) datatypes))))
 
 (deftest test-valid-times
   (let [valid-times (valid-times (open-grid-dataset (make-example-dataset)))]
