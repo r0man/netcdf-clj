@@ -23,11 +23,13 @@
      ~@body
      (. ~symbol finish)))
 
-(defn make-dataset [uri]
+(defn make-dataset
+  "Make a NetCDF dataset."
+  [uri]
   (struct dataset uri nil))
 
 (defn open-grid-dataset
-  "Open the NetCDF grid dataset."
+  "Open the NetCDF dataset as a grid dataset."
   [dataset]
   (assoc dataset :service(. GridDataset open (:uri dataset))))
 
@@ -51,13 +53,19 @@
       (write-dimensions dataset writer)
       (write-variables dataset writer variables))))
 
-(defn dataset-open? [dataset]
+(defn dataset-open?
+  "Returns true if the dataset is open, else false."
+  [dataset]
   (not (nil? (:service dataset))))
 
-(defn datatype [dataset variable]
+(defn datatype
+  "Returns the datatype in the NetCDF dataset for the variable."
+  [dataset variable]
   (. (:service dataset) findGridDatatype variable))
 
-(defn datatypes [dataset]
+(defn datatypes
+  "Returns all datatypes in the NetCDF dataset."
+  [dataset]
   (.getGrids (:service dataset)))
 
 (defn valid-times

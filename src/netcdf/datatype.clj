@@ -12,17 +12,25 @@
       (. dataset readData datatype valid-time (:altitude location) (:latitude location) (:longitude location))
       (. dataset readData datatype valid-time (:latitude location) (:longitude location)))))
 
-(defn make-datatype [dataset-uri variable]
+(defn make-datatype
+  "Make a NetCDF datatype."
+  [dataset-uri variable]
   (struct datatype dataset-uri variable))
 
-(defn datatype-open? [datatype]
+(defn datatype-open?
+  "Returns true if the datatype is open, else false."
+  [datatype]
   (not (nil? (:service datatype))))
 
-(defn open-datatype [datatype]
+(defn open-datatype
+  "Open the NetCDF datatype."
+  [datatype]
   (let [dataset (dataset/open-grid-dataset (dataset/make-dataset (:dataset-uri datatype)))]
     (assoc datatype :service (. (:service dataset) findGridDatatype (:variable datatype)))))
 
-(defn read-datatype [datatype valid-time location]
+(defn read-datatype
+  "Read the NetCDF datatype for the given time and location."
+  [datatype valid-time location]
   (if location
     (let [data (read-data datatype valid-time location)
           actual-location (make-location (.lat data) (.lon data) (.z data))]
@@ -35,7 +43,9 @@
         :value (.dataValue data)
         :variable (:variable datatype)))))
 
-(defn valid-times [datatype]
+(defn valid-times
+  "Returns the valid times in the NetCDF datatype."
+  [datatype]
   (if (datatype-open? datatype)
     (.. (.getCoordinateSystem (:service datatype)) getTimeAxis1D getTimeDates)
     (valid-times (open-datatype datatype))))
