@@ -16,27 +16,32 @@
   [datatype]
   (.. (:service datatype) getCoordinateSystem getLatLonBoundingBox))
 
-(defn latitude-step-size
-  "Returns the step size of the latitude axis."
-  [datatype]
-  (.. (:service datatype) getCoordinateSystem getYHorizAxis getSize))
+(defn latitude-axis [datatype]
+  (let [bounds (bounding-box datatype) axis-size (.. (:service datatype) getCoordinateSystem getYHorizAxis getSize)]
+    {:min (.getLatMin bounds)
+     :max (.getLatMax bounds)
+     :step-size (/ (.getHeight bounds) (- axis-size 1))}))
 
-(defn longitude-step-size
-  "Returns the step size of the longitude axis."
-  [datatype]
-  (.. (:service datatype) getCoordinateSystem getXHorizAxis getSize))
+(defn longitude-axis [datatype]
+  (let [bounds (bounding-box datatype) axis-size (.. (:service datatype) getCoordinateSystem getXHorizAxis getSize)]
+    {
+     ;; :min (- (.getLonMin bounds) 180)
+     ;; :max (- (.getLonMax bounds) 180)
+     :min (.getLonMin bounds)
+     :max (.getLonMax bounds)
+     :step-size (/ (.getWidth bounds) (- axis-size 1))}))
 
 (defn latitude-range
   "Returns the range of the latitude axis."
   [datatype]
-  (let [bounds (bounding-box datatype) step-size (latitude-step-size datatype)]
-    (range (.getLatMin bounds) (.getLatMax bounds) (/ (.getHeight bounds) (- step-size 1)))))
+  (let [axis (latitude-axis datatype)]
+    (range (:min axis) (:max axis) (:step-size axis))))
 
 (defn longitude-range
   "Returns the range of the longitude axis."
   [datatype]
-  (let [bounds (bounding-box datatype) step-size (longitude-step-size datatype) ]
-    (range (- (.getLonMin bounds) 180) (- (.getLonMax bounds) 180) (/ (.getWidth bounds) (- step-size 1)))))
+  (let [axis (longitude-axis datatype)]
+    (range (:min axis) (:max axis) (:step-size axis))))
 
 (defn make-datatype
   "Make a NetCDF datatype."

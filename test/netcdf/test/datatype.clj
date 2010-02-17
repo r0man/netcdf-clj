@@ -23,6 +23,18 @@
     (is (not (datatype-open? datatype-open?)))
     (is (datatype-open? (open-datatype datatype)))))
 
+(deftest test-latitude-axis
+  (let [axis (latitude-axis (open-example-datatype))]
+    (is (= (:min axis) 44.75))
+    (is (= (:max axis) 75.25))
+    (is (= (:step-size axis) 0.25))))
+
+(deftest test-longitude-axis
+  (let [axis (longitude-axis (open-example-datatype))]
+    (is (= (:min axis) 159.5))
+    (is (= (:max axis) 236.5))
+    (is (= (:step-size axis) 0.5))))
+
 (deftest test-latitude-range
   (let [range (latitude-range (open-example-datatype))]
     (is (= (count range) 122))
@@ -32,8 +44,8 @@
 (deftest test-longitude-range
   (let [range (longitude-range (open-example-datatype))]
     (is (= (count range) 154))
-    (is (= (first range) -20.5))
-    (is (= (last range) 56.0))))
+    (is (= (first range) 159.5))
+    (is (= (last range) 236.0))))
 
 (deftest test-make-datatype
   (let [datatype (make-datatype *dataset-uri* *variable*)]
