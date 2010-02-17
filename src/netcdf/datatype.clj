@@ -63,8 +63,8 @@
   "Read the whole NetCDF datatype for the given time."
   [datatype valid-time & options]
   (let [options (apply hash-map options)
-        lat-range (latitude-range datatype)
-        lon-range (longitude-range datatype)]
+        lat-range (or (:lat-range options) (latitude-range datatype))
+        lon-range (or (:lon-range options) (longitude-range datatype))]
     (for [latitude lat-range longitude lon-range]
       (read-at-location datatype valid-time (make-location latitude longitude)))))
 
