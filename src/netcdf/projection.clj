@@ -3,7 +3,7 @@
            ucar.unidata.geoloc.projection.Mercator
            ucar.unidata.geoloc.LatLonPointImpl
            ucar.unidata.geoloc.ProjectionPointImpl)
-  (:use netcdf.location netcdf.position))
+  (:use netcdf.location netcdf.point))
 
 (def *projection* (Mercator. 0 0))
 
@@ -11,20 +11,20 @@
   `(binding [*projection* ~projection]
      ~@body))
 
-(defmulti location->position class)
+(defmulti location->point class)
 
-(defmethod location->position LatLonPointImpl [location]
-  (let [position (. *projection* latLonToProj location (ProjectionPointImpl.))]
-    (make-position (. position getX) (. position getY))))
+(defmethod location->point LatLonPointImpl [location]
+  (let [point (. *projection* latLonToProj location (ProjectionPointImpl.))]
+    (make-point (. point getX) (. point getY))))
 
-(defmethod location->position PersistentStructMap [location]
-  (location->position (LatLonPointImpl. (:latitude location) (:longitude location))))
+(defmethod location->point PersistentStructMap [location]
+  (location->point (LatLonPointImpl. (:latitude location) (:longitude location))))
 
-(defmulti position->location class)
+(defmulti point->location class)
 
-(defmethod position->location ProjectionPointImpl [position]
-  (let [location (. *projection* projToLatLon position (LatLonPointImpl.))]
+(defmethod point->location ProjectionPointImpl [point]
+  (let [location (. *projection* projToLatLon point (LatLonPointImpl.))]
     (make-location (. location getLatitude) (. location getLongitude))))
 
-(defmethod position->location PersistentStructMap [position]
-  (position->location (ProjectionPointImpl. (:x position) (:y position))))
+(defmethod point->location PersistentStructMap [point]
+  (point->location (ProjectionPointImpl. (:x point) (:y point))))

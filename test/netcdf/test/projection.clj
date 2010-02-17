@@ -1,13 +1,13 @@
 (ns netcdf.test.projection
-  (:use clojure.test netcdf.location netcdf.position netcdf.projection))
+  (:use clojure.test netcdf.location netcdf.point netcdf.projection))
 
-(deftest test-location->position
-  (let [position (location->position (make-location 0 0))]
-    (is (= (:x position) 0))
-    (is (= (:y position) 0))))
+(deftest test-location->point
+  (let [point (location->point (make-location 0 0))]
+    (is (= (:x point) 0))
+    (is (= (:y point) 0))))
 
-(deftest test-position->location
-  (let [location (position->location (make-position 0 0))]
+(deftest test-point->location
+  (let [location (point->location (make-point 0 0))]
     (is (= (:latitude location) 0))
     (is (= (:longitude location ) 0))))
 
