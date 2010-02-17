@@ -21,9 +21,15 @@
    (> value 0.0) (Color. 5 15 217)
    :else Color/black))
 
+;; (defn location->point [location]
+;;   {:x (+ (:longitude location) 180)
+;;    :y (+ (:latitude location) 90)})
+
 (defn location->point [location]
   {:x (+ (:longitude location) 180)
-   :y (+ (:latitude location) 90)})
+   :y (+ (* (+ (:latitude location) 90) -1) 180)})
+
+(render-datatype *component* *data*)
 
 (defn fill-component [component & [color]]
   (let [bounds (.getBounds component) graphics (.getGraphics component)]
@@ -57,12 +63,12 @@
     (if data (render-datatype component data))
     component))
 
-;; (def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")))
-;; (def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+(def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")))
+(def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 
-;; (def *data* (read-datatype *datatype* (first (valid-times *datatype*))))
+(def *data* (read-datatype *datatype* (first (valid-times *datatype*))))
 
-;; (def *component* (display-datatype 360 180 *data*))
+(def *component* (display-datatype 360 180 *data*))
 ;; (clear-component *component*)
-;; (render-datatype *component* *data*)
+(render-datatype *component* *data*)
 
