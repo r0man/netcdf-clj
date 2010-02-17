@@ -1,7 +1,7 @@
 (ns netcdf.test.dataset
   (:use clojure.test netcdf.dataset))
 
-(def *dataset-uri* "/home/roman/.weather/20100215/nww3.06.nc")
+(def *dataset-uri* "/home/roman/.weather/20100215/akw.06.nc")
 (def *variable* "htsgwsfc")
 
 (defn make-example-dataset []
@@ -33,10 +33,10 @@
   (let [dataset (open-grid-dataset (make-example-dataset))]
     (close-dataset dataset)))
 
-;; (deftest test-copy-dataset
-;;   (let [target "/tmp/.copy-test.netcdf"]
-;;     (copy-dataset *dataset-uri* target)
-;;     (is (= (.exists (java.io.File. target)) true))))
+(deftest test-copy-dataset
+  (let [target "/tmp/.copy-test.netcdf"]
+    (copy-dataset *dataset-uri* target)
+    (is (= (.exists (java.io.File. target)) true))))
 
 (deftest test-copy-dataset-with-vars
   (let [target "/tmp/.copy-test.netcdf"]
@@ -53,6 +53,11 @@
   (let [datatypes (datatypes (open-grid-dataset (make-example-dataset)))]
     (is (> (count datatypes) 0))
     (is (every? #(isa? (class (:service %)) ucar.nc2.dt.grid.GeoGrid) datatypes))))
+
+(deftest test-read-dataset
+  (let [dataset (open-grid-dataset (make-example-dataset))
+        records (read-dataset dataset (first (valid-times dataset)))]
+    (is (> (count records) 0))))
 
 (deftest test-valid-times
   (let [valid-times (valid-times (open-grid-dataset (make-example-dataset)))]

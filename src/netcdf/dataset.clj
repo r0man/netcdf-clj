@@ -2,7 +2,8 @@
   (:import ucar.nc2.FileWriter
            ucar.nc2.NetcdfFile
            ucar.nc2.dataset.NetcdfDataset
-           [ucar.nc2.dt.grid GridDataset GridAsPointDataset]))
+           [ucar.nc2.dt.grid GridDataset GridAsPointDataset])
+  (:require [netcdf.datatype :as datatype]))
 
 (defstruct dataset :uri :service)
 
@@ -54,13 +55,19 @@
   "Returns the datatype in the NetCDF dataset for the variable."
   [dataset variable]
   (if-let [service (. (:service dataset) findGridDatatype variable)]
-    {:dataset-uri (:uri dataset) :variable variable :service service}))
+    (assoc (datatype/make-datatype (:uri dataset) variable) :service service)))
 
 (defn datatypes
   "Returns all datatypes in the NetCDF dataset."
   [dataset]
-  (map (fn [datatype] {:dataset-uri (:uri dataset) :variable (.getName datatype) :service datatype})
+  (map #(assoc (datatype/make-datatype (:uri dataset) (.getName %)) :service %)
        (.getGrids (:service dataset))))
+
+(defn read-dataset [dataset valid-time]
+  (let [datatypes (datatypes dataset)]
+    (hash-map
+     (map (comp keyword :variable) datatypes)
+     (map #(datatype/read-datatype % valid-time) datatypes))))
 
 (defn valid-times
   "Returns the valid times in the NetCDF dataset."
@@ -68,6 +75,8 @@
 
 (defn copy-dataset
   "Copy the NetCDF dataset from source to target."
+  ([source target]
+     (copy-dataset source target (map :variable (datatypes (open-grid-dataset (make-dataset source))))))
   ([source target variables]
      (with-open [dataset (:service (open-dataset (make-dataset source)))]
        (with-file-writer writer target
