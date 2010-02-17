@@ -11,7 +11,9 @@
   `(binding [*projection* ~projection]
      ~@body))
 
-(defmulti location->point class)
+(defmulti location->point
+  "Convert location to projection coordinates."
+  class)
 
 (defmethod location->point LatLonPointImpl [location]
   (let [point (. *projection* latLonToProj location (ProjectionPointImpl.))]
@@ -20,7 +22,9 @@
 (defmethod location->point PersistentStructMap [location]
   (location->point (LatLonPointImpl. (:latitude location) (:longitude location))))
 
-(defmulti point->location class)
+(defmulti point->location
+  "Convert projection coordinates to a location."
+  class)
 
 (defmethod point->location ProjectionPointImpl [point]
   (let [location (. *projection* projToLatLon point (LatLonPointImpl.))]
