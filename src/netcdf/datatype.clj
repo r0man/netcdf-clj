@@ -1,7 +1,6 @@
 (ns netcdf.datatype
-  (:import ucar.nc2.dt.grid.GridAsPointDataset ucar.unidata.geoloc.LatLonPointImpl)
-  (:use netcdf.location)
-  (:require [netcdf.dataset :as dataset]))
+  (:import ucar.nc2.dt.grid.GridDataset ucar.nc2.dt.grid.GridAsPointDataset ucar.unidata.geoloc.LatLonPointImpl)
+  (:use netcdf.location))
 
 (defstruct datatype :dataset-uri :variable :service)
 (defstruct record :actual-location :distance :unit :valid-time :value :variable)
@@ -53,8 +52,8 @@
   "Open the NetCDF datatype."
   [datatype]
   (if-not (datatype-open? datatype)
-    (let [dataset (dataset/open-grid-dataset (dataset/make-dataset (:dataset-uri datatype)))]
-      (assoc datatype :service (. (:service dataset) findGridDatatype (:variable datatype))))))
+    (let [grid-dataset (. GridDataset open (:dataset-uri datatype))]
+      (assoc datatype :service (. grid-dataset findGridDatatype (:variable datatype))))))
 
 (defn read-at-location
   "Read the NetCDF datatype for the given time and location."

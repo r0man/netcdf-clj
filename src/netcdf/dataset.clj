@@ -36,7 +36,7 @@
 (defn open-grid-dataset
   "Open the NetCDF dataset as a grid dataset."
   [dataset]
-  (assoc dataset :service(. GridDataset open (:uri dataset))))
+  (assoc dataset :service (. GridDataset open (:uri dataset))))
 
 (defn open-dataset
   "Open the NetCDF dataset."
