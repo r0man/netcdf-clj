@@ -19,38 +19,50 @@
    (> value 1.0) (Color. 66 151 255)
    (> value 0.5) (Color. 32 80 255)
    (> value 0.0) (Color. 5 15 217)
-   :else (. Color black)))
+   :else Color/black))
 
 (defn location->point [location]
   {:x (+ (:longitude location) 180)
    :y (+ (:latitude location) 90)})
 
-(defn make-buffered-image [width height & options]
-  (let [options (apply hash-map options)]
-    (BufferedImage. width height (or (:type options BufferedImage/TYPE_3BYTE_BGR)))))
+(defn fill-component [component & [color]]
+  (let [bounds (.getBounds component) graphics (.getGraphics component)]
+    (if color (. graphics setColor color))
+    (. graphics fillRect (.getX bounds) (.getY bounds) (.getWidth bounds) (.getHeight bounds))))
 
-(defn make-datatype-component [width height]
+(defn clear-component [component]
+  (fill-component component Color/black))
+
+(defn make-buffered-image [width height & [type]]  
+  (BufferedImage. width height (or type BufferedImage/TYPE_3BYTE_BGR)))
+
+(defn datatype-component [width height]
   (javax.swing.JLabel. (javax.swing.ImageIcon. (make-buffered-image width height))))
 
-(defn make-datatype-display [width height]
-  (let [component (make-datatype-component width height)]
-    (doto (javax.swing.JFrame.)
-      (.setSize (+ width 10) (+ height 30))
-      (.add component)
-      (.setVisible true))
-    component))
-
-(defn render-datatype [component records]  
+(defn render-datatype [component data]  
+  (clear-component component)
   (let [graphics (.getGraphics component)]
-    (doseq [record records]
-      (let [point (location->point (:actual-location record))]
-        (. graphics setColor (value->color (:value record)))
+    (doseq [{:keys [actual-location value]} data]
+      (let [point (location->point actual-location)]
+        (. graphics setColor (value->color value))
         (. graphics fillRect (:x point) (:y point) 1 1)))
     graphics))
 
-(def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")))
-(def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
-(def *data* (read-datatype *datatype* (first (valid-times *datatype*))))
+(defn display-datatype [width height & [data]]
+  (let [component (datatype-component width height)]
+    (doto (javax.swing.JFrame.)
+      (.setSize (+ width 6) (+ height 24))
+      (.add component)
+      (.setVisible true))
+    (if data (render-datatype component data))
+    component))
 
-(def *display* (make-datatype-display 360 180))
-(render-datatype *display* *data*)
+;; (def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")))
+;; (def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+
+;; (def *data* (read-datatype *datatype* (first (valid-times *datatype*))))
+
+;; (def *component* (display-datatype 360 180 *data*))
+;; (clear-component *component*)
+;; (render-datatype *component* *data*)
+
