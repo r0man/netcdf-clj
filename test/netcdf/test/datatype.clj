@@ -43,16 +43,15 @@
 
 (deftest test-open-datatype
   (let [datatype (open-example-datatype)]
-;    (println (.. (:service datatype) getCoordinateSystem  getBoundingBox))
     (is (= (:dataset-uri datatype)) *dataset-uri*)
     (is (= (:variable datatype) *variable*))
     (is (= (class (:service datatype)) ucar.nc2.dt.grid.GeoGrid))))
 
-;; (deftest test-read-datatype
-;;   (let [datatype (open-example-datatype)
-;;         valid-time (first (valid-times datatype))
-;;         records (read-datatype datatype valid-time)]
-;;     (is (> (count records) 0))))
+(deftest test-read-datatype
+  (let [datatype (open-example-datatype)
+        valid-time (first (valid-times datatype))
+        records (read-datatype datatype valid-time)]
+    (is (> (count records) 0))))
 
 (deftest test-read-at-location
   (let [datatype (open-example-datatype)
