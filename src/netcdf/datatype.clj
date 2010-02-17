@@ -1,5 +1,5 @@
 (ns netcdf.datatype
-  (:import ucar.nc2.dt.grid.GridAsPointDataset)
+  (:import ucar.nc2.dt.grid.GridAsPointDataset ucar.unidata.geoloc.LatLonPointImpl)
   (:use netcdf.location)
   (:require [netcdf.dataset :as dataset]))
 
@@ -11,6 +11,21 @@
     (if (and (:altitude location) (. dataset hasVert datatype (:altitude location)))
       (. dataset readData datatype valid-time (:altitude location) (:latitude location) (:longitude location))
       (. dataset readData datatype valid-time (:latitude location) (:longitude location)))))
+
+(defn bounding-box
+  "Returns the bounding box of the datatype."
+  [datatype]
+  (.. (:service datatype) getCoordinateSystem getLatLonBoundingBox))
+
+(defn latitude-range [datatype]
+  (let [bounds (bounding-box datatype)
+        step (.. (:service datatype) getCoordinateSystem getYHorizAxis getSize)]
+    (range (.getLatMin bounds) (.getLatMax bounds) (/ (.getHeight bounds) (- step 1)))))
+
+(defn longitude-range [datatype]
+  (let [bounds (bounding-box datatype)
+        step (.. (:service datatype) getCoordinateSystem getXHorizAxis getSize)]
+    (range (- (.getLonMin bounds) 180) (- (.getLonMax bounds) 180) (/ (.getWidth bounds) (- step 1)))))
 
 (defn make-datatype
   "Make a NetCDF datatype."
@@ -48,8 +63,8 @@
   "Read the whole NetCDF datatype for the given time."
   [datatype valid-time & options]
   (let [options (apply hash-map options)
-        lat-range (range -90 90 1)
-        lon-range (range -180 180 1)]
+        lat-range (latitude-range datatype)
+        lon-range (longitude-range datatype)]
     (for [latitude lat-range longitude lon-range]
       (read-at-location datatype valid-time (make-location latitude longitude)))))
 
