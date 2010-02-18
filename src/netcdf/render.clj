@@ -23,7 +23,7 @@
   panel)
 
 (defn create-display
-  ([] (configure-display 360 180))
+  ([] (create-display 360 180))
   ([width height]
      (configure-display (JFrame.) (create-panel width height))))
 
@@ -54,19 +54,19 @@
   {:x (+ (:longitude location) 180)
    :y (+ (* (+ (:latitude location) 90) -1) 180)})
 
-(defn fill-component [component & [color]]
+(defn fill [component & [color]]
   (let [bounds (.getBounds component) graphics (.getGraphics component)]
     (if color (. graphics setColor color))
     (. graphics fillRect (.getX bounds) (.getY bounds) (.getWidth bounds) (.getHeight bounds))))
 
-(defn clear-component [component]
-  (fill-component component Color/black))
+(defn clear [component]
+  (fill component Color/black))
 
 (defn make-buffered-image [width height & [type]]  
   (BufferedImage. width height (or type BufferedImage/TYPE_3BYTE_BGR)))
 
 (defn render-datatype [component data]  
-  (clear-component component)
+  (clear component)
   (let [graphics (.getGraphics component)]
     (doseq [{:keys [actual-location value]} data]
       (let [point (location->point actual-location)]
@@ -83,10 +83,10 @@
 (count *data*)
  
 (render-datatype *display* *data*)
-(clear-component *display*)
+(clear *display*)
 
 ;; (def *component* (display-datatype 360 180 *data*))
-;; (clear-component *component*)
+;; (clear *component*)
 ;; (def *map* (static-map-image (make-location 0 0) :width 360 :height 180))
 ;; (display-component
 ;;  (doto (javax.swing.JLabel. (javax.swing.ImageIcon. *map*))
