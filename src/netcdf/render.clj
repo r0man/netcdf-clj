@@ -1,6 +1,31 @@
 (ns netcdf.render
-  (:import java.awt.Color java.awt.image.BufferedImage)
-  (:use netcdf.datatype))
+  (:import java.awt.image.BufferedImage
+           (java.awt Color Dimension)
+           (java.awt.event KeyListener)
+           (javax.swing JFrame JOptionPane JPanel))
+  (:use netcdf.datatype netcdf.map netcdf.location))
+
+(defn create-panel [width height]
+  (proxy [JPanel KeyListener] [] 
+    (getPreferredSize [] (Dimension. width height))
+    (keyPressed [e])
+    (keyReleased [e]) 
+    (keyTyped [e])))
+
+(defn configure-display [frame panel]
+  (doto panel
+    (.setFocusable true)
+    (.addKeyListener panel))
+  (doto frame
+    (.add panel)
+    (.pack)
+    (.setVisible true))
+  panel)
+
+(defn create-display
+  ([] (configure-display 360 180))
+  ([width height]
+     (configure-display (JFrame.) (create-panel width height))))
 
 (defn value->color [value]
   (cond
@@ -29,8 +54,6 @@
   {:x (+ (:longitude location) 180)
    :y (+ (* (+ (:latitude location) 90) -1) 180)})
 
-(render-datatype *component* *data*)
-
 (defn fill-component [component & [color]]
   (let [bounds (.getBounds component) graphics (.getGraphics component)]
     (if color (. graphics setColor color))
@@ -42,9 +65,6 @@
 (defn make-buffered-image [width height & [type]]  
   (BufferedImage. width height (or type BufferedImage/TYPE_3BYTE_BGR)))
 
-(defn datatype-component [width height]
-  (javax.swing.JLabel. (javax.swing.ImageIcon. (make-buffered-image width height))))
-
 (defn render-datatype [component data]  
   (clear-component component)
   (let [graphics (.getGraphics component)]
@@ -54,21 +74,23 @@
         (. graphics fillRect (:x point) (:y point) 1 1)))
     graphics))
 
-(defn display-datatype [width height & [data]]
-  (let [component (datatype-component width height)]
-    (doto (javax.swing.JFrame.)
-      (.setSize (+ width 6) (+ height 24))
-      (.add component)
-      (.setVisible true))
-    (if data (render-datatype component data))
-    component))
+(def *display* (create-display))
 
 (def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")))
 (def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 
 (def *data* (read-datatype *datatype* (first (valid-times *datatype*))))
+(count *data*)
+ 
+(render-datatype *display* *data*)
+(clear-component *display*)
 
-(def *component* (display-datatype 360 180 *data*))
+;; (def *component* (display-datatype 360 180 *data*))
 ;; (clear-component *component*)
-(render-datatype *component* *data*)
+;; (def *map* (static-map-image (make-location 0 0) :width 360 :height 180))
+;; (display-component
+;;  (doto (javax.swing.JLabel. (javax.swing.ImageIcon. *map*))
+;;    (.setSize 360 180)))
+
+
 
