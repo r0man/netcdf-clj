@@ -14,6 +14,7 @@
 
 (defn configure-display [frame panel]
   (doto panel
+    (.setBackground Color/black)
     (.setFocusable true)
     (.addKeyListener panel))
   (doto frame
@@ -54,43 +55,48 @@
   {:x (+ (:longitude location) 180)
    :y (+ (* (+ (:latitude location) 90) -1) 180)})
 
-(defn fill [component & [color]]
-  (let [bounds (.getBounds component) graphics (.getGraphics component)]
-    (if color (. graphics setColor color))
-    (. graphics fillRect (.getX bounds) (.getY bounds) (.getWidth bounds) (.getHeight bounds))))
-
 (defn clear [component]
-  (fill component Color/black))
+  (let [bounds (.getBounds component) graphics (.getGraphics component)]
+    (println (.getBackground component))
+    (. graphics setColor (.getBackground component))
+    (. graphics fillRect (.getX bounds) (.getY bounds) (.getWidth bounds) (.getHeight bounds))))
 
 (defn make-buffered-image [width height & [type]]  
   (BufferedImage. width height (or type BufferedImage/TYPE_3BYTE_BGR)))
 
-(defn render-datatype [component data]  
-  (clear component)
+(defn render-data [component data]  
+;  (clear component)
   (let [graphics (.getGraphics component)]
-    (doseq [{:keys [actual-location value]} data]
+    (doseq [{:keys [actual-location value]} data :when (not (.isNaN value))]
       (let [point (location->point actual-location)]
         (. graphics setColor (value->color value))
         (. graphics fillRect (:x point) (:y point) 1 1)))
     graphics))
 
-(def *display* (create-display))
+(defn render-datatype [component datatype]
+  (println datatype)
+  (render-data component (read-datatype datatype (first (valid-times datatype)))))
 
-(def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")))
-(def *datatype* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+(defn render-datatypes [component & [datatypes]]
+  (doseq [datatype datatypes] (render-datatype component datatype)))
 
-(def *data* (read-datatype *datatype* (first (valid-times *datatype*))))
-(count *data*)
- 
-(render-datatype *display* *data*)
-(clear *display*)
+(def *datatypes*
+     (map #(open-datatype (apply make-datatype %))
+          '(
+            ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
+            )))
 
-;; (def *component* (display-datatype 360 180 *data*))
-;; (clear *component*)
-;; (def *map* (static-map-image (make-location 0 0) :width 360 :height 180))
-;; (display-component
-;;  (doto (javax.swing.JLabel. (javax.swing.ImageIcon. *map*))
-;;    (.setSize 360 180)))
+(def *datatype* (nth *datatypes* 0))
 
+;; (def *display* (create-display))
+;; (clear *display*)
 
+;; (def *data* (read-datatype *datatype* (first (valid-times *datatype*))))
 
+;; (time (render-datatype *display* *datatype*))
+;; (time (render-datatypes *display* *datatypes*))
