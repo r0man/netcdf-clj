@@ -5,7 +5,7 @@
            ucar.unidata.geoloc.ProjectionPointImpl)
   (:use netcdf.location netcdf.point))
 
-(def *projection* (Mercator. 0 0))
+(def *projection* (Mercator.))
 
 (defmacro with-projection [projection & body]
   `(binding [*projection* ~projection]

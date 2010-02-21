@@ -2,6 +2,7 @@
   :description "Clojure NetCDF Library."
   :url "http://github.com/r0man/netcdf-clj"
   :dependencies [[commons-httpclient "3.1"]
+                 [google-maps "0.0.1-SNAPSHOT"]
                  [essi-unidata/netcdf-java "4.0.41"]
                  [org.apache.maven/maven-ant-tasks "2.0.10"]
                  [org.clojure/clojure "1.1.0"]
