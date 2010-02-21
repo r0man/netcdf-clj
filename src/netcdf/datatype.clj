@@ -84,7 +84,7 @@
         :variable (:variable datatype)))))
 
 (defn read-seq
-  "Read the whole NetCDF datatype as sequence for the given time."
+  "Read the whole datatype at valid-time as sequence."
   [datatype valid-time & options]
   (let [options (apply hash-map options)]
     (with-meta
@@ -96,7 +96,7 @@
        :variable (:variable datatype)})))
 
 (defn read-matrix
-  "Read the whole NetCDF datatype as matrix for the given time."
+  "Read the whole datatype at valid-time as matrix."
   [datatype valid-time & options]
   (let [options (apply hash-map options)]
     (with-meta
