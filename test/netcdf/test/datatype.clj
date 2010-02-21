@@ -24,17 +24,22 @@
     (is (not (datatype-open? datatype-open?)))
     (is (datatype-open? (open-datatype datatype)))))
 
+(deftest test-description
+  (is (= (description (open-example-datatype)) "** surface sig height of wind waves and swell [m]")))
+
 (deftest test-latitude-axis
   (let [axis (latitude-axis (open-example-datatype))]
     (is (= (:min axis) 44.75))
     (is (= (:max axis) 75.25))
-    (is (= (:step-size axis) 0.25))))
+    (is (= (:size axis) 123))
+    (is (= (:step axis) 0.25))))
 
 (deftest test-longitude-axis
   (let [axis (longitude-axis (open-example-datatype))]
     (is (= (:min axis) 159.5))
     (is (= (:max axis) 236.5))
-    (is (= (:step-size axis) 0.5))))
+    (is (= (:size axis) 155))
+    (is (= (:step axis) 0.5))))
 
 (deftest test-latitude-range
   (let [range (latitude-range (open-example-datatype))]
@@ -64,12 +69,8 @@
   (let [datatype (open-example-datatype)
         valid-time (first (valid-times datatype))
         data (read-datatype datatype valid-time)]
-    (is (> (count data) 0))
-    (is (= (:variable (meta data)) *variable*))
-    (is (= (:description (meta data)) "** surface sig height of wind waves and swell [m]"))
-    (is (= (:valid-time (meta data)) valid-time))
-    (is (= (:latitude-axis (meta data)) (latitude-axis datatype)))
-    (is (= (:longitude-axis (meta data)) (longitude-axis datatype)))))
+    (is (= (class data) incanter.Matrix))
+    (is (= (count data) 123))))
 
 (deftest test-read-at-location
   (let [datatype (open-example-datatype)
@@ -81,6 +82,11 @@
     (is (= (:requested-location record) location))
     (is (= (:valid-time record) valid-time))
     (is (= (:variable record) *variable*))))
+
+(deftest test-time-index
+  (let [datatype (open-example-datatype)]
+    (is (= (time-index datatype (first (valid-times datatype))) 0))
+    (is (= (time-index datatype (last (valid-times datatype))) (- (count (valid-times datatype)) 1)))))
 
 (deftest test-valid-times-with-closed-datatype
   (let [valid-times (valid-times *datatype*)]
