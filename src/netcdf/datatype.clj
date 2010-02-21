@@ -10,17 +10,6 @@
   [datatype valid-time]
   (. (. (.getCoordinateSystem (:service datatype)) getTimeAxis1D) findTimeIndexFromDate valid-time))
 
-(defn- read-data [datatype valid-time location]
-  (let [datatype (:service datatype) dataset (GridAsPointDataset. [datatype])]
-    (if (and (:altitude location) (. dataset hasVert datatype (:altitude location)))
-      (. dataset readData datatype valid-time (:altitude location) (:latitude location) (:longitude location))
-      (. dataset readData datatype valid-time (:latitude location) (:longitude location)))))
-
-(defn- read-xy-data [datatype valid-time & [z]]
-  (matrix
-   (seq (.copyTo1DJavaArray (.readYXData (:service datatype) (time-index datatype valid-time) (or z 0))))
-   (int (:size (longitude-axis datatype)))))
-
 (defn bounding-box
   "Returns the bounding box of the datatype."
   [datatype]
@@ -74,6 +63,17 @@
   (if-not (datatype-open? datatype)
     (let [grid-dataset (. GridDataset open (:dataset-uri datatype))]
       (assoc datatype :service (. grid-dataset findGridDatatype (:variable datatype))))))
+
+(defn- read-data [datatype valid-time location]
+  (let [datatype (:service datatype) dataset (GridAsPointDataset. [datatype])]
+    (if (and (:altitude location) (. dataset hasVert datatype (:altitude location)))
+      (. dataset readData datatype valid-time (:altitude location) (:latitude location) (:longitude location))
+      (. dataset readData datatype valid-time (:latitude location) (:longitude location)))))
+
+(defn- read-xy-data [datatype valid-time & [z]]
+  (matrix
+   (seq (.copyTo1DJavaArray (.readYXData (:service datatype) (time-index datatype valid-time) (or z 0))))
+   (int (:size (longitude-axis datatype)))))
 
 (defn read-at-location
   "Read the NetCDF datatype for the given time and location."
