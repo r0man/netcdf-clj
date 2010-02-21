@@ -1,5 +1,5 @@
 (ns netcdf.test.datatype
-  (:use clojure.test netcdf.datatype netcdf.location)
+  (:use clojure.test incanter.core incanter.datasets netcdf.datatype netcdf.location)
   (:require [netcdf.dataset :as dataset]))
 
 (def *dataset-uri* "/home/roman/.weather/20100215/akw.06.nc")
@@ -65,12 +65,32 @@
     (is (= (:variable datatype) *variable*))
     (is (= (class (:service datatype)) ucar.nc2.dt.grid.GeoGrid))))
 
-(deftest test-read-datatype
+(deftest test-read-matrix
   (let [datatype (open-example-datatype)
         valid-time (first (valid-times datatype))
-        data (read-datatype datatype valid-time)]
+        data (read-matrix datatype valid-time)]
+    (save data "/tmp/data.csv")
     (is (= (class data) incanter.Matrix))
-    (is (= (count data) 123))))
+    (is (= (count data) (:size (latitude-axis datatype))))
+    (let [m (meta data)]
+      (is (= (:description m) (description datatype)))
+      (is (= (:latitude-axis m) (latitude-axis datatype)))
+      (is (= (:longitude-axis m) (longitude-axis datatype)))
+      (is (= (:valid-time m) valid-time))
+      (is (= (:variable m) (:variable datatype))))))
+
+(deftest test-read-seq
+  (let [datatype (open-example-datatype)
+        valid-time (first (valid-times datatype))
+        data (read-seq datatype valid-time)]
+    (is (seq? data))
+    (is (= (count data) 19065))
+    (let [m (meta data)]
+      (is (= (:description m) (description datatype)))
+      (is (= (:latitude-axis m) (latitude-axis datatype)))
+      (is (= (:longitude-axis m) (longitude-axis datatype)))
+      (is (= (:valid-time m) valid-time))
+      (is (= (:variable m) (:variable datatype))))))
 
 (deftest test-read-at-location
   (let [datatype (open-example-datatype)

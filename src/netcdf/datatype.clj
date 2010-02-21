@@ -5,11 +5,6 @@
 (defstruct datatype :dataset-uri :variable :service)
 (defstruct record :actual-location :distance :unit :valid-time :value :variable)
 
-(defn time-index
-  "Returns the time index for valid-time."
-  [datatype valid-time]
-  (. (. (.getCoordinateSystem (:service datatype)) getTimeAxis1D) findTimeIndexFromDate valid-time))
-
 (defn bounding-box
   "Returns the bounding box of the datatype."
   [datatype]
@@ -64,16 +59,16 @@
     (let [grid-dataset (. GridDataset open (:dataset-uri datatype))]
       (assoc datatype :service (. grid-dataset findGridDatatype (:variable datatype))))))
 
+(defn time-index
+  "Returns the time index for valid-time."
+  [datatype valid-time]
+  (. (. (.getCoordinateSystem (:service datatype)) getTimeAxis1D) findTimeIndexFromDate valid-time))
+
 (defn- read-data [datatype valid-time location]
   (let [datatype (:service datatype) dataset (GridAsPointDataset. [datatype])]
     (if (and (:altitude location) (. dataset hasVert datatype (:altitude location)))
       (. dataset readData datatype valid-time (:altitude location) (:latitude location) (:longitude location))
       (. dataset readData datatype valid-time (:latitude location) (:longitude location)))))
-
-(defn- read-xy-data [datatype valid-time & [z]]
-  (matrix
-   (seq (.copyTo1DJavaArray (.readYXData (:service datatype) (time-index datatype valid-time) (or z 0))))
-   (int (:size (longitude-axis datatype)))))
 
 (defn read-at-location
   "Read the NetCDF datatype for the given time and location."
@@ -90,11 +85,31 @@
         :value (.dataValue data)
         :variable (:variable datatype)))))
 
-(defn read-datatype
-  "Read the whole NetCDF datatype for the given time."
+(defn read-seq
+  "Read the whole NetCDF datatype as sequence for the given time."
   [datatype valid-time & options]
   (let [options (apply hash-map options)]
-    (read-xy-data datatype valid-time (:z options))))
+    (with-meta
+      (seq (.copyTo1DJavaArray (.readYXData (:service datatype) (time-index datatype valid-time) (or (:z options) 0))))
+      {:description (description datatype)
+       :latitude-axis (latitude-axis datatype)
+       :longitude-axis (longitude-axis datatype)
+       :valid-time valid-time
+       :variable (:variable datatype)})))
+
+(defn read-matrix
+  "Read the whole NetCDF datatype as matrix for the given time."
+  [datatype valid-time & options]
+  (let [options (apply hash-map options)]
+    (with-meta
+      (matrix
+       (apply read-seq datatype valid-time options)
+       (int (:size (longitude-axis datatype))))    
+      {:description (description datatype)
+       :latitude-axis (latitude-axis datatype)
+       :longitude-axis (longitude-axis datatype)
+       :valid-time valid-time
+       :variable (:variable datatype)})))
 
 (defn valid-times
   "Returns the valid times in the NetCDF datatype."

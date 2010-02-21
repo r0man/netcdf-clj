@@ -67,7 +67,7 @@
   (let [datatypes (datatypes dataset)]
     (hash-map
      (map (comp keyword :variable) datatypes)
-     (map #(datatype/read-datatype % valid-time) datatypes))))
+     (map #(datatype/read-matrix % valid-time) datatypes))))
 
 (defn valid-times
   "Returns the valid times in the NetCDF dataset."
