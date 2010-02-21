@@ -74,10 +74,9 @@
   "Read the NetCDF datatype for the given time and location."
   [datatype valid-time location]
   (if location
-    (let [data (read-data datatype valid-time location)
-          actual-location (make-location (.lat data) (.lon data) (.z data))]
+    (let [data (read-data datatype valid-time location)]
       (struct-map record
-        :actual-location actual-location
+        :actual-location (make-location (.lat data) (.lon data) (.z data))
         :requested-location location
         :unit (.getUnitsString (:service datatype))
         :valid-time valid-time
