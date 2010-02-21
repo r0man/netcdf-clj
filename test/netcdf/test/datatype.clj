@@ -69,9 +69,9 @@
   (let [datatype (open-example-datatype)
         valid-time (first (valid-times datatype))
         data (read-matrix datatype valid-time)]
-    (save data "/tmp/data.csv")
     (is (= (class data) incanter.Matrix))
     (is (= (count data) (:size (latitude-axis datatype))))
+    ;; (is (= (seq data) (read-seq datatype valid-time)))
     (let [m (meta data)]
       (is (= (:description m) (description datatype)))
       (is (= (:latitude-axis m) (latitude-axis datatype)))
