@@ -3,6 +3,7 @@
   (:require [netcdf.dataset :as dataset]))
 
 (def *dataset-uri* "/home/roman/.weather/20100215/akw.06.nc")
+;; (def *dataset-uri* "/home/roman/.weather/20100215/nww3.06.nc")
 (def *variable* "htsgwsfc")
 
 (def *datatype* (make-datatype *dataset-uri* *variable*))
@@ -62,8 +63,13 @@
 (deftest test-read-datatype
   (let [datatype (open-example-datatype)
         valid-time (first (valid-times datatype))
-        records (read-datatype datatype valid-time)]
-    (is (> (count records) 0))))
+        data (read-datatype datatype valid-time)]
+    (is (> (count data) 0))
+    (is (= (:variable (meta data)) *variable*))
+    (is (= (:description (meta data)) "** surface sig height of wind waves and swell [m]"))
+    (is (= (:valid-time (meta data)) valid-time))
+    (is (= (:latitude-axis (meta data)) (latitude-axis datatype)))
+    (is (= (:longitude-axis (meta data)) (longitude-axis datatype)))))
 
 (deftest test-read-at-location
   (let [datatype (open-example-datatype)

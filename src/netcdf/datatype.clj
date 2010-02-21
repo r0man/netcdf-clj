@@ -81,8 +81,15 @@
   (let [options (apply hash-map options)
         lat-range (or (:lat-range options) (latitude-range datatype))
         lon-range (or (:lon-range options) (longitude-range datatype))]
-    (for [latitude lat-range longitude lon-range]
-      (read-at-location datatype valid-time (make-location latitude longitude)))))
+    (with-meta
+      (for [latitude lat-range longitude lon-range]
+        (read-at-location datatype valid-time (make-location latitude longitude)))
+      {:variable (:variable datatype)
+       :description (.. (:service datatype) getVariable getDescription)
+       :valid-time valid-time
+       :latitude-axis (latitude-axis datatype)
+       :longitude-axis (longitude-axis datatype)})))
+
 
 (defn valid-times
   "Returns the valid times in the NetCDF datatype."
