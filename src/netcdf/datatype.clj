@@ -78,7 +78,6 @@
           actual-location (make-location (.lat data) (.lon data) (.z data))]
       (struct-map record
         :actual-location actual-location
-        :distance (distance location actual-location)
         :requested-location location
         :unit (.getUnitsString (:service datatype))
         :valid-time valid-time

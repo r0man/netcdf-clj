@@ -98,7 +98,6 @@
         location (make-location 0 0)
         record (read-at-location datatype valid-time location)]
     (is (location? (:actual-location record)))
-    (is (>= (:distance record) 0))
     (is (= (:requested-location record) location))
     (is (= (:valid-time record) valid-time))
     (is (= (:variable record) *variable*))))
