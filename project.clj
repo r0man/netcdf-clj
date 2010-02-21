@@ -4,6 +4,7 @@
   :dependencies [[commons-httpclient "3.1"]
                  [google-maps "0.0.1-SNAPSHOT"]
                  [essi-unidata/netcdf-java "4.0.41"]
+                 [org.incanter/incanter-full "1.2.0-SNAPSHOT"]
                  [org.apache.maven/maven-ant-tasks "2.0.10"]
                  [org.clojure/clojure "1.1.0"]
                  [org.clojure/clojure-contrib "1.0-SNAPSHOT"]
