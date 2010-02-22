@@ -70,8 +70,7 @@
         valid-time (first (valid-times datatype))
         data (read-matrix datatype valid-time)]
     (is (= (class data) incanter.Matrix))
-    (is (= (count data) (:size (latitude-axis datatype))))
-    ;; (is (= (seq data) (read-seq datatype valid-time)))
+    (is (= (count data) (:size (longitude-axis datatype))))
     (let [m (meta data)]
       (is (= (:description m) (description datatype)))
       (is (= (:latitude-axis m) (latitude-axis datatype)))
