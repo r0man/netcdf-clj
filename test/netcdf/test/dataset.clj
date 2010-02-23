@@ -57,10 +57,10 @@
     (copy-dataset *dataset-uri* target ["htsgwsfc"])
     (is (= (.exists (java.io.File. target)) true))))
 
-(deftest test-copy-dataset-from-remote
-  (let [target "/tmp/.copy-test.netcdf"]
-    (copy-dataset *remote-uri* target)
-    (is (= (.exists (java.io.File. target)) true))))
+;; (deftest test-copy-dataset-from-remote
+;;   (let [target "/tmp/.copy-test.netcdf"]
+;;     (copy-dataset *remote-uri* target)
+;;     (is (= (.exists (java.io.File. target)) true))))
 
 (deftest test-datatype
   (let [datatype (datatype (open-grid-dataset (make-example-dataset)) *variable*)]

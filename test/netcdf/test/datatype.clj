@@ -41,18 +41,6 @@
     (is (= (:size axis) 155))
     (is (= (:step axis) 0.5))))
 
-(deftest test-latitude-range
-  (let [range (latitude-range (open-example-datatype))]
-    (is (= (count range) 122))
-    (is (= (first range) 44.75))
-    (is (= (last range) 75.0))))
-
-(deftest test-longitude-range
-  (let [range (longitude-range (open-example-datatype))]
-    (is (= (count range) 154))
-    (is (= (first range) 159.5))
-    (is (= (last range) 236.0))))
-
 (deftest test-make-datatype
   (let [datatype (make-datatype *dataset-uri* *variable*)]
     (is (= (:dataset-uri datatype)) *dataset-uri*)
@@ -116,3 +104,8 @@
   (let [valid-times (valid-times (open-datatype *datatype*))]
     (is (> (count valid-times) 0))
     (is (every? #(isa? (class %) java.util.Date) valid-times))))
+
+(deftest test-grid-location
+  (let [datatype (open-example-datatype)]
+    (is (= (grid-location datatype (make-location 0 0)) (make-location 0 0)))
+    (is (= (grid-location datatype (make-location 77.1 0.2)) (make-location 77 0)))))
