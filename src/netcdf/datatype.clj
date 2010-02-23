@@ -90,9 +90,9 @@
   [datatype valid-time & options]
   (let [options (apply hash-map options)]
     (with-meta
-      (matrix
-       (apply read-seq datatype valid-time options)
-       (int (:size (longitude-axis datatype))))    
+      (trans (matrix
+        (apply read-seq datatype valid-time options)
+        (int (:size (longitude-axis datatype)))))    
       {:description (description datatype)
        :latitude-axis (latitude-axis datatype)
        :longitude-axis (longitude-axis datatype)
