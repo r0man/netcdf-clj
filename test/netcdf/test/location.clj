@@ -105,3 +105,36 @@
   (is (= (longitude-distance *berlin* *berlin*) 0))
   (is (= (longitude-distance *berlin* *paris*) -11.059999999999999))
   (is (= (longitude-distance *paris* *berlin* ) 11.059999999999999)))
+
+(deftest test-latitude-range
+  (is (empty? (latitude-range 0 0)))
+  (is (= (latitude-range 0 1) [0]))
+  (is (= (latitude-range 0 1 0.5) [0 0.5]))
+  (let [range (latitude-range 0 90)]
+    (is (= (count range) 90))
+    (is (= (first range) 0))
+    (is (= (last range) 89))))
+
+(deftest test-longitude-range
+  (is (empty? (longitude-range 0 0)))
+  (is (= (longitude-range 0 1) [0]))
+  (is (= (longitude-range 0 1 0.5) [0 0.5]))
+  (let [range (longitude-range 0 180)]
+    (is (= (count range) 180))
+    (is (= (first range) 0))
+    (is (= (last range) 179))))
+
+(deftest test-location-range
+  (is (empty? (location-range (make-location 0 0) (make-location 0 0))))
+  (is (= (location-range (make-location 0 0) (make-location 1 1))
+         [(make-location 0 0)]))
+  (is (= (location-range (make-location 0 0) (make-location 1 1) :step-lat 0.5)
+         [(make-location 0 0) (make-location 0.5 0)]))
+  (is (= (location-range (make-location 0 0) (make-location 1 1) :step-lon 0.5)
+         [(make-location 0 0) (make-location 0 0.5)]))
+  (let [range (location-range (make-location 0 0) (make-location 2 2))]
+    (is (= (count range) 4))
+    (is (= (first range) (make-location 0 0)))
+    (is (= (nth range 1) (make-location 0 1)))
+    (is (= (nth range 2) (make-location 1 0)))
+    (is (= (last range) (make-location 1 1)))))
