@@ -2,6 +2,7 @@
   (:use clojure.test netcdf.dataset))
 
 (def *dataset-uri* "/home/roman/.weather/20100215/akw.06.nc")
+(def *remote-uri* "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw/akw20100223/akw_00z")
 (def *variable* "htsgwsfc")
 
 (defn make-example-dataset []
@@ -10,12 +11,20 @@
 (deftest test-make-dataset
   (let [dataset (make-example-dataset)]
     (is (= (:uri dataset) *dataset-uri*))
+    (is (nil? (:service dataset))))
+  (let [dataset (make-dataset *remote-uri*)]
+    (is (= (:uri dataset) *remote-uri*))
     (is (nil? (:service dataset)))))
 
 (deftest test-open-dataset
   (let [dataset (open-dataset (make-example-dataset))]
     (is (= (:uri dataset) *dataset-uri*))
-    (is (= (class (:service dataset)) ucar.nc2.NetcdfFile))))
+    (is (= (class (:service dataset)) ucar.nc2.dataset.NetcdfDataset))))
+
+(deftest test-open-dataset-with-remote
+  (let [dataset (open-dataset (make-dataset *remote-uri*))]
+    (is (= (:uri dataset) *remote-uri*))
+    (is (= (class (:service dataset)) ucar.nc2.dataset.NetcdfDataset))))
 
 (deftest test-dataset-open?
   (let [dataset (make-example-dataset)]
@@ -25,6 +34,11 @@
 (deftest test-open-grid-dataset
   (let [dataset (open-grid-dataset (make-example-dataset))]
     (is (= (:uri dataset) *dataset-uri*))
+    (is (= (class (:service dataset)) ucar.nc2.dt.grid.GridDataset))))
+
+(deftest test-open-grid-dataset-with-remote
+  (let [dataset (open-grid-dataset (make-dataset *remote-uri*))]
+    (is (= (:uri dataset) *remote-uri*))
     (is (= (class (:service dataset)) ucar.nc2.dt.grid.GridDataset))))
 
 (deftest test-close-datatset
@@ -38,9 +52,14 @@
     (copy-dataset *dataset-uri* target)
     (is (= (.exists (java.io.File. target)) true))))
 
-(deftest test-copy-dataset-with-vars
+(deftest test-copy-dataset-selected-variables
   (let [target "/tmp/.copy-test.netcdf"]
     (copy-dataset *dataset-uri* target ["htsgwsfc"])
+    (is (= (.exists (java.io.File. target)) true))))
+
+(deftest test-copy-dataset-from-remote
+  (let [target "/tmp/.copy-test.netcdf"]
+    (copy-dataset *remote-uri* target)
     (is (= (.exists (java.io.File. target)) true))))
 
 (deftest test-datatype
