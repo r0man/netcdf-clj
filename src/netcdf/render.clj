@@ -78,12 +78,9 @@
 
 (defn water-color? [color]
   (or (= color (Color. 152 178 203))
+      (= color (Color. 153 178 203))
       (= color (Color. 153 179 203))
       (= color (Color. 153 179 204))))
-
-(defn location->point [location]
-  {:x (+ (:longitude location) 180)
-   :y (+ (* (+ (:latitude location) 90) -1) 180)})
 
 (defn clear [component]
   (let [bounds (.getBounds component) graphics (.getGraphics component)]
@@ -143,42 +140,54 @@
 
 (def *datatype* (nth *datatypes* 0))
 
-(defn render-map [display center valid-time & options]
-  (let [map (apply static-map-image (make-location 0 0) options)
-        graphics (.getGraphics display)
+(defn render-map [graphics center valid-time & options]
+  (let [map (apply static-map-image center options)
         options (apply hash-map options)
         zoom (or (:zoom options) (:zoom *options*))
         origin (location->coords center zoom)
         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
-        x-offset (x-coord-delta (:longitude center) (:longitude (coords->location upper-left zoom)) zoom)
-        y-offset (y-coord-delta (:latitude center) (:latitude (coords->location upper-left zoom)) zoom)
+        offsets (coord-delta center (coords->location upper-left zoom) zoom)
         ]
     (. graphics drawImage map 0 0 nil)
     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
-      (let [location (coords->location {:x (+ (:x origin) x x-offset) :y (+ (:y origin) y y-offset)} zoom)]
+      (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
         (if (water-color? (Color. (. map getRGB x y)))
           (let [data (read-at-location *datatype* valid-time location)]
             (. graphics setColor (value->color (:value data)))
-            (. graphics fillRect x y 1 1)))))))
+            (. graphics fillRect x y 1 1)))))
+    map))
+
+(defn render-image [center valid-time & options]
+  (let [image (apply static-map-image center options)
+        graphics (.getGraphics image)
+        options (apply hash-map options)
+        zoom (or (:zoom options) (:zoom *options*))
+        origin (location->coords center zoom)
+        upper-left {:x (- (:x origin) (/ (.getWidth image) 2)) :y (- (:y origin) (/ (.getHeight image) 2))}
+        offsets (coord-delta center (coords->location upper-left zoom) zoom)
+        ]
+    (doseq [y (range 0 (.getHeight image)) x (range 0 (.getWidth image))]
+      (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
+        (if (water-color? (Color. (. image getRGB x y)))
+          (let [data (read-at-location *datatype* valid-time location)]
+            (. graphics setColor (value->color (:value data)))
+            (. graphics fillRect x y 1 1)))))
+    image))
 
 ;; (render-datatype *display* *datatype*)
 ;; ;; (*datatype*)
 
 ;; (def *display* (create-display 500 300))
-;; ;; (clear *display*)
-;; ;; (time (render-datatype *display* *datatype*))
+;; (clear *display*)
+;; (time (render-datatype *display* *datatype*))
 ;; (clear *display*)
 ;; (render-data *display* (read-matrix *datatype* (first (valid-times *datatype*))))
 ;; (render-data *display* (read-seq *datatype* (first (valid-times *datatype*))))
 
-
-;; (water-color? (Color. 242 239 233))
-
-
-
 ;; (def *display* (create-display 500 400))
 ;; (clear *display*)
-;; (render-map *display* {:latitude 0 :longitude 0} (nth (valid-times *datatype*) 5) :zoom 1 :width 500 :height 400)
+;; (render-map (.getGraphics *display*) {:latitude 50 :longitude 0} (nth (valid-times *datatype*) 5) :zoom 1 :width 500 :height 400 :maptype "terrain")
+
 
 ;; (take 5 (render-map *display* {:latitude 0 :longitude 0} :zoom 2 :width 200 :height 100))
 ;; (nth (render-map *display* {:latitude 0 :longitude 0} :zoom 2 :width 360 :height 180) 359)
