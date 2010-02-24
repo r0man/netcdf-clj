@@ -19,6 +19,9 @@
 (defn location? [location]
   (and (:latitude location) (:longitude location) location))
 
+(defn location->array [location]
+  [(:latitude location) (:longitude location)])
+
 (defn parse-latitude [str]
   (parse-double str))
 

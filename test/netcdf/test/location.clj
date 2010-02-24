@@ -138,3 +138,6 @@
     (is (= (nth range 1) (make-location 0 1)))
     (is (= (nth range 2) (make-location 1 0)))
     (is (= (last range) (make-location 1 1)))))
+
+(deftest test-location->array
+  (is (= (location->array (make-location 78 0)) [78 0])))
