@@ -4,10 +4,11 @@
            (java.awt.event KeyListener)
            (javax.swing JFrame JOptionPane JPanel))
   (:use netcdf.datatype
+        netcdf.interpolation
+        netcdf.location
         google.maps.static
         google.maps.projection
-        incanter.core
-        netcdf.location))
+        incanter.core))
 
 (defn create-panel [width height]
   (proxy [JPanel KeyListener] [] 
@@ -178,7 +179,7 @@
 ;; (def *display* (create-display 500 400))
 ;; (clear *display*)
 ;; (render-map (.getGraphics *display*) {:latitude 50 :longitude 0} (nth (valid-times *datatype*) 5)
-;;             :zoom 4 :width 500 :height 400 :maptype "terrain")
+;;             :zoom 2 :width 500 :height 400 :maptype "terrain")
 
 ;; (render-datatype *display* *datatype*)
 ;; ;; (*datatype*)
