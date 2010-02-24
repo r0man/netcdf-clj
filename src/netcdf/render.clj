@@ -84,7 +84,6 @@
 
 (defn clear [component]
   (let [bounds (.getBounds component) graphics (.getGraphics component)]
-    (println (.getBackground component))
     (. graphics setColor (.getBackground component))
     (. graphics fillRect (.getX bounds) (.getY bounds) (.getWidth bounds) (.getHeight bounds))))
 
@@ -152,10 +151,12 @@
     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
         (if (water-color? (Color. (. map getRGB x y)))
-          (let [data (read-at-location *datatype* valid-time location)]
+          (let [data (interpolate-bilinear *datatype* valid-time location)]
             (. graphics setColor (value->color (:value data)))
             (. graphics fillRect x y 1 1)))))
     map))
+
+;; (render-map (.getGraphics *display*) {:latitude 50 :longitude 0} (nth (valid-times *datatype*) 5) :zoom 1 :width 500 :height 400 :maptype "terrain")
 
 (defn render-image [center valid-time & options]
   (let [image (apply static-map-image center options)
@@ -174,6 +175,11 @@
             (. graphics fillRect x y 1 1)))))
     image))
 
+;; (def *display* (create-display 500 400))
+;; (clear *display*)
+;; (render-map (.getGraphics *display*) {:latitude 50 :longitude 0} (nth (valid-times *datatype*) 5)
+;;             :zoom 4 :width 500 :height 400 :maptype "terrain")
+
 ;; (render-datatype *display* *datatype*)
 ;; ;; (*datatype*)
 
@@ -184,10 +190,7 @@
 ;; (render-data *display* (read-matrix *datatype* (first (valid-times *datatype*))))
 ;; (render-data *display* (read-seq *datatype* (first (valid-times *datatype*))))
 
-;; (def *display* (create-display 500 400))
-;; (clear *display*)
-;; (render-map (.getGraphics *display*) {:latitude 50 :longitude 0} (nth (valid-times *datatype*) 5) :zoom 1 :width 500 :height 400 :maptype "terrain")
-
+;; (interpolate-bilinear *datatype* (first (valid-times *datatype*)) (make-location 0 0))
 
 ;; (take 5 (render-map *display* {:latitude 0 :longitude 0} :zoom 2 :width 200 :height 100))
 ;; (nth (render-map *display* {:latitude 0 :longitude 0} :zoom 2 :width 360 :height 180) 359)
