@@ -59,8 +59,8 @@
 
 (defn location-range [location-1 location-2 & options]
   (let [options (apply hash-map options)]
-    (for [latitude (latitude-range (:latitude location-1) (:latitude location-2) (:step-lat options ))
-          longitude (longitude-range (:longitude location-1) (:longitude location-2) (:step-lon options ))]
+    (for [latitude (latitude-range (:latitude location-1) (:latitude location-2) (:lat-step options ))
+          longitude (longitude-range (:longitude location-1) (:longitude location-2) (:lon-step options ))]
       (make-location latitude longitude))))
 
 (defn location-rect [location & options]

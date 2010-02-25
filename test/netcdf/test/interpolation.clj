@@ -15,8 +15,8 @@
 ;;   (open-datatype (make-example-datatype)))
 
 (deftest test-central-sample-location
-  (are [lat lon step-lat step-lon expect-lat expect-lon]
-    (is (= (central-sample-location (make-location lat lon) step-lat step-lon) (make-location expect-lat expect-lon)))
+  (are [lat lon lat-step lon-step expect-lat expect-lon]
+    (is (= (central-sample-location (make-location lat lon) lat-step lon-step) (make-location expect-lat expect-lon)))
     0 0 1 1 0 0
     0 0 1 1 0 0
     77.0 0 1 1.25 77 0
@@ -49,21 +49,21 @@
 
 (deftest test-sample-location
   (are [lat lon expected]
-    (is (= (map location->array (sample-location (make-location lat lon) :step-lat 1 :step-lon 1.25 :width 2 :height 2)) expected))
+    (is (= (map location->array (sample-location (make-location lat lon) :lat-step 1 :lon-step 1.25 :width 2 :height 2)) expected))
     76.9 0 [[77 0] [77 1.25] [76 0] [76 1.25]]
     77.0 0 [[77 0] [77 1.25] [76 0] [76 1.25]]
     77.5 0 [[78 0] [78 1.25] [77 0] [77 1.25]]
     78.0 0 [[78 0] [78 1.25] [77 0] [77 1.25]]))
 
 (deftest test-location->sample-2x2
-  (let [locations (location->sample-2x2 (make-location 77 0) :step-lat 1 :step-lon 1.25)]
+  (let [locations (location->sample-2x2 (make-location 77 0) :lat-step 1 :lon-step 1.25)]
     (are [key latitude longitude]
       (is (= (key locations) (make-location latitude longitude)))
       :s00 77 0
       :s01 77 1.25
       :s10 76 0
       :s11 76 1.25))
-  (let [locations (location->sample-2x2 (make-location 77.5 1) :step-lat 1 :step-lon 1.25)]
+  (let [locations (location->sample-2x2 (make-location 77.5 1) :lat-step 1 :lon-step 1.25)]
     (are [key latitude longitude]
       (is (= (key locations) (make-location latitude longitude)))
       :s00 78 0
@@ -79,7 +79,7 @@
 ;;     ))
 
 ;; (deftest test-sample-location-4x4
-;;   (let [locations (location->sample-4x4 (make-location 77 1.25) :step-lat 1 :step-lon 1.25)]
+;;   (let [locations (location->sample-4x4 (make-location 77 1.25) :lat-step 1 :lon-step 1.25)]
 ;;     (are [key latitude longitude]
 ;;       (is (= (key locations) (make-location latitude longitude)))
 ;;       :s__ 78 0

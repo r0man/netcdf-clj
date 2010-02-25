@@ -95,19 +95,6 @@
   (let [sequence (apply read-seq datatype valid-time location options)]
     (with-meta (matrix (map :value sequence) (:lon-size (meta sequence))) (meta sequence))))
 
-
-;; (defn read-matrix
-;;   "Read the whole datatype at valid-time as matrix."
-;;   [datatype valid-time & options]
-;;   (let [options (apply hash-map options)]
-;;     (with-meta
-;;       (trans (matrix
-;;         (apply read-seq datatype valid-time options)
-;;         (int (:size (lon-axis datatype)))))    
-;;       (merge {:description (description datatype)
-;;               :valid-time valid-time
-;;               :variable (:variable datatype)} (axis datatype)))))
-
 (defn valid-times
   "Returns the valid times in the NetCDF datatype."
   [datatype]
@@ -116,6 +103,10 @@
     (valid-times (open-datatype datatype))))
 
 ;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+;; (println (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 15))
+
+;; (save (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 15)
+;;       "matrix.txt")
 
 ;; (defn read-matrix [datatype valid-time location & options]
 ;;   (let [sequence (read-seq datatype valid-time location width height)]
@@ -222,15 +213,15 @@
 ;; (sample-locations *akw* (first (valid-times *akw*)) {:latitude 78 :longitude 0})
 
 ;; (defn location-rect [datatype location num]
-;;   (let [step-lat (:step (lat-axis datatype)) step-lon (:step (lon-axis datatype))]
-;;     (for [latitude (reverse (range (:latitude location) (+ (:latitude location) (* num step-lat)) step-lat))
-;;           longitude (range (:longitude location) (+ (:longitude location) (* num step-lon)) step-lon)]
+;;   (let [lat-step (:step (lat-axis datatype)) lon-step (:step (lon-axis datatype))]
+;;     (for [latitude (reverse (range (:latitude location) (+ (:latitude location) (* num lat-step)) lat-step))
+;;           longitude (range (:longitude location) (+ (:longitude location) (* num lon-step)) lon-step)]
 ;;       (make-location latitude longitude))))
 
 ;; ;; (defn location-range [lat1 lon1 lat2 lon2]
-;;   (let [step-lat (:step (lat-axis datatype)) step-lon (:step (lon-axis datatype))]
-;;     (for [latitude (reverse (range (:latitude location) (+ (:latitude location) (* num step-lat)) step-lat))
-;;           longitude (range (:longitude location) (+ (:longitude location) (* num step-lon)) step-lon)]
+;;   (let [lat-step (:step (lat-axis datatype)) lon-step (:step (lon-axis datatype))]
+;;     (for [latitude (reverse (range (:latitude location) (+ (:latitude location) (* num lat-step)) lat-step))
+;;           longitude (range (:longitude location) (+ (:longitude location) (* num lon-step)) lon-step)]
 ;;       (make-location latitude longitude))))
 
 
@@ -263,20 +254,20 @@
 
 ;; (defn sample-locations [datatype location num]
 ;;   (let [location (central-sample-location datatype location)
-;;         step-lat (:step (lat-axis datatype))
-;;         step-lon (:step (lon-axis datatype))]
+;;         lat-step (:step (lat-axis datatype))
+;;         lon-step (:step (lon-axis datatype))]
 ;;     (location-range
-;;      (make-location (- (:latitude location) (* step-lat num)) (- (:longitude location) (* step-lon num)))
-;;      (make-location (+ (:latitude location) (* step-lat num)) (+ (:longitude location) (* step-lon num)))
-;;      :step-lat step-lat :step-lon step-lon)))
+;;      (make-location (- (:latitude location) (* lat-step num)) (- (:longitude location) (* lon-step num)))
+;;      (make-location (+ (:latitude location) (* lat-step num)) (+ (:longitude location) (* lon-step num)))
+;;      :lat-step lat-step :lon-step lon-step)))
 
 ;; (defn sample-locations [datatype location width height]
 ;;   (let [location (central-sample-location datatype location)
-;;         step-lat (:step (lat-axis datatype))
-;;         step-lon (:step (lon-axis datatype))]
+;;         lat-step (:step (lat-axis datatype))
+;;         lon-step (:step (lon-axis datatype))]
 ;;     (for [
-;;           latitude (range (- (:latitude location) (* (/ width 2) step-lat)) (+ (:latitude location) (* (/ width 2) step-lat)) step-lat)
-;;           longitude (range (- (:longitude location) (* (/ height 2) step-lon)) (+ (:longitude location) (* (/ height 2) step-lon)) step-lon)
+;;           latitude (range (- (:latitude location) (* (/ width 2) lat-step)) (+ (:latitude location) (* (/ width 2) lat-step)) lat-step)
+;;           longitude (range (- (:longitude location) (* (/ height 2) lon-step)) (+ (:longitude location) (* (/ height 2) lon-step)) lon-step)
 ;; ]
 ;;       [latitude longitude]
 ;;       )))

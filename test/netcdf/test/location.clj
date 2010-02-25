@@ -128,9 +128,9 @@
   (is (empty? (location-range (make-location 0 0) (make-location 0 0))))
   (is (= (location-range (make-location 0 0) (make-location 1 1))
          [(make-location 0 0)]))
-  (is (= (location-range (make-location 0 0) (make-location 1 1) :step-lat 0.5)
+  (is (= (location-range (make-location 0 0) (make-location 1 1) :lat-step 0.5)
          [(make-location 0 0) (make-location 0.5 0)]))
-  (is (= (location-range (make-location 0 0) (make-location 1 1) :step-lon 0.5)
+  (is (= (location-range (make-location 0 0) (make-location 1 1) :lon-step 0.5)
          [(make-location 0 0) (make-location 0 0.5)]))
   (let [range (location-range (make-location 0 0) (make-location 2 2))]
     (is (= (count range) 4))
