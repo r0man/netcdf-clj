@@ -70,3 +70,15 @@
       77.1 1.25 -0.09999999999999432
       76.9 1.25 0.09999999999999432
       76.1 1.25 0.9000000000000057)))
+
+(deftest test-interpolate-bicubic-2x2
+  (let [datatype (open-example-datatype) valid-time (first (valid-times datatype))]
+    (interpolate-bicubic-2x2 datatype valid-time (make-location 77 0))))
+
+(deftest test-interpolate-bilinear-2x2
+  (let [datatype (open-example-datatype) valid-time (first (valid-times datatype))]
+    (interpolate-bilinear-2x2 datatype valid-time (make-location 77 0))))
+
+(deftest test-interpolate-bilinear-4x4
+  (let [datatype (open-example-datatype) valid-time (first (valid-times datatype))]
+    (interpolate-bilinear-4x4 datatype valid-time (make-location 77 0))))

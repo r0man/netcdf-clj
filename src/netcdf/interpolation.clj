@@ -45,34 +45,32 @@
 ;;      (make-location (+ (:latitude location) (:lat-step datatype)) (- (:longitude location) (:lon-step datatype)))
 ;;      :width 4 :height 4)))
 
+(defn interpolate-bicubic-2x2
+  "Read the NetCDF datatype for the given time and location."
+  [datatype valid-time location]
+  (if location
+    (let [sample (read-sample-2x2 datatype valid-time location)]
+      (struct-map record
+        :variable (:variable datatype)
+        :location location
+        :valid-time valid-time
+        :value (. (InterpolationBicubic. 4)
+                  interpolate
+                  (double (sel sample 0 0))
+                  (double (sel sample 0 1))
+                  (double (sel sample 1 0))
+                  (double (sel sample 1 1))
+                  (float (x-fract sample location))
+                  (float (y-fract sample location)))))))
+
 (defn interpolate-bilinear-2x2
   "Read the NetCDF datatype for the given time and location."
   [datatype valid-time location]
   (if location
-    (let [sample (read-sample-2x2 datatype valid-time location)
-          ;; xfrac (/ (- (:longitude location) (:lon-min (meta sample)))
-          ;;          (- (:lon-max (meta sample)) (:lon-min (meta sample))))
-          ;; yfrac (/ (- (:lat-max (meta sample)) (:latitude location))
-          ;;          (- (:lat-max (meta sample)) (:lat-min (meta sample))))
-          ;; xfrac (/ (- (:lon-max (meta sample)) (:longitude location))
-          ;;          (- (:lon-max (meta sample)) (:lon-min (meta sample))))
-          ;; yfrac (/ (- (:lat-max (meta sample)) (:latitude location))
-          ;;          (- (:lat-max (meta sample)) (:lat-min (meta sample))))
-          ]
-      ;; (println location)
-      ;; (println sample)
-      ;; (println (meta sample))
-      ;; (println (:lon-max (meta sample)))
-      ;; (println (:lon-min (meta sample)))
-      ;; (println xfrac)
-      ;; (println)
-      ;; (println (:lat-max (meta sample)))
-      ;; (println (:lat-min (meta sample)))
-      ;; (println yfrac)
-      ;; (println)
+    (let [sample (read-sample-2x2 datatype valid-time location)]
       (struct-map record
-        :actual-location location
-        :requested-location location
+        :variable (:variable datatype)
+        :location location
         :valid-time valid-time
         :value (. (InterpolationBilinear.)
                   interpolate
@@ -81,33 +79,16 @@
                   (double (sel sample 1 0))
                   (double (sel sample 1 1))
                   (float (x-fract sample location))
-                  (float (y-fract sample location)))        
-        :variable (:variable datatype)))))
+                  (float (y-fract sample location)))))))
 
 (defn interpolate-bilinear-4x4
   "Read the NetCDF datatype for the given time and location."
   [datatype valid-time location]
   (if location
-    (let [sample (read-sample-4x4 datatype valid-time location)
-          xfrac (/ (- (:lon-max (meta sample)) (:longitude location))
-                   (- (:lon-max (meta sample)) (:lon-min (meta sample))))
-          yfrac (/ (- (:lat-max (meta sample)) (:latitude location))
-                   (- (:lat-max (meta sample)) (:lat-min (meta sample))))
-          ]
-      ;; (println location)
-      ;; (println sample)
-      ;; (println (meta sample))
-      ;; (println (:lon-max (meta sample)))
-      ;; (println (:lon-min (meta sample)))
-      ;; (println xfrac)
-      ;; (println)
-      ;; (println (:lat-max (meta sample)))
-      ;; (println (:lat-min (meta sample)))
-      ;; (println yfrac)
-      ;; (println)
+    (let [sample (read-sample-4x4 datatype valid-time location)]
       (struct-map record
-        :actual-location location
-        :requested-location location
+        :variable (:variable datatype)
+        :location location
         :valid-time valid-time
         :value (. (InterpolationBilinear.)
                   interpolate
@@ -127,9 +108,8 @@
                   (double (sel sample 3 1))
                   (double (sel sample 3 2))
                   (double (sel sample 3 3))
-                  (float xfrac)
-                  (float yfrac))        
-        :variable (:variable datatype)))))
+                  (float (x-fract sample location))
+                  (float (y-fract sample location)))))))
 
 (defn interpolate-matrix [datatype valid-time location & options]
   (apply read-matrix datatype valid-time location (flatten (seq (assoc (apply hash-map options) :read-fn interpolate-bilinear-4x4)))))

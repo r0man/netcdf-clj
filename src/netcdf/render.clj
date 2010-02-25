@@ -163,7 +163,7 @@
     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
         (if (water-color? (Color. (. map getRGB x y)))
-          (let [data (interpolate-bilinear *datatype* valid-time location)]
+          (let [data (interpolate-bilinear-2x2 *datatype* valid-time location)]
             (. graphics setColor (value->color (:value data)))
             (. graphics fillRect x y 1 1)))))
     map))
@@ -187,10 +187,10 @@
             (. graphics fillRect x y 1 1)))))
     image))
 
-;; (def *display* (create-display 500 400))
+;; (def *display* (create-display 500 250))
 ;; (clear *display*)
 ;; (render-map (.getGraphics *display*) {:latitude 0 :longitude 0} (nth (valid-times *datatype*) 5)
-;;             :zoom 2 :width 500 :height 400 :maptype "roadmap")
+;;             :zoom 2 :width 500 :height 250 :maptype "roadmap")
 
 ;; (render-datatype *display* *datatype*)
 ;; ;; (*datatype*)
