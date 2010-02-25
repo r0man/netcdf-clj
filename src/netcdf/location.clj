@@ -51,6 +51,18 @@
 (defn longitude-distance [from-location to-location]
   (- (:longitude to-location) (:longitude from-location)))
 
+(defn latitude-range [latitude-1 latitude-2 & [step]]
+  (range (min latitude-1 latitude-2) (max latitude-1 latitude-2) (or step 1)))
+
+(defn longitude-range [longitude-1 longitude-2 & [step]]
+  (range (min longitude-1 longitude-2) (max longitude-1 longitude-2) (or step 1)))
+
+(defn location-range [location-1 location-2 & options]
+  (let [options (apply hash-map options)]
+    (for [latitude (latitude-range (:latitude location-1) (:latitude location-2) (:step-lat options ))
+          longitude (longitude-range (:longitude location-1) (:longitude location-2) (:step-lon options ))]
+      (make-location latitude longitude))))
+
 (defn north? [source target]
   (> (:latitude source) (:latitude target)))
 
@@ -75,15 +87,4 @@
 (defn north-west? [source target]
   (and (north? source target) (west? source target)))
 
-(defn latitude-range [latitude-1 latitude-2 & [step]]
-  (range (min latitude-1 latitude-2) (max latitude-1 latitude-2) (or step 1)))
-
-(defn longitude-range [longitude-1 longitude-2 & [step]]
-  (range (min longitude-1 longitude-2) (max longitude-1 longitude-2) (or step 1)))
-
-(defn location-range [location-1 location-2 & options]
-  (let [options (apply hash-map options)]
-    (for [latitude (latitude-range (:latitude location-1) (:latitude location-2) (:step-lat options ))
-          longitude (longitude-range (:longitude location-1) (:longitude location-2) (:step-lon options ))]
-      (make-location latitude longitude))))
 

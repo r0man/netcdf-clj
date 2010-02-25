@@ -41,7 +41,7 @@
      (sample-location location :step-lat (:step-lat options) :step-lon (:step-lon options) :width 4 :height 4))))
 
 (defn read-sample-2x2 [datatype valid-time location]
-  (let [locations (location->sample-2x2 location :step-lat (:step-lat (latitude-axis datatype)) :step-lon (:step (longitude-axis datatype)))]
+  (let [locations (location->sample-2x2 location :step-lat (:step-lat (lat-axis datatype)) :step-lon (:step (lon-axis datatype)))]
     (with-meta (zipmap (keys locations) (map #(read-at-location datatype valid-time %) (vals locations)))
       {:lat-min (:latitude (:s11 locations))
        :lat-max (:latitude (:s01 locations))
@@ -64,7 +64,7 @@
 ;; :s2_ :s20 :s21 :s22
 
 (defn read-sample [datatype valid-time location]
-  (let [locations (sample-location location (:step (latitude-axis datatype)) (:step (longitude-axis datatype)) 4 4)]
+  (let [locations (sample-location location (:step (lat-axis datatype)) (:step (lon-axis datatype)) 4 4)]
     (with-meta (map #(read-at-location datatype valid-time %) locations)
       ;; TODO: REALLY?
       {:lat-min (:latitude (first locations))
@@ -121,3 +121,10 @@
 ;; (:value (interpolate-bilinear *nww3* (first (valid-times *nww3*)) (make-location 75 1.25)))
 ;; (:value (interpolate-bilinear *nww3* (first (valid-times *nww3*)) (make-location 76.5 1)))
 
+;; (defn matrix-interpolate-bilinear [datatype valid-time location & [width height]]
+;;   (let [width (or width 10) height (or height width) ]    
+;;     (matrix
+;;      (for [latitude (reverse (sample-latitude (:latitude location) height (:step (lat-axis datatype))))
+;;            longitude (sample-longitude (:longitude location) width (:step (lon-axis datatype)))]
+;;        (:value (interpolate-bilinear datatype valid-time (make-location latitude longitude))))
+;;      width)))

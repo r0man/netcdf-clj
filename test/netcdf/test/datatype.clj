@@ -27,19 +27,23 @@
 (deftest test-description
   (is (= (description (open-example-datatype)) "** surface sig height of wind waves and swell [m]")))
 
-;; (deftest test-latitude-axis
-;;   (let [axis (latitude-axis (open-example-datatype))]
-;;     (is (= (:min axis) 44.75))
-;;     (is (= (:max axis) 75.25))
-;;     (is (= (:size axis) 123))
-;;     (is (= (:step axis) 0.25))))
+(deftest test-lat-axis
+  (let [axis (lat-axis (open-example-datatype))]
+    (is (= (:lat-min axis) -78))
+    (is (= (:lat-max axis) 78))
+    (is (= (:lat-size axis) 157))
+    (is (= (:lat-step axis) 1))))
 
-;; (deftest test-longitude-axis
-;;   (let [axis (longitude-axis (open-example-datatype))]
-;;     (is (= (:min axis) 159.5))
-;;     (is (= (:max axis) 236.5))
-;;     (is (= (:size axis) 155))
-;;     (is (= (:step axis) 0.5))))
+(deftest test-lon-axis
+  (let [axis (lon-axis (open-example-datatype))]
+    (is (= (:lon-min axis) 0))
+    (is (= (:lon-max axis) 358.75))
+    (is (= (:lon-size axis) 288))
+    (is (= (:lon-step axis) 1.25))))
+
+(deftest test-axis
+  (let [datatype (open-example-datatype)]
+    (is (= (axis datatype) (merge (lat-axis datatype) (lon-axis datatype))))))
 
 (deftest test-make-datatype
   (let [datatype (make-datatype *dataset-uri* *variable*)]
@@ -51,20 +55,22 @@
   (let [datatype (open-example-datatype)]
     (is (= (:dataset-uri datatype)) *dataset-uri*)
     (is (= (:variable datatype) *variable*))
-    (is (= (class (:service datatype)) ucar.nc2.dt.grid.GeoGrid))))
+    (is (= (class (:service datatype)) ucar.nc2.dt.grid.GeoGrid))
+    (is (= (select-keys datatype (keys (lat-axis datatype))) (lat-axis datatype)))
+    (is (= (select-keys datatype (keys (lon-axis datatype))) (lon-axis datatype)))))
 
-(deftest test-read-matrix
-  (let [datatype (open-example-datatype)
-        valid-time (first (valid-times datatype))
-        data (read-matrix datatype valid-time)]
-    (is (= (class data) incanter.Matrix))
-    (is (= (count data) (:size (longitude-axis datatype))))
-    (let [m (meta data)]
-      (is (= (:description m) (description datatype)))
-      (is (= (:latitude-axis m) (latitude-axis datatype)))
-      (is (= (:longitude-axis m) (longitude-axis datatype)))
-      (is (= (:valid-time m) valid-time))
-      (is (= (:variable m) (:variable datatype))))))
+;; (deftest test-read-matrix
+;;   (let [datatype (open-example-datatype)
+;;         valid-time (first (valid-times datatype))
+;;         data (read-matrix datatype valid-time)]
+;;     (is (= (class data) incanter.Matrix))
+;;     (is (= (count data) (:size (lon-axis datatype))))
+;;     (let [m (meta data)]
+;;       (is (= (:description m) (description datatype)))
+;;       (is (= (:lat-axis m) (lat-axis datatype)))
+;;       (is (= (:lon-axis m) (lon-axis datatype)))
+;;       (is (= (:valid-time m) valid-time))
+;;       (is (= (:variable m) (:variable datatype))))))
 
 (deftest test-read-seq
   (let [datatype (open-example-datatype)
@@ -74,10 +80,9 @@
     ;; (is (= (count data) 19065))
     (let [m (meta data)]
       (is (= (:description m) (description datatype)))
-      (is (= (:latitude-axis m) (latitude-axis datatype)))
-      (is (= (:longitude-axis m) (longitude-axis datatype)))
       (is (= (:valid-time m) valid-time))
-      (is (= (:variable m) (:variable datatype))))))
+      (is (= (:variable m) (:variable datatype)))
+      (is (= (select-keys m (keys (axis datatype))) (axis datatype))))))
 
 (deftest test-read-at-location
   (let [datatype (open-example-datatype)

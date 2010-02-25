@@ -15,22 +15,22 @@
 (defn description [datatype]
   (.. (:service datatype) getVariable getDescription))
 
-(defn latitude-axis [datatype]
-  (let [axis (.. (:service datatype) getCoordinateSystem getYHorizAxis)
-        bounds (bounding-box datatype)]
-    {:min (.getLatMin bounds)
-     :max (.getLatMax bounds)
-     :size (.getSize axis)
-     :step (/ (.getHeight bounds) (- (.getSize axis) 1))}))
+(defn lat-axis [datatype]
+  (let [axis (.. (:service datatype) getCoordinateSystem getYHorizAxis) bounds (bounding-box datatype)]
+    {:lat-min (.getLatMin bounds)
+     :lat-max (.getLatMax bounds)
+     :lat-size (.getSize axis)
+     :lat-step (/ (.getHeight bounds) (- (.getSize axis) 1))}))
 
-(defn longitude-axis [datatype]
-  (let [axis (.. (:service datatype) getCoordinateSystem getXHorizAxis)
-        bounds (bounding-box datatype)]
-    {
-     :min (.getLonMin bounds)
-     :max (.getLonMax bounds)
-     :size (.getSize axis)
-     :step (/ (.getWidth bounds) (- (.getSize axis) 1))}))
+(defn lon-axis [datatype]
+  (let [axis (.. (:service datatype) getCoordinateSystem getXHorizAxis) bounds (bounding-box datatype)]
+    {:lon-min (.getLonMin bounds)
+     :lon-max (.getLonMax bounds)
+     :lon-size (.getSize axis)
+     :lon-step (/ (.getWidth bounds) (- (.getSize axis) 1))}))
+
+(defn axis [datatype]
+  (merge (lat-axis datatype) (lon-axis datatype)))
 
 (defn make-datatype
   "Make a NetCDF datatype."
@@ -46,8 +46,8 @@
   "Open the NetCDF datatype."
   [datatype]
   (if-not (datatype-open? datatype)
-    (let [grid-dataset (. GridDataset open (:dataset-uri datatype))]
-      (assoc datatype :service (. grid-dataset findGridDatatype (:variable datatype))))))
+    (let [datatype (assoc datatype :service (. (. GridDataset open (:dataset-uri datatype)) findGridDatatype (:variable datatype)))]
+      (merge datatype (axis datatype)))))
 
 (defn time-index
   "Returns the time index for valid-time."
@@ -79,11 +79,10 @@
   (let [options (apply hash-map options)]
     (with-meta
       (seq (.copyTo1DJavaArray (.readYXData (:service datatype) (time-index datatype valid-time) (or (:z options) 0))))
-      {:description (description datatype)
-       :latitude-axis (latitude-axis datatype)
-       :longitude-axis (longitude-axis datatype)
-       :valid-time valid-time
-       :variable (:variable datatype)})))
+      (merge
+       {:description (description datatype)
+        :valid-time valid-time
+        :variable (:variable datatype)} (axis datatype)))))
 
 (defn read-matrix
   "Read the whole datatype at valid-time as matrix."
@@ -92,12 +91,11 @@
     (with-meta
       (trans (matrix
         (apply read-seq datatype valid-time options)
-        (int (:size (longitude-axis datatype)))))    
-      {:description (description datatype)
-       :latitude-axis (latitude-axis datatype)
-       :longitude-axis (longitude-axis datatype)
-       :valid-time valid-time
-       :variable (:variable datatype)})))
+        (int (:size (lon-axis datatype)))))    
+      (merge
+       {:description (description datatype)
+        :valid-time valid-time
+        :variable (:variable datatype)} (axis datatype)))))
 
 (defn valid-times
   "Returns the valid times in the NetCDF datatype."
@@ -107,23 +105,24 @@
     (valid-times (open-datatype datatype))))
 
 
-;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+(def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 
 ;; (defn matrix-read-at-location [datatype valid-time location & [width height]]
 ;;   (let [width (or width 10) height (or height width)]    
 ;;     (matrix
-;;      (for [latitude (reverse (sample-latitude (:latitude location) height (:step (latitude-axis datatype))))
-;;            longitude (sample-longitude (:longitude location) width (:step (longitude-axis datatype)))]
+;;      (for [latitude (reverse (range (:latitude location) (+ (:latitude location) height) (:step (lat-axis datatype))))
+;;            longitude (range (:longitude location) (+ (:longitude location) width) (:step (lon-axis datatype)))]
 ;;        (:value (read-at-location datatype valid-time (make-location latitude longitude))))
 ;;      width)))
 
-;; (defn matrix-interpolate-bilinear [datatype valid-time location & [width height]]
-;;   (let [width (or width 10) height (or height width) ]    
+;; (defn matrix-read-at-location [datatype valid-time location & [width height]]
+;;   (let [width (or width 10) height (or height width)]    
 ;;     (matrix
-;;      (for [latitude (reverse (sample-latitude (:latitude location) height (:step (latitude-axis datatype))))
-;;            longitude (sample-longitude (:longitude location) width (:step (longitude-axis datatype)))]
-;;        (:value (interpolate-bilinear datatype valid-time (make-location latitude longitude))))
+;;      (for [latitude (reverse (sample-latitude (:latitude location) height (:step (lat-axis datatype))))
+;;            longitude (sample-longitude (:longitude location) width (:step (lon-axis datatype)))]
+;;        (:value (read-at-location datatype valid-time (make-location latitude longitude))))
 ;;      width)))
+
 
 ;; (println (matrix-read-at-location *nww3* (first (valid-times *nww3*)) (make-location 78 0) 7))
 ;; (println (matrix-interpolate-bilinear *nww3* (first (valid-times *nww3*)) (make-location 78 0) 7))
@@ -205,13 +204,13 @@
 ;; (sample-locations *akw* (first (valid-times *akw*)) {:latitude 78 :longitude 0})
 
 ;; (defn location-rect [datatype location num]
-;;   (let [step-lat (:step (latitude-axis datatype)) step-lon (:step (longitude-axis datatype))]
+;;   (let [step-lat (:step (lat-axis datatype)) step-lon (:step (lon-axis datatype))]
 ;;     (for [latitude (reverse (range (:latitude location) (+ (:latitude location) (* num step-lat)) step-lat))
 ;;           longitude (range (:longitude location) (+ (:longitude location) (* num step-lon)) step-lon)]
 ;;       (make-location latitude longitude))))
 
 ;; ;; (defn location-range [lat1 lon1 lat2 lon2]
-;;   (let [step-lat (:step (latitude-axis datatype)) step-lon (:step (longitude-axis datatype))]
+;;   (let [step-lat (:step (lat-axis datatype)) step-lon (:step (lon-axis datatype))]
 ;;     (for [latitude (reverse (range (:latitude location) (+ (:latitude location) (* num step-lat)) step-lat))
 ;;           longitude (range (:longitude location) (+ (:longitude location) (* num step-lon)) step-lon)]
 ;;       (make-location latitude longitude))))
@@ -246,8 +245,8 @@
 
 ;; (defn sample-locations [datatype location num]
 ;;   (let [location (central-sample-location datatype location)
-;;         step-lat (:step (latitude-axis datatype))
-;;         step-lon (:step (longitude-axis datatype))]
+;;         step-lat (:step (lat-axis datatype))
+;;         step-lon (:step (lon-axis datatype))]
 ;;     (location-range
 ;;      (make-location (- (:latitude location) (* step-lat num)) (- (:longitude location) (* step-lon num)))
 ;;      (make-location (+ (:latitude location) (* step-lat num)) (+ (:longitude location) (* step-lon num)))
@@ -255,8 +254,8 @@
 
 ;; (defn sample-locations [datatype location width height]
 ;;   (let [location (central-sample-location datatype location)
-;;         step-lat (:step (latitude-axis datatype))
-;;         step-lon (:step (longitude-axis datatype))]
+;;         step-lat (:step (lat-axis datatype))
+;;         step-lon (:step (lon-axis datatype))]
 ;;     (for [
 ;;           latitude (range (- (:latitude location) (* (/ width 2) step-lat)) (+ (:latitude location) (* (/ width 2) step-lat)) step-lat)
 ;;           longitude (range (- (:longitude location) (* (/ height 2) step-lon)) (+ (:longitude location) (* (/ height 2) step-lon)) step-lon)
