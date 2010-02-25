@@ -63,6 +63,16 @@
           longitude (longitude-range (:longitude location-1) (:longitude location-2) (:step-lon options ))]
       (make-location latitude longitude))))
 
+(defn location-rect [location & options]
+  (let [options (apply hash-map options)
+        width (or (:width options) 1)
+        height (or (:height options) width)
+        lat-step (or (:lat-step options) (:lon-step options) 1)
+        lon-step (or (:lon-step options) lat-step)]
+    (for [latitude (reverse (range (- (:latitude location) (* (- height 2) lat-step) lat-step) (+ (:latitude location) lat-step) lat-step))
+          longitude (range (:longitude location) (+ (:longitude location) (* (- width 1) lon-step) lon-step) lon-step)]
+      (make-location latitude longitude))))
+
 (defn north? [source target]
   (> (:latitude source) (:latitude target)))
 

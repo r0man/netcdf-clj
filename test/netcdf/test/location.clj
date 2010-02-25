@@ -141,3 +141,13 @@
 
 (deftest test-location->array
   (is (= (location->array (make-location 78 0)) [78 0])))
+
+(deftest test-location-rect
+  (is (empty? (location-rect (make-location 0 0) :width 0)))
+  (is (empty? (location-rect (make-location 0 0) :height 0)))
+  (is (= (location-rect (make-location 0 0)) [(make-location 0 0)]))
+  (is (= (location-rect (make-location 0 0) :width 2)
+         [(make-location 0 0) (make-location 0 1) (make-location -1 0) (make-location -1 1)]))
+  (is (= (location-rect (make-location 0 0) :width 2 :height 1)
+         [(make-location 0 0) (make-location 0 1)])))
+
