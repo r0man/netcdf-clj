@@ -11,7 +11,15 @@
    (* (floor (/ (:longitude location) lon-step)) lon-step)))
 
 (defn read-sample-2x2 [datatype valid-time location]
-  (read-matrix datatype valid-time (central-sample-location location (:lat-step datatype) (:lon-step datatype)) :width 2 :height 2))
+  (let [location (central-sample-location location (:lat-step datatype) (:lon-step datatype))]
+    (read-matrix datatype valid-time location :width 2 :height 2)))
+
+(defn read-sample-4x4 [datatype valid-time location]
+  (let [location (central-sample-location location (:lat-step datatype) (:lon-step datatype))]
+    (read-matrix
+     datatype valid-time
+     (make-location (+ (:latitude location) (:lat-step datatype)) (- (:longitude location) (:lon-step datatype)))
+     :width 4 :height 4)))
 
 (defn interpolate-bilinear
   "Read the NetCDF datatype for the given time and location."
