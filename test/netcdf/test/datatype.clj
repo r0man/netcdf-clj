@@ -59,29 +59,43 @@
     (is (= (select-keys datatype (keys (lat-axis datatype))) (lat-axis datatype)))
     (is (= (select-keys datatype (keys (lon-axis datatype))) (lon-axis datatype)))))
 
-;; (deftest test-read-matrix
-;;   (let [datatype (open-example-datatype)
-;;         valid-time (first (valid-times datatype))
-;;         data (read-matrix datatype valid-time)]
-;;     (is (= (class data) incanter.Matrix))
-;;     (is (= (count data) (:size (lon-axis datatype))))
-;;     (let [m (meta data)]
-;;       (is (= (:description m) (description datatype)))
-;;       (is (= (:lat-axis m) (lat-axis datatype)))
-;;       (is (= (:lon-axis m) (lon-axis datatype)))
-;;       (is (= (:valid-time m) valid-time))
-;;       (is (= (:variable m) (:variable datatype))))))
-
 (deftest test-read-seq
   (let [datatype (open-example-datatype)
         valid-time (first (valid-times datatype))
         sequence (read-seq datatype valid-time (make-location 0 0))]
-    (is (seq? sequence))    
+    (is (seq? sequence))
+    (is (= (count sequence) 4))
     (is (= (:actual-location (nth sequence 0)) (make-location 0 0)))    
     (is (= (:actual-location (nth sequence 1)) (make-location 0 (:lon-step datatype))))
     (is (= (:actual-location (nth sequence 2)) (make-location (* -1 (:lat-step datatype)) 0)))
     (is (= (:actual-location (nth sequence 3)) (make-location (* -1 (:lat-step datatype)) (:lon-step datatype))))
     (let [m (meta sequence)]
+      (is (= (:description m) (description datatype)))
+      (is (= (:valid-time m) valid-time))
+      (is (= (:variable m) (:variable datatype)))
+      (is (= (:lat-max m) 0))
+      (is (= (:lat-min m) (* -1 (:lat-step datatype))))
+      (is (= (:lat-size m) 2))
+      (is (= (:lat-step m) (:lat-step datatype)))
+      (is (= (:lon-max m) (:lon-step datatype)))
+      (is (= (:lon-min m) 0))
+      (is (= (:lon-size m) 2))
+      (is (= (:lon-step m) (:lon-step datatype))))))
+
+(deftest test-read-matrix
+  (let [datatype (open-example-datatype)
+        valid-time (first (valid-times datatype))
+        sequence (read-seq datatype valid-time (make-location 0 0))
+        matrix (read-matrix datatype valid-time (make-location 0 0))]
+    (is (matrix? matrix))
+    (is (= (count sequence) 4))
+    (is (= (count matrix) 2))
+    (is (every? #(= % 2) (map count matrix)))    
+    (is (= (sel matrix 0 0) (:value (nth sequence 0))))
+    (is (= (sel matrix 0 1) (:value (nth sequence 1))))
+    (is (= (sel matrix 1 0) (:value (nth sequence 2))))
+    (is (= (sel matrix 1 1) (:value (nth sequence 3))))
+    (let [m (meta matrix)]
       (is (= (:description m) (description datatype)))
       (is (= (:valid-time m) valid-time))
       (is (= (:variable m) (:variable datatype)))
@@ -118,5 +132,3 @@
   (let [valid-times (valid-times (open-datatype *datatype*))]
     (is (> (count valid-times) 0))
     (is (every? #(isa? (class %) java.util.Date) valid-times))))
-
-(deftest test-location-rect)

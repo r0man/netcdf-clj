@@ -84,12 +84,17 @@
               :variable (:variable datatype)
               :lat-min (:latitude (last locations))
               :lat-max (:latitude (first locations))
-              :lat-size width
+              :lat-size height
               :lat-step (:lat-step (lat-axis datatype))
               :lon-min (:longitude (first locations))
               :lon-max (:longitude (last locations))
-              :lon-size height
+              :lon-size width
               :lon-step (:lon-step (lon-axis datatype))}))))
+
+(defn read-matrix [datatype valid-time location & options]
+  (let [sequence (apply read-seq datatype valid-time location options)]
+    (with-meta (matrix (map :value sequence) (:lon-size (meta sequence))) (meta sequence))))
+
 
 ;; (defn read-matrix
 ;;   "Read the whole datatype at valid-time as matrix."
@@ -110,7 +115,6 @@
     (.. (.getCoordinateSystem (:service datatype)) getTimeAxis1D getTimeDates)
     (valid-times (open-datatype datatype))))
 
-
 ;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 
 ;; (defn read-matrix [datatype valid-time location & options]
@@ -118,6 +122,7 @@
 ;;     (with-meta (matrix sequence (or width 2)) {})))
 
 ;; (println (read-seq *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 1))
+;; (println (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 5))
 ;; (println (meta (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0))))
 
 ;; (defn matrix-read-at-location [datatype valid-time location & [width height]]
