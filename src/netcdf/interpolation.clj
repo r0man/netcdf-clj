@@ -5,29 +5,59 @@
         [clojure.contrib.seq-utils :only (flatten)]
         incanter.core netcdf.datatype netcdf.location))
 
+(defn with-meta+
+  "Returns an object of the same type and value as obj, with map m
+  merged into the object's existing metadata."
+  [obj m] (with-meta obj (merge (meta obj) m)))
+
 (defn central-sample-location [location lat-step lon-step]
   (make-location
    (* (ceil (/ (:latitude location) lat-step)) lat-step)
    (* (floor (/ (:longitude location) lon-step)) lon-step)))
 
+(defn x-fract [sample location]
+  (/ (- (:longitude location) (:lon-min (meta sample)))
+     (- (:lon-max (meta sample)) (:lon-min (meta sample)))))
+
+(defn y-fract [sample location]
+  (/ (- (:lat-max (meta sample)) (:latitude location))
+     (- (:lat-max (meta sample)) (:lat-min (meta sample)))))
+
 (defn read-sample-2x2 [datatype valid-time location]
-  (let [location (central-sample-location location (:lat-step datatype) (:lon-step datatype))]
-    (read-matrix datatype valid-time location :width 2 :height 2)))
+  (let [anchor (central-sample-location location (:lat-step datatype) (:lon-step datatype))
+        sample (read-matrix datatype valid-time anchor :width 2 :height 2)]
+    (with-meta+ sample      
+      {:x-fract (x-fract sample location)
+       :y-fract (y-fract sample location)})))
 
 (defn read-sample-4x4 [datatype valid-time location]
-  (let [location (central-sample-location location (:lat-step datatype) (:lon-step datatype))]
-    (read-matrix
-     datatype valid-time
-     (make-location (+ (:latitude location) (:lat-step datatype)) (- (:longitude location) (:lon-step datatype)))
-     :width 4 :height 4)))
+  (let [anchor (central-sample-location location (:lat-step datatype) (:lon-step datatype))
+        anchor (make-location (+ (:latitude location) (:lat-step datatype)) (- (:longitude location) (:lon-step datatype))) 
+        sample (read-matrix datatype valid-time anchor :width 4 :height 4)]
+    (with-meta+ sample      
+      {:x-fract (x-fract sample location)
+       :y-fract (y-fract sample location)})))
 
-(defn interpolate-bilinear
+;; (defn read-sample-4x4 [datatype valid-time location]
+;;   (let [location (central-sample-location location (:lat-step datatype) (:lon-step datatype))]
+;;     (read-matrix
+;;      datatype valid-time
+;;      (make-location (+ (:latitude location) (:lat-step datatype)) (- (:longitude location) (:lon-step datatype)))
+;;      :width 4 :height 4)))
+
+(defn interpolate-bilinear-2x2
   "Read the NetCDF datatype for the given time and location."
   [datatype valid-time location]
   (if location
     (let [sample (read-sample-2x2 datatype valid-time location)
-          xfrac (/ (- (:longitude location) (:lon-min (meta sample))) (:lon-step (meta sample)))
-          yfrac (/ (- (:lat-max (meta sample)) (:latitude location)) (:lat-step (meta sample)))
+          ;; xfrac (/ (- (:longitude location) (:lon-min (meta sample)))
+          ;;          (- (:lon-max (meta sample)) (:lon-min (meta sample))))
+          ;; yfrac (/ (- (:lat-max (meta sample)) (:latitude location))
+          ;;          (- (:lat-max (meta sample)) (:lat-min (meta sample))))
+          ;; xfrac (/ (- (:lon-max (meta sample)) (:longitude location))
+          ;;          (- (:lon-max (meta sample)) (:lon-min (meta sample))))
+          ;; yfrac (/ (- (:lat-max (meta sample)) (:latitude location))
+          ;;          (- (:lat-max (meta sample)) (:lat-min (meta sample))))
           ]
       ;; (println location)
       ;; (println sample)
@@ -50,32 +80,56 @@
                   (double (sel sample 0 1))
                   (double (sel sample 1 0))
                   (double (sel sample 1 1))
+                  (float (x-fract sample location))
+                  (float (y-fract sample location)))        
+        :variable (:variable datatype)))))
+
+(defn interpolate-bilinear-4x4
+  "Read the NetCDF datatype for the given time and location."
+  [datatype valid-time location]
+  (if location
+    (let [sample (read-sample-4x4 datatype valid-time location)
+          xfrac (/ (- (:lon-max (meta sample)) (:longitude location))
+                   (- (:lon-max (meta sample)) (:lon-min (meta sample))))
+          yfrac (/ (- (:lat-max (meta sample)) (:latitude location))
+                   (- (:lat-max (meta sample)) (:lat-min (meta sample))))
+          ]
+      ;; (println location)
+      ;; (println sample)
+      ;; (println (meta sample))
+      ;; (println (:lon-max (meta sample)))
+      ;; (println (:lon-min (meta sample)))
+      ;; (println xfrac)
+      ;; (println)
+      ;; (println (:lat-max (meta sample)))
+      ;; (println (:lat-min (meta sample)))
+      ;; (println yfrac)
+      ;; (println)
+      (struct-map record
+        :actual-location location
+        :requested-location location
+        :valid-time valid-time
+        :value (. (InterpolationBilinear.)
+                  interpolate
+                  (double (sel sample 0 0))
+                  (double (sel sample 0 1))
+                  (double (sel sample 0 2))
+                  (double (sel sample 0 3))
+                  (double (sel sample 1 0))
+                  (double (sel sample 1 1))
+                  (double (sel sample 1 2))
+                  (double (sel sample 1 3))
+                  (double (sel sample 2 0))
+                  (double (sel sample 2 1))
+                  (double (sel sample 2 2))
+                  (double (sel sample 2 3))
+                  (double (sel sample 3 0))
+                  (double (sel sample 3 1))
+                  (double (sel sample 3 2))
+                  (double (sel sample 3 3))
                   (float xfrac)
                   (float yfrac))        
         :variable (:variable datatype)))))
 
 (defn interpolate-matrix [datatype valid-time location & options]
-  (apply read-matrix datatype valid-time location (flatten (seq (assoc (apply hash-map options) :read-fn interpolate-bilinear)))))
-
-;; (:value (read-at-location *nww3* (first (valid-times *nww3*)) (make-location 68 0)))
-;; (println (:value (interpolate-bilinear *nww3* (first (valid-times *nww3*)) (make-location 76.5 0))))
-
-
-;; (println (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 10))
-;; (println (interpolate-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 10 :lat-step 0.5))
-
-;; (:value (interpolate-bilinear *nww3* (first (valid-times *nww3*)) (make-location 68 0)))
-
-;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
-;; (println (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 15))
-
-
-;; (:value (interpolate-bilinear *nww3* (first (valid-times *nww3*)) (make-location 76.5 1)))
-
-;; (defn matrix-interpolate-bilinear [datatype valid-time location & [width height]]
-;;   (let [width (or width 10) height (or height width) ]    
-;;     (matrix
-;;      (for [latitude (reverse (sample-latitude (:latitude location) height (:step (lat-axis datatype))))
-;;            longitude (sample-longitude (:longitude location) width (:step (lon-axis datatype)))]
-;;        (:value (interpolate-bilinear datatype valid-time (make-location latitude longitude))))
-;;      width)))
+  (apply read-matrix datatype valid-time location (flatten (seq (assoc (apply hash-map options) :read-fn interpolate-bilinear-4x4)))))

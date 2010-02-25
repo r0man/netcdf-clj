@@ -29,11 +29,44 @@
 
 (deftest test-read-sample-2x2
   (let [datatype (open-example-datatype) valid-time (first (valid-times datatype))]
-    (is (= (read-sample-2x2 datatype valid-time (make-location 77 0))
-           (read-matrix datatype valid-time (make-location 77 0) :width 2 :height 2)))))
+    (let [sample (read-sample-2x2 datatype valid-time (make-location 77 0))]
+    ;; (println sample)
+    ;;   (println (meta sample))
+      (is (= sample (read-matrix datatype valid-time (make-location 77 0) :width 2 :height 2)))
+      (is (= (:x-fract (meta sample)) 0))
+      (is (= (:y-fract (meta sample)) 0)))))
 
 (deftest test-read-sample-4x4
   (let [datatype (open-example-datatype) valid-time (first (valid-times datatype))]
-    (is (= (read-sample-4x4 datatype valid-time (make-location 77 1.25))
-           (read-matrix datatype valid-time (make-location 78 0) :width 4 :height 4)))))
+    (let [sample (read-sample-4x4 datatype valid-time (make-location 77 1.25))]
+      ;; (println (meta sample))
+      (is (= sample (read-matrix datatype valid-time (make-location 78 0) :width 4 :height 4))))))
 
+(deftest test-with-meta+
+  (let [obj [1 2] m {:key "val"}]
+    (is (= (with-meta+ obj {}) obj))
+    (is (= (with-meta+ obj m) obj))
+    (is (= (meta (with-meta+ obj m)) m))
+    (is (= (meta (with-meta+ (with-meta obj {:key "x"}) m)) m))
+    (is (= (meta (with-meta+ (with-meta obj m) {:key2 "val2"})) (merge m {:key2 "val2"})))))
+
+(deftest test-x-fract
+  (let [sample (with-meta [] {:lon-min 0.0 :lon-max 1.25})]
+    (are [lat lon fract]
+      (is (= (x-fract sample (make-location lat lon)) fract))
+      0 0 0
+      0 1.25 1
+      0 -0.1 -0.08
+      0 0.1 0.08
+      0 0.124 0.0992
+      0 1.26 1.008)))
+
+(deftest test-y-fract
+  (let [sample (with-meta [] {:lat-min 76 :lat-max 77})]
+    (are [lat lon fract]
+      (is (= (y-fract sample (make-location lat lon)) fract))
+      77 1.25 0
+      76 1.25 1
+      77.1 1.25 -0.09999999999999432
+      76.9 1.25 0.09999999999999432
+      76.1 1.25 0.9000000000000057)))
