@@ -77,19 +77,22 @@
   (let [options (apply hash-map options)
         width (or (:width options) 2)
         height (or (:height options) width)
-        locations (location-rect location :width width :height height :lat-step (:lat-step datatype) :lon-step (:lon-step datatype))]
-    (with-meta (map #(read-at-location datatype valid-time %) locations)
+        lat-step (or (:lat-step options) (:lat-step datatype))
+        lon-step (or (:lon-step options) (:lon-step datatype))
+        locations (location-rect location :width width :height height :lat-step lat-step :lon-step lon-step)
+        read-fn (or (:read-fn options) read-at-location)]
+    (with-meta (map #(read-fn datatype valid-time %) locations)
       (merge {:description (description datatype)
               :valid-time valid-time
               :variable (:variable datatype)
               :lat-min (:latitude (last locations))
               :lat-max (:latitude (first locations))
               :lat-size height
-              :lat-step (:lat-step (lat-axis datatype))
+              :lat-step lat-step
               :lon-min (:longitude (first locations))
               :lon-max (:longitude (last locations))
               :lon-size width
-              :lon-step (:lon-step (lon-axis datatype))}))))
+              :lon-step lon-step}))))
 
 (defn read-matrix [datatype valid-time location & options]
   (let [sequence (apply read-seq datatype valid-time location options)]

@@ -78,10 +78,21 @@
    ))
 
 (defn water-color? [color]
-  (or (= color (Color. 152 178 203))
-      (= color (Color. 153 178 203))
-      (= color (Color. 153 179 203))
-      (= color (Color. 153 179 204))))
+  (or
+   (= color (Color. 152 166 181))
+   (= color (Color. 152 178 203))
+   (= color (Color. 153 178 203))
+   (= color (Color. 153 179 203))
+   (= color (Color. 153 179 204))
+   (= color (Color. 157 184 204))
+   (= color (Color. 164 185 203))
+   (= color (Color. 164 187 208))
+   (= color (Color. 171 192 210))
+   (= color (Color. 182 199 213))
+   (= color (Color. 192 208 224))
+   (= color (Color. 204 217 230))
+   (= color (Color. 215 227 235))
+   ))
 
 (defn clear [component]
   (let [bounds (.getBounds component) graphics (.getGraphics component)]
@@ -178,8 +189,8 @@
 
 ;; (def *display* (create-display 500 400))
 ;; (clear *display*)
-;; (render-map (.getGraphics *display*) {:latitude 50 :longitude 0} (nth (valid-times *datatype*) 5)
-;;             :zoom 2 :width 500 :height 400 :maptype "terrain")
+;; (render-map (.getGraphics *display*) {:latitude 0 :longitude 0} (nth (valid-times *datatype*) 5)
+;;             :zoom 2 :width 500 :height 400 :maptype "roadmap")
 
 ;; (render-datatype *display* *datatype*)
 ;; ;; (*datatype*)
@@ -202,7 +213,7 @@
 ;; (latitude-delta -180 180 0)
 
 
-;; (def *map* (static-map-image (make-location 0 0) :width 360 :height 180 :zoom 0))
+;; (def *map* (static-map-image (make-location 0 0) :width 500 :height 400 :zoom 2))
 ;; (. (.getGraphics *display*) drawImage *map* 0 0 nil)
 ;; (. (.getGraphics *display*) drawImage (remove-water *map*) 0 0 nil)
 
