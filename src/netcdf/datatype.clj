@@ -66,36 +66,42 @@
   (if location
     (let [data (read-data datatype valid-time location)]
       (struct-map record
-        :actual-location (make-location (.lat data) (.lon data) (.z data))
+        :actual-location (make-location (.lat data) (.lon data))
         :requested-location location
         :unit (.getUnitsString (:service datatype))
         :valid-time valid-time
         :value (.dataValue data)
         :variable (:variable datatype)))))
 
-(defn read-seq
-  "Read the whole datatype at valid-time as sequence."
-  [datatype valid-time & options]
-  (let [options (apply hash-map options)]
-    (with-meta
-      (seq (.copyTo1DJavaArray (.readYXData (:service datatype) (time-index datatype valid-time) (or (:z options) 0))))
-      (merge
-       {:description (description datatype)
-        :valid-time valid-time
-        :variable (:variable datatype)} (axis datatype)))))
+(defn read-seq [datatype valid-time location & options]
+  (let [options (apply hash-map options)
+        width (or (:width options) 2)
+        height (or (:height options) width)
+        locations (location-rect location :width width :height height :lat-step (:lat-step datatype) :lon-step (:lon-step datatype))]
+    (with-meta (map #(read-at-location datatype valid-time %) locations)
+      (merge {:description (description datatype)
+              :valid-time valid-time
+              :variable (:variable datatype)
+              :lat-min (:latitude (last locations))
+              :lat-max (:latitude (first locations))
+              :lat-size width
+              :lat-step (:lat-step (lat-axis datatype))
+              :lon-min (:longitude (first locations))
+              :lon-max (:longitude (last locations))
+              :lon-size height
+              :lon-step (:lon-step (lon-axis datatype))}))))
 
-(defn read-matrix
-  "Read the whole datatype at valid-time as matrix."
-  [datatype valid-time & options]
-  (let [options (apply hash-map options)]
-    (with-meta
-      (trans (matrix
-        (apply read-seq datatype valid-time options)
-        (int (:size (lon-axis datatype)))))    
-      (merge
-       {:description (description datatype)
-        :valid-time valid-time
-        :variable (:variable datatype)} (axis datatype)))))
+;; (defn read-matrix
+;;   "Read the whole datatype at valid-time as matrix."
+;;   [datatype valid-time & options]
+;;   (let [options (apply hash-map options)]
+;;     (with-meta
+;;       (trans (matrix
+;;         (apply read-seq datatype valid-time options)
+;;         (int (:size (lon-axis datatype)))))    
+;;       (merge {:description (description datatype)
+;;               :valid-time valid-time
+;;               :variable (:variable datatype)} (axis datatype)))))
 
 (defn valid-times
   "Returns the valid times in the NetCDF datatype."
@@ -105,7 +111,14 @@
     (valid-times (open-datatype datatype))))
 
 
-(def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+
+;; (defn read-matrix [datatype valid-time location & options]
+;;   (let [sequence (read-seq datatype valid-time location width height)]
+;;     (with-meta (matrix sequence (or width 2)) {})))
+
+;; (println (read-seq *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 1))
+;; (println (meta (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0))))
 
 ;; (defn matrix-read-at-location [datatype valid-time location & [width height]]
 ;;   (let [width (or width 10) height (or height width)]    

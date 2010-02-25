@@ -75,14 +75,24 @@
 (deftest test-read-seq
   (let [datatype (open-example-datatype)
         valid-time (first (valid-times datatype))
-        data (read-seq datatype valid-time)]
-    (is (seq? data))
-    ;; (is (= (count data) 19065))
-    (let [m (meta data)]
+        sequence (read-seq datatype valid-time (make-location 0 0))]
+    (is (seq? sequence))    
+    (is (= (:actual-location (nth sequence 0)) (make-location 0 0)))    
+    (is (= (:actual-location (nth sequence 1)) (make-location 0 (:lon-step datatype))))
+    (is (= (:actual-location (nth sequence 2)) (make-location (* -1 (:lat-step datatype)) 0)))
+    (is (= (:actual-location (nth sequence 3)) (make-location (* -1 (:lat-step datatype)) (:lon-step datatype))))
+    (let [m (meta sequence)]
       (is (= (:description m) (description datatype)))
       (is (= (:valid-time m) valid-time))
       (is (= (:variable m) (:variable datatype)))
-      (is (= (select-keys m (keys (axis datatype))) (axis datatype))))))
+      (is (= (:lat-max m) 0))
+      (is (= (:lat-min m) (* -1 (:lat-step datatype))))
+      (is (= (:lat-size m) 2))
+      (is (= (:lat-step m) (:lat-step datatype)))
+      (is (= (:lon-max m) (:lon-step datatype)))
+      (is (= (:lon-min m) 0))
+      (is (= (:lon-size m) 2))
+      (is (= (:lon-step m) (:lon-step datatype))))))
 
 (deftest test-read-at-location
   (let [datatype (open-example-datatype)
@@ -109,3 +119,4 @@
     (is (> (count valid-times) 0))
     (is (every? #(isa? (class %) java.util.Date) valid-times))))
 
+(deftest test-location-rect)
