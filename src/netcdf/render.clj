@@ -102,41 +102,31 @@
 (defn make-buffered-image [width height & [type]]  
   (BufferedImage. width height (or type BufferedImage/TYPE_3BYTE_BGR)))
 
-(defmulti render-data 
-  (fn [component data]
-    (cond
-     (isa? (class data) incanter.Matrix) :matrix
-     (seq? data) :seq
-     (vector? data) :vector)))
+(defn render-static-map
+  "Renders a static Google Map in the graphics context and returns the
+  map as a buffered image."
+  [graphics center & options]
+  (let [map (apply static-map-image center options)]
+    (. graphics drawImage map 0 0 nil)
+    map))
 
-(defmethod render-data :matrix [component matrix]
-  (let [graphics (.getGraphics component)
-        width (:size (:longitude-axis (meta matrix)))
-        height (:size (:latitude-axis (meta matrix)))]     
-    (doseq [x (range width) y (range height) :let [value (sel matrix x y)] :when (not (.isNaN value))]
-      (. graphics setColor (value->color value))
-      (. graphics fillRect x (- (+ (* -1 y) height) 1) 1 1))))
+(defn render-datatype [graphics datatype valid-time center & options]
+  (let [map (apply render-static-map graphics center options)
+        options (apply hash-map options)
+        reader-fn (or (:reader options) interpolate-bilinear-2x2)
+        zoom (or (:zoom options) (:zoom *options*))
+        origin (location->coords center zoom)
+        upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
+        offsets (coord-delta center (coords->location upper-left zoom) zoom)
+        ]
+    (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
+      (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
+        (if (water-color? (Color. (. map getRGB x y)))
+          (let [data (reader-fn datatype valid-time location)]
+            (. graphics setColor (value->color (:value data)))
+            (. graphics fillRect x y 1 1)))))
+    map))
 
-(defmethod render-data :seq [component sequence]
-  (render-data component (with-meta (apply vector sequence) (meta sequence))))
-
-(defmethod render-data :vector [component vector]
-  (let [graphics (.getGraphics component)
-        width (:size (:longitude-axis (meta vector)))
-        height (:size (:latitude-axis (meta vector)))]     
-    (doseq [index (range (count vector))
-            :let [value (nth vector index)
-                  x (mod index width)
-                  y (/ index width)]
-            :when (not (.isNaN value))]      
-      (. graphics setColor (value->color value))
-      (. graphics fillRect x (+ (* -1 y) height) 1 1))))
-
-(defn render-datatype [component datatype]
-  (render-data component (read-seq datatype (first (valid-times datatype)))))
-
-(defn render-datatypes [component & [datatypes]]
-  (doseq [datatype datatypes] (render-datatype component datatype)))
 
 (def *datatypes*
      (map #(open-datatype (apply make-datatype %))
@@ -149,43 +139,99 @@
             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
             )))
 
-(def *datatype* (nth *datatypes* 0))
+;; (def *nww3* (nth *datatypes* 0))
+;; (def *display* (create-display 500 250))
+;; (clear *display*)
 
-(defn render-map [graphics center valid-time & options]
-  (let [map (apply static-map-image center options)
-        options (apply hash-map options)
-        zoom (or (:zoom options) (:zoom *options*))
-        origin (location->coords center zoom)
-        upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
-        offsets (coord-delta center (coords->location upper-left zoom) zoom)
-        ]
-    (. graphics drawImage map 0 0 nil)
-    (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
-      (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
-        (if (water-color? (Color. (. map getRGB x y)))
-          (let [data (interpolate-bilinear-2x2 *datatype* valid-time location)]
-            (. graphics setColor (value->color (:value data)))
-            (. graphics fillRect x y 1 1)))))
-    map))
+;; (render-static-map (.getGraphics *display*) (make-location 0 0) :width 500 :height 250)
+;; (render-datatype (.getGraphics *display*) *nww3* (make-location 0 0) (nth (valid-times *nww3*) 5) :zoom 2 :width 500 :height 250 :maptype "roadmap")
+;; (render-datatype (.getGraphics *display*) *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0))
+
+
+;; (defmulti render-data 
+;;   (fn [component data]
+;;     (cond
+;;      (isa? (class data) incanter.Matrix) :matrix
+;;      (seq? data) :seq
+;;      (vector? data) :vector)))
+
+;; (defmethod render-data :matrix [component matrix]
+;;   (let [graphics (.getGraphics component)
+;;         width (:size (:longitude-axis (meta matrix)))
+;;         height (:size (:latitude-axis (meta matrix)))]     
+;;     (doseq [x (range width) y (range height) :let [value (sel matrix x y)] :when (not (.isNaN value))]
+;;       (. graphics setColor (value->color value))
+;;       (. graphics fillRect x (- (+ (* -1 y) height) 1) 1 1))))
+
+;; (defmethod render-data :seq [component sequence]
+;;   (render-data component (with-meta (apply vector sequence) (meta sequence))))
+
+;; (defmethod render-data :vector [component vector]
+;;   (let [graphics (.getGraphics component)
+;;         width (:size (:longitude-axis (meta vector)))
+;;         height (:size (:latitude-axis (meta vector)))]     
+;;     (doseq [index (range (count vector))
+;;             :let [value (nth vector index)
+;;                   x (mod index width)
+;;                   y (/ index width)]
+;;             :when (not (.isNaN value))]      
+;;       (. graphics setColor (value->color value))
+;;       (. graphics fillRect x (+ (* -1 y) height) 1 1))))
+
+;; (defn render-datatype [component datatype]
+;;   (render-data component (read-seq datatype (first (valid-times datatype)))))
+
+;; (defn render-datatypes [component & [datatypes]]
+;;   (doseq [datatype datatypes] (render-datatype component datatype)))
+
+
+
+
+;; (defn render-map [graphics center valid-time & options]
+;;   (let [map (apply static-map-image center options)
+;;         options (apply hash-map options)
+;;         zoom (or (:zoom options) (:zoom *options*))
+;;         origin (location->coords center zoom)
+;;         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
+;;         offsets (coord-delta center (coords->location upper-left zoom) zoom)
+;;         ]
+;;     (. graphics drawImage map 0 0 nil)
+;;     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
+;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
+;;         (if (water-color? (Color. (. map getRGB x y)))
+;;           (let [data (interpolate-bilinear-2x2 *datatype* valid-time location)]
+;;             (. graphics setColor (value->color (:value data)))
+;;             (. graphics fillRect x y 1 1)))))
+;;     map))
 
 ;; (render-map (.getGraphics *display*) {:latitude 50 :longitude 0} (nth (valid-times *datatype*) 5) :zoom 1 :width 500 :height 400 :maptype "terrain")
 
-(defn render-image [center valid-time & options]
-  (let [image (apply static-map-image center options)
-        graphics (.getGraphics image)
-        options (apply hash-map options)
-        zoom (or (:zoom options) (:zoom *options*))
-        origin (location->coords center zoom)
-        upper-left {:x (- (:x origin) (/ (.getWidth image) 2)) :y (- (:y origin) (/ (.getHeight image) 2))}
-        offsets (coord-delta center (coords->location upper-left zoom) zoom)
-        ]
-    (doseq [y (range 0 (.getHeight image)) x (range 0 (.getWidth image))]
-      (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
-        (if (water-color? (Color. (. image getRGB x y)))
-          (let [data (read-at-location *datatype* valid-time location)]
-            (. graphics setColor (value->color (:value data)))
-            (. graphics fillRect x y 1 1)))))
-    image))
+;; (defn render-image [center valid-time & options]
+;;   (let [image (apply static-map-image center options)
+;;         graphics (.getGraphics image)
+;;         options (apply hash-map options)
+;;         zoom (or (:zoom options) (:zoom *options*))
+;;         origin (location->coords center zoom)
+;;         upper-left {:x (- (:x origin) (/ (.getWidth image) 2)) :y (- (:y origin) (/ (.getHeight image) 2))}
+;;         offsets (coord-delta center (coords->location upper-left zoom) zoom)
+;;         ]
+;;     (doseq [y (range 0 (.getHeight image)) x (range 0 (.getWidth image))]
+;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
+;;         (if (water-color? (Color. (. image getRGB x y)))
+;;           (let [data (read-at-location *datatype* valid-time location)]
+;;             (. graphics setColor (value->color (:value data)))
+;;             (. graphics fillRect x y 1 1)))))
+;;     image))
+
+
+
+;; (render-datatype (.getGraphics *display*) *datatype* (make-location 0 0) (nth (valid-times *datatype*) 5) :zoom 2 :width 500 :height 250 :maptype "roadmap")
+;; (render-datatype (.getGraphics *display*) *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0))
+
+
+;; (clear *display*)
+;; (render-map (.getGraphics *display*) (make-location 0 0) :width 500 :height 250)
+
 
 ;; (def *display* (create-display 500 250))
 ;; (clear *display*)
