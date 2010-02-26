@@ -187,23 +187,24 @@
 
 
 
-;; (def *datatypes*
-;;      (map #(open-datatype (apply make-datatype %))
-;;           '(
-;;             ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
-;;             )))
+(def *datatypes*
+     (map #(open-datatype (apply make-datatype %))
+          '(
+            ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
+            )))
 
-;; (def *nww3* (nth *datatypes* 0))
-;; (def *display* (create-display 640 480))
-;; ;; (clear *display*)
+(def *nww3* (nth *datatypes* 0))
+;; (def *display* (create-display 400 200))
+;; (clear *display*)
 
-;; (render-static-map *display* (make-location 0 110) :width 640 :height 480 :zoom 2)
-;; (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 1 :width 500 :height 300 :maptype "roadmap")
+;; (render-static-map *display* (make-location 0 110) :width 400 :height 200 :zoom 2)
+;; (time
+;;  (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 1 :width 400 :height 200 :maptype "roadmap"))
 
 ;; (defmulti render-data 
 ;;   (fn [component data]
