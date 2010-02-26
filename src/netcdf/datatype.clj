@@ -70,7 +70,8 @@
         :requested-location location
         :unit (.getUnitsString (:service datatype))
         :valid-time valid-time
-        :value (.dataValue data)
+        ;; :value (.dataValue data)
+        :value (if (.isNaN (.dataValue data)) 0 (.dataValue data))
         :variable (:variable datatype)))))
 
 (defn read-seq [datatype valid-time location & options]
