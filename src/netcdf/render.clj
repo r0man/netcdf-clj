@@ -8,7 +8,8 @@
         netcdf.location
         google.maps.static
         google.maps.projection
-        incanter.core))
+        incanter.core
+        incanter.chrono))
 
 (defn create-panel [width height]
   (proxy [JPanel KeyListener] [] 
@@ -31,6 +32,9 @@
 (defn create-display
   ([] (create-display 360 180))
   ([width height] (configure-display (JFrame.) (create-panel width height))))
+
+(defn file-extension [filename]
+  (last (re-find #"\.(.[^.]+)$" filename)))
 
 (defn value->color [value]
   (cond
@@ -78,21 +82,22 @@
    ))
 
 (defn water-color? [color]
-  (or
-   (= color (Color. 152 166 181))
-   (= color (Color. 152 178 203))
-   (= color (Color. 153 178 203))
-   (= color (Color. 153 179 203))
-   (= color (Color. 153 179 204))
-   (= color (Color. 157 184 204))
-   (= color (Color. 164 185 203))
-   (= color (Color. 164 187 208))
-   (= color (Color. 171 192 210))
-   (= color (Color. 182 199 213))
-   (= color (Color. 192 208 224))
-   (= color (Color. 204 217 230))
-   (= color (Color. 215 227 235))
-   ))
+  (and
+   (or
+    (= color (Color. 152 166 181))
+    (= color (Color. 152 178 203))
+    (= color (Color. 153 178 203))
+    (= color (Color. 153 179 203))
+    (= color (Color. 153 179 204))
+    (= color (Color. 157 184 204))
+    (= color (Color. 164 185 203))
+    (= color (Color. 164 187 208))
+    (= color (Color. 171 192 210))
+    (= color (Color. 182 199 213))
+    (= color (Color. 192 208 224))
+    (= color (Color. 204 217 230))
+    (= color (Color. 215 227 235)))
+   color))
 
 (defn clear [component]
   (let [bounds (.getBounds component) graphics (.getGraphics component)]
@@ -105,48 +110,100 @@
 (defn render-static-map
   "Renders a static Google Map in the graphics context and returns the
   map as a buffered image."
-  [graphics center & options]
+  [component center & options]
   (let [map (apply static-map-image center options)]
-    (. graphics drawImage map 0 0 nil)
+    (. (.getGraphics component) drawImage map 0 0 nil)
     map))
 
-(defn render-datatype [graphics datatype valid-time center & options]
-  (let [map (apply render-static-map graphics center options)
+(defn render-datatype [component datatype valid-time center & options]
+  (let [graphics (.getGraphics component)
+        map (apply render-static-map component center options)
         options (apply hash-map options)
         reader-fn (or (:reader options) interpolate-bilinear-2x2)
         zoom (or (:zoom options) (:zoom *options*))
         origin (location->coords center zoom)
         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
-        offsets (coord-delta center (coords->location upper-left zoom) zoom)
-        ]
+        offsets (coord-delta center (coords->location upper-left zoom) zoom)]
     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
-        (if (water-color? (Color. (. map getRGB x y)))
-          (let [data (reader-fn datatype valid-time location)]
-            (. graphics setColor (value->color (:value data)))
-            (. graphics fillRect x y 1 1)))))
-    map))
+        (. graphics setColor
+           (if (water-color? (Color. (. map getRGB x y)))
+             (value->color (:value (reader-fn datatype valid-time location)))
+             (Color. (. map getRGB x y))))
+        (. graphics fillRect x y 1 1)))))
+
+(defn read-datatype-image [datatype valid-time center & options]
+  (let [image (apply static-map-image center options)
+        graphics (.getGraphics image)
+        options (apply hash-map options)
+        reader-fn (or (:reader options) interpolate-bilinear-2x2)
+        zoom (or (:zoom options) (:zoom *options*))
+        origin (location->coords center zoom)
+        upper-left {:x (- (:x origin) (/ (.getWidth image) 2)) :y (- (:y origin) (/ (.getHeight image) 2))}
+        offsets (coord-delta center (coords->location upper-left zoom) zoom)]
+    (doseq [y (range 0 (.getHeight image)) x (range 0 (.getWidth image))]
+      (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
+        (. graphics setColor
+           (if (water-color? (Color. (. image getRGB x y)))
+             (value->color (:value (reader-fn datatype valid-time location)))
+             (Color. (. image getRGB x y))))
+        (. graphics fillRect x y 1 1)))
+    image))
+
+(defn save-datatype-image [filename datatype valid-time center & options]
+  (let [image (apply read-datatype-image datatype valid-time center options)]
+    (javax.imageio.ImageIO/write image (or (file-extension filename) "PNG") (java.io.File. filename))
+    image))
+
+(defn save-datatype-images [directory datatype center & options]
+  (doseq [valid-time (valid-times datatype)]
+    (println valid-time)
+    (apply save-datatype-image
+           (str directory "/" (str-time valid-time :basic-date-time-no-ms) ".png")
+           datatype valid-time center options)))
+
+;; (save-datatype-image "/tmp/test.png" *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0))
+;; (save-datatype-images "/tmp" *nww3* (make-location 0 110)  :width 640 :height 480 :zoom 2)
+
+;; (display-formats)
+
+;; (defn render-datatype [graphics datatype valid-time center & options]
+;;   (let [map (apply render-static-map graphics center options)
+;;         options (apply hash-map options)
+;;         reader-fn (or (:reader options) interpolate-bilinear-2x2)
+;;         zoom (or (:zoom options) (:zoom *options*))
+;;         origin (location->coords center zoom)
+;;         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
+;;         offsets (coord-delta center (coords->location upper-left zoom) zoom)
+;;         ]
+;;     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
+;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
+;;         (if (water-color? (Color. (. map getRGB x y)))
+;;           (let [data (reader-fn datatype valid-time location)]
+;;             (. graphics setColor (value->color (:value data)))
+;;             (. graphics fillRect x y 1 1)))))
+;;     map))
 
 
-(def *datatypes*
-     (map #(open-datatype (apply make-datatype %))
-          '(
-            ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
-            )))
+
+
+;; (def *datatypes*
+;;      (map #(open-datatype (apply make-datatype %))
+;;           '(
+;;             ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
+;;             )))
 
 ;; (def *nww3* (nth *datatypes* 0))
-;; (def *display* (create-display 500 250))
-;; (clear *display*)
+;; (def *display* (create-display 640 480))
+;; ;; (clear *display*)
 
-;; (render-static-map (.getGraphics *display*) (make-location 0 0) :width 500 :height 250)
-;; (render-datatype (.getGraphics *display*) *nww3* (make-location 0 0) (nth (valid-times *nww3*) 5) :zoom 2 :width 500 :height 250 :maptype "roadmap")
-;; (render-datatype (.getGraphics *display*) *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0))
-
+;; (render-static-map *display* (make-location 0 110) :width 640 :height 480 :zoom 2)
+;; (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 1 :width 500 :height 300 :maptype "roadmap")
 
 ;; (defmulti render-data 
 ;;   (fn [component data]
