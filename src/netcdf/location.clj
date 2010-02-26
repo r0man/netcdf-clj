@@ -4,9 +4,18 @@
 
 (defstruct location :latitude :longitude :altitude)
 
-(defn parse-double [str]
-  (try (Double/parseDouble str)
+(defn parse-double [string]
+  (try (if (number? string) string (Double/parseDouble (str string)))
        (catch NumberFormatException exception nil)))
+
+(defn parse-altitude [str]
+  (parse-double str))
+
+(defn parse-latitude [str]
+  (parse-double str))
+
+(defn parse-longitude [str]
+  (parse-double str))
 
 (defn make-location
   ([latitude longitude]
@@ -14,19 +23,13 @@
      (make-location latitude longitude nil))
   ([latitude longitude altitude]
      "Make a location with the given latitude, longitude and altitude."
-     (struct location latitude longitude altitude)))
+     (struct location (parse-latitude latitude) (parse-longitude longitude) (parse-altitude altitude))))
 
 (defn location? [location]
   (and (:latitude location) (:longitude location) location))
 
 (defn location->array [location]
   [(:latitude location) (:longitude location)])
-
-(defn parse-latitude [str]
-  (parse-double str))
-
-(defn parse-longitude [str]
-  (parse-double str))
 
 (defn parse-location [lat-lon-str]
   (let [[latitude longitude] (re-split #",|;|\s+" lat-lon-str)]

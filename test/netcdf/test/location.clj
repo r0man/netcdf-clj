@@ -13,6 +13,10 @@
   (let [location (make-location 52.523 13.411 10.3)]
     (is (= (:latitude location) 52.523))
     (is (= (:longitude location) 13.411))
+    (is (= (:altitude location) 10.3)))
+  (let [location (make-location "52.523" "13.411" "10.3")]
+    (is (= (:latitude location) 52.523))
+    (is (= (:longitude location) 13.411))
     (is (= (:altitude location) 10.3))))
 
 (deftest test-location?
