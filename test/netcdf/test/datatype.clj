@@ -110,13 +110,24 @@
 
 (deftest test-read-at-location
   (let [datatype (open-example-datatype)
-        valid-time (first (valid-times datatype))
-        location (make-location 0 0)
-        record (read-at-location datatype valid-time location)]
-    (is (location? (:actual-location record)))
-    (is (= (:requested-location record) location))
-    (is (= (:valid-time record) valid-time))
-    (is (= (:variable record) *variable*))))
+        valid-time (first (valid-times datatype))]
+    (let [data (read-at-location datatype valid-time (make-location 0 0))]
+      (is (location? (:actual-location data)))
+      (is (= (:requested-location data) (make-location 0 0)))
+      (is (= (:valid-time data) valid-time))
+      (is (= (:variable data) *variable*)))
+    (let [data (read-at-location datatype valid-time (make-location 78 0))]
+      (is (location? (:actual-location data)))
+      (is (= (:requested-location data) (make-location 78 0)))
+      (is (= (:valid-time data) valid-time))
+      (is (= (:variable data) *variable*))
+      (is (.isNaN (:value data))))
+    (let [data (read-at-location datatype valid-time (make-location 78 0) :nil -999)]
+      (is (location? (:actual-location data)))
+      (is (= (:requested-location data) (make-location 78 0)))
+      (is (= (:valid-time data) valid-time))
+      (is (= (:variable data) *variable*))
+      (is (= (:value data) -999)))))
 
 (deftest test-time-index
   (let [datatype (open-example-datatype)]

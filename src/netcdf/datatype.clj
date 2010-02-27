@@ -62,16 +62,17 @@
 
 (defn read-at-location
   "Read the NetCDF datatype for the given time and location."
-  [datatype valid-time location]
+  [datatype valid-time location & options]
   (if location
-    (let [data (read-data datatype valid-time location)]
+    (let [options (apply hash-map options)
+          data (read-data datatype valid-time location)]
       (struct-map record
         :actual-location (make-location (.lat data) (.lon data))
         :requested-location location
         :unit (.getUnitsString (:service datatype))
         :valid-time valid-time
-        ;; :value (.dataValue data)
-        :value (if (.isNaN (.dataValue data)) 0 (.dataValue data))
+        :value (or (and (.isNaN (.dataValue data)) (:nil options))
+                   (.dataValue data))
         :variable (:variable datatype)))))
 
 (defn read-seq [datatype valid-time location & options]
