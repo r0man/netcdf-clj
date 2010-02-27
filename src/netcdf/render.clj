@@ -128,7 +128,7 @@
       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
         (. graphics setColor
            (if (water-color? (Color. (. map getRGB x y)))
-             (value->color (:value (reader-fn datatype valid-time location)))
+             (value->color (:value (reader-fn datatype valid-time location :nil 0)))
              (Color. (. map getRGB x y))))
         (. graphics fillRect x y 1 1)))))
 
@@ -145,7 +145,7 @@
       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
         (. graphics setColor
            (if (water-color? (Color. (. image getRGB x y)))
-             (value->color (:value (reader-fn datatype valid-time location)))
+             (value->color (:value (reader-fn datatype valid-time location :nil 0)))
              (Color. (. image getRGB x y))))
         (. graphics fillRect x y 1 1)))
     image))
@@ -184,9 +184,6 @@
 ;;             (. graphics fillRect x y 1 1)))))
 ;;     map))
 
-
-
-
 (def *datatypes*
      (map #(open-datatype (apply make-datatype %))
           '(
@@ -198,13 +195,13 @@
             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
             )))
 
-(def *nww3* (nth *datatypes* 0))
-;; (def *display* (create-display 400 200))
+;; (def *nww3* (nth *datatypes* 0))
+;; (def *display* (create-display 300 300))
 ;; (clear *display*)
 
 ;; (render-static-map *display* (make-location 0 110) :width 400 :height 200 :zoom 2)
-;; (time
-;;  (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 1 :width 400 :height 200 :maptype "roadmap"))
+;; (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 3 :width 100 :height 100 :maptype "roadmap")
+;; (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 5 0) :zoom 1 :width 300 :height 300 :maptype "roadmap" :reader interpolate-bilinear-2x2)
 
 ;; (defmulti render-data 
 ;;   (fn [component data]

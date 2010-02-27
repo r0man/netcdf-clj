@@ -71,8 +71,7 @@
         :requested-location location
         :unit (.getUnitsString (:service datatype))
         :valid-time valid-time
-        :value (or (and (.isNaN (.dataValue data)) (:nil options))
-                   (.dataValue data))
+        :value (or (and (.isNaN (.dataValue data)) (:nil options)) (.dataValue data))
         :variable (:variable datatype)))))
 
 (defn read-seq [datatype valid-time location & options]
@@ -83,7 +82,7 @@
         lon-step (or (:lon-step options) (:lon-step datatype))
         locations (location-rect location :width width :height height :lat-step lat-step :lon-step lon-step)
         read-fn (or (:read-fn options) read-at-location)]
-    (with-meta (map #(read-fn datatype valid-time %) locations)
+    (with-meta (map #(read-fn datatype valid-time % :nil (:nil options)) locations)
       (merge {:description (description datatype)
               :valid-time valid-time
               :variable (:variable datatype)
