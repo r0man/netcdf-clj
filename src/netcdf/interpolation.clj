@@ -25,15 +25,15 @@
 
 (defn read-sample-2x2 [datatype valid-time location & options]
   (let [anchor (central-sample-location location (:lat-step datatype) (:lon-step datatype))
-        sample (read-matrix datatype valid-time anchor :width 2 :height 2)]
+        sample (apply read-matrix datatype valid-time anchor (flatten (seq (merge (apply hash-map options) {:width 2 :height 2}))))]
     (with-meta+ sample      
       {:x-fract (x-fract sample location)
        :y-fract (y-fract sample location)})))
 
 (defn read-sample-4x4 [datatype valid-time location & options]
   (let [anchor (central-sample-location location (:lat-step datatype) (:lon-step datatype))
-        anchor (make-location (+ (:latitude location) (:lat-step datatype)) (- (:longitude location) (:lon-step datatype))) 
-        sample (read-matrix datatype valid-time anchor :width 4 :height 4)]
+        anchor (make-location (+ (:latitude location) (:lat-step datatype)) (- (:longitude location) (:lon-step datatype)))
+        sample (apply read-matrix datatype valid-time anchor (flatten (seq (merge (apply hash-map options) {:width 4 :height 4}))))]
     (with-meta+ sample      
       {:x-fract (x-fract sample location)
        :y-fract (y-fract sample location)})))
@@ -42,7 +42,7 @@
   "Read the NetCDF datatype for the given time and location."
   [datatype valid-time location & options]
   (if location
-    (let [sample (read-sample-2x2 datatype valid-time location)]
+    (let [sample (apply read-sample-2x2 datatype valid-time location options)]
       (struct-map record
         :variable (:variable datatype)
         :location location
@@ -60,7 +60,7 @@
   "Read the NetCDF datatype for the given time and location."
   [datatype valid-time location & options]
   (if location
-    (let [sample (read-sample-2x2 datatype valid-time location)]
+    (let [sample (apply read-sample-2x2 datatype valid-time location options)]
       (struct-map record
         :variable (:variable datatype)
         :location location
@@ -78,7 +78,7 @@
   "Read the NetCDF datatype for the given time and location."
   [datatype valid-time location & options]
   (if location
-    (let [sample (read-sample-4x4 datatype valid-time location)]
+    (let [sample (apply read-sample-4x4 datatype valid-time location options)]
       (struct-map record
         :variable (:variable datatype)
         :location location

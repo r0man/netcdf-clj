@@ -29,18 +29,23 @@
 
 (deftest test-read-sample-2x2
   (let [datatype (open-example-datatype) valid-time (first (valid-times datatype))]
-    (let [sample (read-sample-2x2 datatype valid-time (make-location 77 0))]
-    ;; (println sample)
-    ;;   (println (meta sample))
-      (is (= sample (read-matrix datatype valid-time (make-location 77 0) :width 2 :height 2)))
+    (let [sample (read-sample-2x2 datatype valid-time (make-location 78 0))]
+      (is (= sample (read-matrix datatype valid-time (make-location 78 0) :width 2 :height 2)))
+      (is (= (:x-fract (meta sample)) 0))
+      (is (= (:y-fract (meta sample)) 0)))
+    (let [sample (read-sample-2x2 datatype valid-time (make-location 78 0) :nil 0)]
+      (is (= sample (read-matrix datatype valid-time (make-location 78 0) :width 2 :height 2 :nil 0)))
       (is (= (:x-fract (meta sample)) 0))
       (is (= (:y-fract (meta sample)) 0)))))
 
 (deftest test-read-sample-4x4
   (let [datatype (open-example-datatype) valid-time (first (valid-times datatype))]
     (let [sample (read-sample-4x4 datatype valid-time (make-location 77 1.25))]
-      ;; (println (meta sample))
-      (is (= sample (read-matrix datatype valid-time (make-location 78 0) :width 4 :height 4))))))
+      (is (= sample (read-matrix datatype valid-time (make-location 78 0) :width 4 :height 4)))
+      (is (= (:x-fract (meta sample)) 0.3333333333333333))
+      (is (= (:y-fract (meta sample)) 0.3333333333333333)))
+    (let [sample (read-sample-4x4 datatype valid-time (make-location 77 1.25) :nil 0)]
+      (is (= sample (read-matrix datatype valid-time (make-location 78 0) :width 4 :height 4 :nil 0))))))
 
 (deftest test-with-meta+
   (let [obj [1 2] m {:key "val"}]
