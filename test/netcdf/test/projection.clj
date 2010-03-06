@@ -10,6 +10,6 @@
 
 (deftest test-point->location
   (let [location (point->location (make-point 0 0))]
-    (is (= (:latitude location) 0))
-    (is (= (:longitude location ) -105))))
+    (is (= (latitude location) 0))
+    (is (= (longitude location ) -105))))
 

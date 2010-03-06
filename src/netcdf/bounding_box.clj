@@ -5,7 +5,6 @@
 (defmulti make-bounding-box
   (fn [& args]
     (let [num (count args)]
-      (println num)
      (cond
       (= num 1) String
       (= num 2) [(class (first args)) (class (last args))]))))

@@ -2,7 +2,8 @@
   (:use clojure.test netcdf.dataset))
 
 (def *dataset-uri* "/home/roman/.weather/20100215/akw.06.nc")
-(def *remote-uri* "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw/akw20100223/akw_00z")
+;;; TODO: Compute url with current date
+(def *remote-uri* "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw/akw20100305/akw_00z")
 (def *variable* "htsgwsfc")
 
 (defn make-example-dataset []

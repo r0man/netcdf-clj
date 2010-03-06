@@ -117,9 +117,10 @@
 
 (defn render-datatype [component datatype valid-time center & options]
   (let [graphics (.getGraphics component)
+        center {:latitude (latitude center) :longitude (longitude center)}
         map (apply render-static-map component center options)
         options (apply hash-map options)
-        reader-fn (or (:reader options) interpolate-bilinear-2x2)
+        reader-fn (or (:reader options) read-at-location)
         zoom (or (:zoom options) (:zoom *options*))
         origin (location->coords center zoom)
         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
@@ -134,9 +135,10 @@
 
 (defn read-datatype-image [datatype valid-time center & options]
   (let [image (apply static-map-image center options)
+        center {:latitude (latitude center) :longitude (longitude center)}
         graphics (.getGraphics image)
         options (apply hash-map options)
-        reader-fn (or (:reader options) interpolate-bilinear-2x2)
+        reader-fn (or (:reader options) read-at-location)
         zoom (or (:zoom options) (:zoom *options*))
         origin (location->coords center zoom)
         upper-left {:x (- (:x origin) (/ (.getWidth image) 2)) :y (- (:y origin) (/ (.getHeight image) 2))}
@@ -170,7 +172,7 @@
 ;; (defn render-datatype [graphics datatype valid-time center & options]
 ;;   (let [map (apply render-static-map graphics center options)
 ;;         options (apply hash-map options)
-;;         reader-fn (or (:reader options) interpolate-bilinear-2x2)
+;;         reader-fn (or (:reader options) read-at-location)
 ;;         zoom (or (:zoom options) (:zoom *options*))
 ;;         origin (location->coords center zoom)
 ;;         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
@@ -195,13 +197,17 @@
             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
             )))
 
-;; (def *nww3* (nth *datatypes* 0))
+(def *nww3* (nth *datatypes* 0))
 ;; (def *display* (create-display 300 300))
-;; (clear *display*)
+;; ;; (clear *display*)
+;; (import ucar.nc2.dt.image.ImageDatasetFactory)
+;; (. (ImageDatasetFactory.) openDataset (:service *nww3*))
+
+;; (. (.getGraphics *display*) drawImage (. (ImageDatasetFactory.) openDataset (:service *nww3*)) 0 0 nil)
 
 ;; (render-static-map *display* (make-location 0 110) :width 400 :height 200 :zoom 2)
 ;; (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 3 :width 100 :height 100 :maptype "roadmap")
-;; (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 5 0) :zoom 1 :width 300 :height 300 :maptype "roadmap" :reader interpolate-bilinear-2x2)
+;; (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 5 0) :zoom 1 :width 300 :height 300 :maptype "roadmap" :reader read-at-location)
 
 ;; (defmulti render-data 
 ;;   (fn [component data]
@@ -254,7 +260,7 @@
 ;;     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
 ;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
 ;;         (if (water-color? (Color. (. map getRGB x y)))
-;;           (let [data (interpolate-bilinear-2x2 *datatype* valid-time location)]
+;;           (let [data (read-at-location *datatype* valid-time location)]
 ;;             (. graphics setColor (value->color (:value data)))
 ;;             (. graphics fillRect x y 1 1)))))
 ;;     map))
