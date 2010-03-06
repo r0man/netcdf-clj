@@ -7,46 +7,34 @@
 
 (deftest test-make-location
   (let [location (make-location 52.523 13.411)]
-    (is (= (:latitude location) 52.523))
-    (is (= (:longitude location) 13.411))
-    (is (nil? (:altitude location))))
-  (let [location (make-location 52.523 13.411 10.3)]
-    (is (= (:latitude location) 52.523))
-    (is (= (:longitude location) 13.411))
-    (is (= (:altitude location) 10.3)))
-  (let [location (make-location "52.523" "13.411" "10.3")]
-    (is (= (:latitude location) 52.523))
-    (is (= (:longitude location) 13.411))
-    (is (= (:altitude location) 10.3))))
+    (is (= (latitude location) 52.523))
+    (is (= (longitude location) 13.411)))
+  (let [location (make-location "52.523" "13.411")]
+    (is (= (latitude location) 52.523))
+    (is (= (longitude location) 13.411))))
 
 (deftest test-location?
   (is (location? (make-location 1 2)))
-  (is (not (location? nil)))
-  (is (not (location? {:latitude nil :longitude 2})))
-  (is (not (location? {:latitude nil :longitude 2}))))
+  (is (not (location? nil))))
 
 (deftest test-parse-location
   (let [location (parse-location "52.52 13.41")]
-    (is (= (:latitude location) 52.52))
-    (is (= (:longitude location) 13.41))
-    (is (nil? (:altitude location))))
+    (is (= (latitude location) 52.52))
+    (is (= (longitude location) 13.41)))
   (let [location (parse-location "52.52,13.41")]
-    (is (= (:latitude location) 52.52))
-    (is (= (:longitude location) 13.41))
-    (is (nil? (:altitude location))))
-  (let [location (parse-location "52.52,13.41")]
-    (is (= (:latitude location) 52.52))
-    (is (= (:longitude location) 13.41))
-    (is (= (:altitude location) nil)))
+    (is (= (latitude location) 52.52))
+    (is (= (longitude location) 13.41)))
+  (let [location (parse-location "52.52;13.41")]
+    (is (= (latitude location) 52.52))
+    (is (= (longitude location) 13.41)))
   (let [location (parse-location "52.52\t13.41")]
-    (is (= (:latitude location) 52.52))
-    (is (= (:longitude location) 13.41))
-    (is (nil? (:altitude location)))))
+    (is (= (latitude location) 52.52))
+    (is (= (longitude location) 13.41))))
 
 (deftest test-destination-point
   (let [location (destination-point *berlin* 30 100)]
-    (is (= (:latitude location) 53.298866294161215))
-    (is (= (:longitude location) 14.16092284183496))))
+    (is (= (latitude location) 53.298866294161215))
+    (is (= (longitude location) 14.16092284183496))))
 
 (deftest test-distance
   (is (= (distance *berlin* *berlin*) 0.0))
@@ -56,29 +44,29 @@
   (is (north? *berlin* *paris*))
   (is (north? *paris* *vienna*))
   (is (not (north? *berlin* *berlin*)))
-  (is (not (north? (make-location (dec (:latitude *berlin*)) (:longitude *berlin*)) *berlin*)))
-  (is (north? (make-location (inc (:latitude *berlin*)) (:longitude *berlin*)) *berlin*)))
+  (is (not (north? (make-location (dec (latitude *berlin*)) (longitude *berlin*)) *berlin*)))
+  (is (north? (make-location (inc (latitude *berlin*)) (longitude *berlin*)) *berlin*)))
 
 (deftest test-east?
   (is (east? *berlin* *paris*))
   (is (east? *vienna* *berlin*))
   (is (not (east? *berlin* *berlin*)))
-  (is (not (east? (make-location (:latitude *berlin*) (dec (:longitude *berlin*))) *berlin*)))
-  (is (east? (make-location (:latitude *berlin*) (inc (:longitude *berlin*))) *berlin*)))
+  (is (not (east? (make-location (latitude *berlin*) (dec (longitude *berlin*))) *berlin*)))
+  (is (east? (make-location (latitude *berlin*) (inc (longitude *berlin*))) *berlin*)))
 
 (deftest test-south?
   (is (south? *paris* *berlin*))
   (is (south? *vienna* *berlin*))
   (is (not (south? *berlin* *berlin*)))
-  (is (not (south? (make-location (inc (:latitude *berlin*)) (:longitude *berlin*)) *berlin*)))
-  (is (south? (make-location (dec (:latitude *berlin*)) (:longitude *berlin*)) *berlin*)))
+  (is (not (south? (make-location (inc (latitude *berlin*)) (longitude *berlin*)) *berlin*)))
+  (is (south? (make-location (dec (latitude *berlin*)) (longitude *berlin*)) *berlin*)))
 
 (deftest test-west?
   (is (west? *paris* *berlin*))
   (is (west? *paris* *vienna* ))
   (is (not (west? *berlin* *berlin*)))
-  (is (not (west? (make-location (:latitude *berlin*) (inc (:longitude *berlin*))) *berlin*)))
-  (is (west? (make-location (:latitude *berlin*) (dec (:longitude *berlin*))) *berlin*)))
+  (is (not (west? (make-location (latitude *berlin*) (inc (longitude *berlin*))) *berlin*)))
+  (is (west? (make-location (latitude *berlin*) (dec (longitude *berlin*))) *berlin*)))
 
 (deftest test-north-east?
   (is (north-east? *berlin* *paris*))
