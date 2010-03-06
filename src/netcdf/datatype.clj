@@ -1,5 +1,7 @@
 (ns netcdf.datatype
-  (:import (ucar.nc2.dt.grid GridDataset GridAsPointDataset)
+  (:import (ucar.nc2.dt.grid GeoGrid GridDataset GridAsPointDataset)
+           clojure.lang.PersistentStructMap
+           incanter.Matrix
            ucar.ma2.Range
            ucar.unidata.geoloc.LatLonPointImpl
            ucar.unidata.geoloc.LatLonRect)
@@ -94,17 +96,31 @@
     (let [datatype (assoc datatype :service (. (. GridDataset open (:dataset-uri datatype)) findGridDatatype (:variable datatype)))]
       (merge datatype (axis datatype)))))
 
+(defmulti valid-times
+  "Returns the valid times in the NetCDF datatype."
+  class)
+
+(defmethod valid-times GeoGrid [datatype]
+  (.. (.getCoordinateSystem datatype) getTimeAxis1D getTimeDates))
+
+(defmethod valid-times PersistentStructMap [datatype]
+  (valid-times (or (:service datatype) (open-datatype datatype))))
+
 (defn- read-data [datatype valid-time location]
   (let [datatype (:service datatype) dataset (GridAsPointDataset. [datatype])]
     (if (and (:altitude location) (. dataset hasVert datatype (:altitude location)))
       (. dataset readData datatype valid-time (:altitude location) (latitude location) (longitude location))
       (. dataset readData datatype valid-time (latitude location) (longitude location)))))
 
-(defn read-at-location
+(defmulti read-at-location
   "Read the NetCDF datatype for the given time and location."
-  [datatype valid-time location & options]
+  (fn [datatype location & options]
+    (class datatype)))
+
+(defmethod read-at-location PersistentStructMap [datatype location & options]
   (if location
     (let [options (apply hash-map options)
+          valid-time (or (:valid-time options) (first (valid-times datatype)))
           data (read-data datatype valid-time location)]
       (struct-map record
         :actual-location (make-location (.lat data) (.lon data))
@@ -114,6 +130,15 @@
         :value (or (and (.isNaN (.dataValue data)) (:nil options)) (.dataValue data))
         :variable (:variable datatype)))))
 
+(defmethod read-at-location Matrix [datatype location & options]
+  (if location
+    (let [options (apply hash-map options)
+          row-index 0
+          column-index 0]
+      (struct-map record
+        :requested-location location
+        :value (sel datatype row-index column-index)))))
+
 (defn read-seq [datatype valid-time location & options]
   (let [options (apply hash-map options)
         width (or (:width options) 2)
@@ -122,7 +147,7 @@
         lon-step (or (:lon-step options) (:lon-step datatype))
         locations (location-rect location :width width :height height :lat-step lat-step :lon-step lon-step)
         read-fn (or (:read-fn options) read-at-location)]
-    (with-meta (map #(read-fn datatype valid-time % :nil (:nil options)) locations)
+    (with-meta (map #(read-fn datatype % :valid-time valid-time :nil (:nil options)) locations)
       (merge {:description (description datatype)
               :valid-time valid-time
               :variable (:variable datatype)
@@ -163,15 +188,16 @@
 ;;        :lon-step (:lon-step datatype)})))
 
 (defmulti read-matrix
-  (fn [datatype valid-time & options]
+  (fn [datatype & options]
     (let [options (apply hash-map options)]
       (cond
        (empty? options) :grid
        (:location options) :location
        :else :grid))))
 
-(defmethod read-matrix :grid [datatype valid-time & options]
+(defmethod read-matrix :grid [datatype & options]
   (let [options (apply hash-map options)
+        valid-time (or (:valid-time options) (first (valid-times datatype)))
         width (int (or (:width options) (:lon-size datatype)))
         height (int (or (:height options) (:lat-size datatype)))
         time-index (int (time-index datatype valid-time))
@@ -191,8 +217,31 @@
 
 ;; (time (read-matrix *nww3* (first (valid-times *nww3*))))
 
-(defmethod read-matrix :location [datatype valid-time & options]
+(defmethod read-matrix :location [datatype & options]
   (let [options (apply hash-map options)
+        valid-time (or (:valid-time options) (first (valid-times datatype)))
+        location (:location options)
+        width (int (or (:width options) (:lon-size datatype)))
+        height (int (or (:height options) (:lat-size datatype)))
+        time-index (int (time-index datatype valid-time))
+        z-index (int (or (:z-index options) 0))]
+    (with-meta (.viewRowFlip (matrix (seq (. (. (:service datatype) readYXData time-index z-index) copyTo1DJavaArray)) width))
+      {:description (description datatype)
+       :valid-time valid-time
+       :variable (:variable datatype)
+       :lat-min (:lat-min datatype)
+       :lat-max (:lat-max datatype)
+       :lat-size height
+       :lat-step (:lat-step datatype)
+       :lon-min (:lon-min datatype)
+       :lon-max (:lon-max datatype)
+       :lon-size width
+       :lon-step (:lon-step datatype)})))
+
+
+(defmethod read-matrix ucar.nc2.dt.grid.GeoGrid [datatype & options]
+  (let [options (apply hash-map options)
+        valid-time (or (:valid-time options) (first (valid-times datatype)))
         location (:location options)
         width (int (or (:width options) (:lon-size datatype)))
         height (int (or (:height options) (:lat-size datatype)))
@@ -241,12 +290,12 @@
 ;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 
 
-(defn valid-times
-  "Returns the valid times in the NetCDF datatype."
-  [datatype]
-  (if (datatype-open? datatype)
-    (.. (.getCoordinateSystem (:service datatype)) getTimeAxis1D getTimeDates)
-    (valid-times (open-datatype datatype))))
+;; (defn valid-times
+;;   "Returns the valid times in the NetCDF datatype."
+;;   [datatype]
+;;   (if (datatype-open? datatype)
+;;     (.. (.getCoordinateSystem (:service datatype)) getTimeAxis1D getTimeDates)
+;;     (valid-times (open-datatype datatype))))
 
 ;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 ;; (println (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 5))

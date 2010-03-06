@@ -1,5 +1,6 @@
 (ns netcdf.render
   (:import java.awt.image.BufferedImage
+           incanter.Matrix
            (java.awt Color Dimension)
            (java.awt.event KeyListener)
            (javax.swing JFrame JOptionPane JPanel))
@@ -115,7 +116,7 @@
     (. (.getGraphics component) drawImage map 0 0 nil)
     map))
 
-(defn render-datatype [component datatype valid-time center & options]
+(defn render-datatype2 [component datatype valid-time center & options]
   (let [graphics (.getGraphics component)
         center {:latitude (latitude center) :longitude (longitude center)}
         map (apply render-static-map component center options)
@@ -169,7 +170,7 @@
 
 ;; (display-formats)
 
-;; (defn render-datatype [graphics datatype valid-time center & options]
+;; (defn render-datatype2 [graphics datatype valid-time center & options]
 ;;   (let [map (apply render-static-map graphics center options)
 ;;         options (apply hash-map options)
 ;;         reader-fn (or (:reader options) read-at-location)
@@ -199,6 +200,33 @@
 
 (def *nww3* (nth *datatypes* 0))
 ;; (def *display* (create-display 300 300))
+;; (def *data* (read-matrix *nww3* (first (valid-times *nww3*))))
+;; (count *data*)
+
+(defmulti render-datatype
+  (fn [component datatype & options]
+    (class datatype)))
+
+(def *render-options* {:latitude 0 :longitude 0 :zoom 0 :width 360 :height 180})
+
+;; (defmethod render-datatype Matrix [graphics datatype & options]
+;;   (let [options (merge *render-options* (apply hash-map options))
+        
+;;         reader-fn (or (:reader options) read-at-location)
+;;         zoom (or (:zoom options) (:zoom *options*))
+;;         origin (location->coords center zoom)
+;;         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
+;;         offsets (coord-delta center (coords->location upper-left zoom) zoom)]
+;;     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
+;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
+;;         (. graphics setColor
+;;            (if (water-color? (Color. (. map getRGB x y)))
+;;              (value->color (:value (reader-fn datatype valid-time location :nil 0)))
+;;              (Color. (. map getRGB x y))))
+;;         (. graphics fillRect x y 1 1)))))
+
+
+
 ;; ;; (clear *display*)
 ;; (import ucar.nc2.dt.image.ImageDatasetFactory)
 ;; (. (ImageDatasetFactory.) openDataset (:service *nww3*))
@@ -206,8 +234,8 @@
 ;; (. (.getGraphics *display*) drawImage (. (ImageDatasetFactory.) openDataset (:service *nww3*)) 0 0 nil)
 
 ;; (render-static-map *display* (make-location 0 110) :width 400 :height 200 :zoom 2)
-;; (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 3 :width 100 :height 100 :maptype "roadmap")
-;; (render-datatype *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 5 0) :zoom 1 :width 300 :height 300 :maptype "roadmap" :reader read-at-location)
+;; (render-datatype2 *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 3 :width 100 :height 100 :maptype "roadmap")
+;; (render-datatype2 *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 5 0) :zoom 1 :width 300 :height 300 :maptype "roadmap" :reader read-at-location)
 
 ;; (defmulti render-data 
 ;;   (fn [component data]

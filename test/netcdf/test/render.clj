@@ -15,9 +15,9 @@
     (is (= (.getWidth map) 500))
     (is (= (.getHeight map) 250))))
 
-(deftest test-render-datatype
+(deftest test-render-datatype2
   (let [component (make-buffered-image 10 10)]
-    (render-datatype component *datatype* *valid-time* (make-location 0 0) :width 10 :height 10)))
+    (render-datatype2 component *datatype* *valid-time* (make-location 0 0) :width 10 :height 10)))
 
 (deftest test-read-datatype-image
   (let [image (read-datatype-image *datatype* *valid-time* (make-location 0 0) :width 10 :height 10)]
