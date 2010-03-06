@@ -70,31 +70,26 @@
 (deftest test-read-seq
   (let [datatype (open-example-datatype)
         valid-time (first (valid-times datatype))
-        sequence (read-seq datatype valid-time (make-location 0 0))]
+        sequence (read-seq datatype)]
     (is (seq? sequence))
-    (is (= (count sequence) 4))
-    (is (= (:actual-location (nth sequence 0)) (make-location 0 0)))    
-    (is (= (:actual-location (nth sequence 1)) (make-location 0 (:lon-step datatype))))
-    (is (= (:actual-location (nth sequence 2)) (make-location (* -1 (:lat-step datatype)) 0)))
-    (is (= (:actual-location (nth sequence 3)) (make-location (* -1 (:lat-step datatype)) (:lon-step datatype))))
+    (is (= (count sequence) 45216))
     (let [m (meta sequence)]
       (is (= (:description m) (description datatype)))
       (is (= (:valid-time m) valid-time))
       (is (= (:variable m) (:variable datatype)))
-      (is (= (:lat-max m) 0))
-      (is (= (:lat-min m) (* -1 (:lat-step datatype))))
-      (is (= (:lat-size m) 2))
+      (is (= (:lat-max m) 78))
+      (is (= (:lat-min m) -78))
+      (is (= (:lat-size m) 157))
       (is (= (:lat-step m) (:lat-step datatype)))
-      (is (= (:lon-max m) (:lon-step datatype)))
+      (is (= (:lon-max m) 358.75))
       (is (= (:lon-min m) 0))
-      (is (= (:lon-size m) 2))
+      (is (= (:lon-size m) 288))
       (is (= (:lon-step m) (:lon-step datatype))))))
 
 (deftest test-read-matrix
   (let [datatype (open-example-datatype)
-        valid-time (first (valid-times datatype))
-        sequence (read-seq datatype valid-time (make-location 0 0))
-        matrix (read-matrix datatype (make-location 0 0))]
+        sequence (read-seq datatype)
+        matrix (read-matrix datatype)]
     (is (matrix? matrix))
     (is (= (count sequence) 4))
     (is (= (count matrix) 2))
@@ -105,7 +100,7 @@
     (is (= (sel matrix 1 1) (:value (nth sequence 3))))
     (let [m (meta matrix)]
       (is (= (:description m) (description datatype)))
-      (is (= (:valid-time m) valid-time))
+      (is (= (:valid-time m) (first (valid-times datatype))))
       (is (= (:variable m) (:variable datatype)))
       (is (= (:lat-max m) 0))
       (is (= (:lat-min m) (* -1 (:lat-step datatype))))
@@ -118,9 +113,8 @@
 
 (deftest test-read-matrix
   (let [datatype (open-example-datatype)
-        valid-time (first (valid-times datatype))
-        sequence (read-seq datatype valid-time (make-location 77 0))
-        matrix (read-matrix datatype (make-location 77 0) :width 5 :height 5)]
+        sequence (read-seq datatype)
+        matrix (read-matrix datatype :width 5 :height 5)]
     (is (matrix? matrix))
     (is (= (count sequence) 4))
     (is (= (count matrix) 5))
@@ -131,7 +125,7 @@
     (is (= (sel matrix 1 1) (:value (nth sequence 3))))
     (let [m (meta matrix)]
       (is (= (:description m) (description datatype)))
-      (is (= (:valid-time m) valid-time))
+      (is (= (:valid-time m) (first (valid-times datatype))))
       (is (= (:variable m) (:variable datatype)))
       (is (= (:lat-max m) 77))
       (is (= (:lat-min m) 73))
@@ -204,8 +198,13 @@
       (is (= (:variable data) *variable*))
       (is (= (:value data) -999)))))
 
-(deftest test-time-index
+(deftest test-time-index-with-datatype
   (let [datatype (open-example-datatype)]
+    (is (= (time-index datatype (first (valid-times datatype))) 0))
+    (is (= (time-index datatype (last (valid-times datatype))) (- (count (valid-times datatype)) 1)))))
+
+(deftest test-time-index-with-geogrid
+  (let [datatype (:service (open-example-datatype))]
     (is (= (time-index datatype (first (valid-times datatype))) 0))
     (is (= (time-index datatype (last (valid-times datatype))) (- (count (valid-times datatype)) 1)))))
 

@@ -8,7 +8,7 @@
   (:use [clojure.contrib.math :only (ceil floor)]
         [clojure.contrib.repl-utils :only (show)]
         clojure.contrib.profile
-        incanter.core netcdf.location))
+        incanter.core netcdf.location netcdf.utils))
 
 (defstruct datatype :dataset-uri :variable :service)
 (defstruct record :actual-location :distance :unit :valid-time :value :variable)
@@ -16,20 +16,20 @@
 (defn bounding-box
   "Returns the bounding box of the datatype."
   [datatype]
-  (.. (:service datatype) getCoordinateSystem getLatLonBoundingBox))
+  (.. (or (:service datatype) datatype) getCoordinateSystem getLatLonBoundingBox))
 
 (defn description [datatype]
-  (.. (:service datatype) getVariable getDescription))
+  (.. (or (:service datatype) datatype) getVariable getDescription))
 
 (defn latitude-axis [datatype]
-  (let [axis (.. (:service datatype) getCoordinateSystem getYHorizAxis) bounds (bounding-box datatype)]
+  (let [axis (.. (or (:service datatype) datatype) getCoordinateSystem getYHorizAxis) bounds (bounding-box datatype)]
     {:lat-min (.getLatMin bounds)
      :lat-max (.getLatMax bounds)
      :lat-size (.getSize axis)
      :lat-step (/ (.getHeight bounds) (- (.getSize axis) 1))}))
 
-(defn longitude-axis [datatype]
-  (let [axis (.. (:service datatype) getCoordinateSystem getXHorizAxis) bounds (bounding-box datatype)]
+(defn longitude-axis GeoGrid [datatype]
+  (let [axis (.. (or (:service datatype) datatype) getCoordinateSystem getXHorizAxis) bounds (bounding-box datatype)]
     {:lon-min (.getLonMin bounds)
      :lon-max (.getLonMax bounds)
      :lon-size (.getSize axis)
@@ -38,7 +38,7 @@
 (defn time-index
   "Returns the time index for valid-time."
   [datatype valid-time]
-  (. (. (.getCoordinateSystem (:service datatype)) getTimeAxis1D) findTimeIndexFromDate valid-time))
+  (. (. (.getCoordinateSystem (or (:service datatype) datatype)) getTimeAxis1D) findTimeIndexFromDate valid-time))
 
 (defn axis [datatype]
   (merge (latitude-axis datatype) (longitude-axis datatype)))
@@ -139,26 +139,18 @@
         :requested-location location
         :value (sel datatype row-index column-index)))))
 
-(defn read-seq [datatype valid-time location & options]
-  (let [options (apply hash-map options)
-        width (or (:width options) 2)
-        height (or (:height options) width)
-        lat-step (or (:lat-step options) (:lat-step datatype))
-        lon-step (or (:lon-step options) (:lon-step datatype))
-        locations (location-rect location :width width :height height :lat-step lat-step :lon-step lon-step)
-        read-fn (or (:read-fn options) read-at-location)]
-    (with-meta (map #(read-fn datatype % :valid-time valid-time :nil (:nil options)) locations)
-      (merge {:description (description datatype)
-              :valid-time valid-time
-              :variable (:variable datatype)
-              :lat-min (latitude (last locations))
-              :lat-max (latitude (first locations))
-              :lat-size height
-              :lat-step lat-step
-              :lon-min (longitude (first locations))
-              :lon-max (longitude (last locations))
-              :lon-size width
-              :lon-step lon-step}))))
+(defn- read-xy-data [datatype valid-time & [z-index]]  
+  (. (:service datatype) readYXData (time-index datatype valid-time) (or z-index 0)))
+
+(defmulti read-seq
+  "Read the datatype as a sequence."
+  (fn [datatype & options]
+    (class datatype)))
+
+(defmethod read-seq :default [datatype & options]
+  (let [options (apply hash-map options) valid-time (or (:valid-time options) (first (valid-times datatype)))]
+    (with-meta (seq (. (read-xy-data datatype valid-time (:z-index options)) copyTo1DJavaArray))
+      (merge (axis datatype) {:description (description datatype) :valid-time valid-time :variable (:variable datatype) }))))
 
 ;; (defn read-matrix [datatype valid-time location & options]
 ;;   (let [sequence (apply read-seq datatype valid-time location options)]
@@ -188,6 +180,7 @@
 ;;        :lon-step (:lon-step datatype)})))
 
 (defmulti read-matrix
+  "Read the datatype as a matrix."
   (fn [datatype & options]
     (let [options (apply hash-map options)]
       (cond
@@ -239,26 +232,26 @@
        :lon-step (:lon-step datatype)})))
 
 
-(defmethod read-matrix ucar.nc2.dt.grid.GeoGrid [datatype & options]
-  (let [options (apply hash-map options)
-        valid-time (or (:valid-time options) (first (valid-times datatype)))
-        location (:location options)
-        width (int (or (:width options) (:lon-size datatype)))
-        height (int (or (:height options) (:lat-size datatype)))
-        time-index (int (time-index datatype valid-time))
-        z-index (int (or (:z-index options) 0))]
-    (with-meta (.viewRowFlip (matrix (seq (. (. (:service datatype) readYXData time-index z-index) copyTo1DJavaArray)) width))
-      {:description (description datatype)
-       :valid-time valid-time
-       :variable (:variable datatype)
-       :lat-min (:lat-min datatype)
-       :lat-max (:lat-max datatype)
-       :lat-size height
-       :lat-step (:lat-step datatype)
-       :lon-min (:lon-min datatype)
-       :lon-max (:lon-max datatype)
-       :lon-size width
-       :lon-step (:lon-step datatype)})))
+;; (defmethod read-matrix GeoGrid [datatype & options]
+;;   (let [options (apply hash-map options)
+;;         valid-time (or (:valid-time options) (first (valid-times datatype)))
+;;         location (:location options)
+;;         width (int (or ( options) (:lon-size datatype)))
+;;         height (int (or (:height options) (:lat-size datatype)))
+;;         time-index (int (time-index datatype valid-time))
+;;         z-index (int (or (:z-index options) 0))]
+;;     (with-meta (.viewRowFlip (matrix (seq (. (. datatype readYXData time-index z-index) copyTo1DJavaArray)) width))
+;;       {:description (description datatype)
+;;        :valid-time valid-time
+;;        :variable (:variable datatype)
+;;        :lat-min (:lat-min datatype)
+;;        :lat-max (:lat-max datatype)
+;;        :lat-size height
+;;        :lat-step (:lat-step datatype)
+;;        :lon-min (:lon-min datatype)
+;;        :lon-max (:lon-max datatype)
+;;        :lon-size width
+;;        :lon-step (:lon-step datatype)})))
 
 ;; (datatype-subset *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 5 :height 5)
 
