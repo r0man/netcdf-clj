@@ -148,9 +148,10 @@
   (if location
     (let [datatype (:datatype (meta matrix))
           {:keys [x y]} (location->index datatype location)
-          value (sel matrix y x)]
+          in-bounds (and (>= x 0) (>= y 0))
+          value (if in-bounds (sel matrix y x) Double/NaN)]
       (struct-map record
-        :actual-location (. (coord-system datatype) getLatLon x y)
+        :actual-location (if in-bounds (. (coord-system datatype) getLatLon x y))
         :requested-location location
         :unit (.getUnitsString (:service datatype))
         :valid-time (:valid-time (meta matrix))

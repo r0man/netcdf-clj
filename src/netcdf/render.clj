@@ -1,16 +1,22 @@
 (ns netcdf.render
   (:import java.awt.image.BufferedImage
+           java.io.File
+           javax.imageio.ImageIO           
            incanter.Matrix
            (java.awt Color Dimension)
            (java.awt.event KeyListener)
            (javax.swing JFrame JOptionPane JPanel))
-  (:use netcdf.datatype
+  (:use [clojure.contrib.seq-utils :only (flatten)]
+        netcdf.datatype
         netcdf.interpolation
         netcdf.location
+        netcdf.utils
         google.maps.static
         google.maps.projection
         incanter.core
         incanter.chrono))
+
+(def *render-options* {:center (make-location 0 0) :zoom 2 :width 512 :height 256})
 
 (defn create-panel [width height]
   (proxy [JPanel KeyListener] [] 
@@ -34,31 +40,6 @@
   ([] (create-display 360 180))
   ([width height] (configure-display (JFrame.) (create-panel width height))))
 
-(defn file-extension [filename]
-  (last (re-find #"\.(.[^.]+)$" filename)))
-
-(defn value->color [value]
-  (cond
-   (> value 7.0) (Color. 213 159 0)
-   (> value 6.5) (Color. 213 0 0)
-   (> value 6.0) (Color. 255 0 0)
-   (> value 5.5) (Color. 255 73 0)
-   (> value 5.0) (Color. 255 144 0)
-   (> value 4.5) (Color. 255 196 0)
-   (> value 4.0) (Color. 255 236 0)
-   (> value 3.5) (Color. 255 255 102)
-   (> value 3.0) (Color. 207 255 255)
-   (> value 2.5) (Color. 175 246 255)
-   (> value 2.0) (Color. 157 239 255)
-   (> value 1.5) (Color. 109 193 255)
-   (> value 1.0) (Color. 66 151 255)
-   (> value 0.5) (Color. 32 80 255)
-   (> value 0.0) (Color. 5 15 217)
-;   (> value 0.0) (Color. 152 178 203)   
-   ;; :else (Color. 153 179 204)
-   :else Color/black
-   ))
-
 (defn value->color [value]
   (cond
    (> value 10.5) (Color. 213 159 0)
@@ -75,12 +56,7 @@
    (> value 2.25) (Color. 109 193 255)
    (> value 1.5) (Color. 66 151 255)
    (> value 0.75) (Color. 32 80 255)
-   ;; (> value 0.5) (Color. 5 15 217)
-   ;; (> value 0.) (Color. 152 178 203)
-   :else (Color. 5 15 217)
-   ;; :else (Color. 153 179 204)
-   ;; :else Color/black
-   ))
+   :else (Color. 5 15 217)))
 
 (defn water-color? [color]
   (and
@@ -106,86 +82,64 @@
     (. graphics fillRect (.getX bounds) (.getY bounds) (.getWidth bounds) (.getHeight bounds))))
 
 (defn make-buffered-image [width height & [type]]  
-  (BufferedImage. width height (or type BufferedImage/TYPE_3BYTE_BGR)))
+  (BufferedImage. width height (or type BufferedImage/TYPE_INT_ARGB)))
+
+(defn locations [center width height zoom]
+  (let [center (if (map? center) center {:latitude (latitude center) :longitude (longitude center)})
+        origin (location->coords center zoom)
+        upper-left {:x (- (:x origin) (/ width 2)) :y (- (:y origin) (/ height 2))}
+        offsets (coord-delta center (coords->location upper-left zoom) zoom)]
+    (for [y (range 0 height) x (range 0 width)]
+      {:x x :y y :location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)})))
 
 (defn render-static-map
   "Renders a static Google Map in the graphics context and returns the
   map as a buffered image."
-  [component center & options]
-  (let [map (apply static-map-image center options)]
-    (. (.getGraphics component) drawImage map 0 0 nil)
-    map))
+  [graphics center & options]
+  (let [map (apply static-map-image {:latitude (latitude center) :longitude (longitude center)} options)]
+    (. graphics drawImage map 0 0 nil)))
 
-(defn render-datatype2 [component datatype valid-time center & options]
-  (let [graphics (.getGraphics component)
-        center {:latitude (latitude center) :longitude (longitude center)}
-        map (apply render-static-map component center options)
-        options (apply hash-map options)
-        reader-fn (or (:reader options) read-datapoint)
-        zoom (or (:zoom options) (:zoom *options*))
-        origin (location->coords center zoom)
-        upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
-        offsets (coord-delta center (coords->location upper-left zoom) zoom)]
-    (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
-      (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
-        (. graphics setColor
-           (if (water-color? (Color. (. map getRGB x y)))
-             (value->color (:value (reader-fn datatype valid-time location :nil 0)))
-             (Color. (. map getRGB x y))))
-        (. graphics fillRect x y 1 1)))))
+(defn render-datatype [graphics datatype & options]
+  (let [options (merge *render-options* (apply hash-map options))
+        center (:center options)
+        width (:width options)
+        height (:height options)
+        zoom (:zoom options)
+        map (static-map-image {:latitude (latitude center) :longitude (longitude center)} :width width :height height :zoom zoom)]
+    (doseq [{:keys [x y location]} (locations center width height zoom)]
+      (let [value (:value (read-datapoint datatype (make-location (:latitude location) (:longitude location))))]
+        (. graphics setColor (value->color value))
+        (if (water-color? (Color. (. map getRGB x y))) 
+          (. graphics fillRect x y 1 1))))))
 
-(defn read-datatype-image [datatype valid-time center & options]
-  (let [image (apply static-map-image center options)
-        center {:latitude (latitude center) :longitude (longitude center)}
-        graphics (.getGraphics image)
-        options (apply hash-map options)
-        reader-fn (or (:reader options) read-datapoint)
-        zoom (or (:zoom options) (:zoom *options*))
-        origin (location->coords center zoom)
-        upper-left {:x (- (:x origin) (/ (.getWidth image) 2)) :y (- (:y origin) (/ (.getHeight image) 2))}
-        offsets (coord-delta center (coords->location upper-left zoom) zoom)]
-    (doseq [y (range 0 (.getHeight image)) x (range 0 (.getWidth image))]
-      (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
-        (. graphics setColor
-           (if (water-color? (Color. (. image getRGB x y)))
-             (value->color (:value (reader-fn datatype valid-time location :nil 0)))
-             (Color. (. image getRGB x y))))
-        (. graphics fillRect x y 1 1)))
+(defn datatype-image
+  "Render the datatype into a new image."
+  [datatype & options]
+  (let [options (merge *render-options* (apply hash-map options))
+        image (make-buffered-image (:width options) (:height options))]
+    (apply render-datatype (.getGraphics image) datatype (flatten (seq options)))
     image))
 
-(defn save-datatype-image [filename datatype valid-time center & options]
-  (let [image (apply read-datatype-image datatype valid-time center options)]
-    (javax.imageio.ImageIO/write image (or (file-extension filename) "PNG") (java.io.File. filename))
-    image))
+(defn write-datatype-image
+  "Render the datatype and write the image to the target."
+  [target datatype & options]
+  (let [format (or (:format (apply hash-map options)) (file-extension target) "PNG")
+        image (apply datatype-image datatype options)]
+    (ImageIO/write image format target)
+    target))
 
-(defn save-datatype-images [directory datatype center & options]
-  (doseq [valid-time (valid-times datatype)]
-    (println valid-time)
-    (apply save-datatype-image
-           (str directory "/" (str-time valid-time :basic-date-time-no-ms) ".png")
-           datatype valid-time center options)))
+(defn save-datatype-image
+  "Render the datatype and save the image to filename."
+  [filename datatype & options]
+  (apply write-datatype-image (File. filename) datatype options)
+  filename)
 
-;; (save-datatype-image "/tmp/test.png" *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0))
-;; (save-datatype-images "/tmp" *nww3* (make-location 0 110)  :width 640 :height 480 :zoom 2)
+(defn save-datatype-images [directory datatype & options]
+  (for [valid-time (valid-times datatype)]
+    (let [filename (str directory "/" (str-time valid-time :basic-date-time-no-ms) ".png")
+          matrix (read-matrix datatype :valid-time valid-time)]
+      (apply save-datatype-image filename matrix options))))
 
-;; (display-formats)
-
-;; (defn render-datatype2 [graphics datatype valid-time center & options]
-;;   (let [map (apply render-static-map graphics center options)
-;;         options (apply hash-map options)
-;;         reader-fn (or (:reader options) read-datapoint)
-;;         zoom (or (:zoom options) (:zoom *options*))
-;;         origin (location->coords center zoom)
-;;         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
-;;         offsets (coord-delta center (coords->location upper-left zoom) zoom)
-;;         ]
-;;     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
-;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
-;;         (if (water-color? (Color. (. map getRGB x y)))
-;;           (let [data (reader-fn datatype valid-time location)]
-;;             (. graphics setColor (value->color (:value data)))
-;;             (. graphics fillRect x y 1 1)))))
-;;     map))
 
 (def *datatypes*
      (map #(open-datatype (apply make-datatype %))
@@ -198,170 +152,14 @@
             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
             )))
 
-(def *nww3* (nth *datatypes* 0))
-;; (def *display* (create-display 300 300))
-;; (def *data* (read-matrix *nww3* (first (valid-times *nww3*))))
-;; (count *data*)
-
-(defmulti render-datatype
-  (fn [component datatype & options]
-    (class datatype)))
-
-(def *render-options* {:latitude 0 :longitude 0 :zoom 0 :width 360 :height 180})
-
-;; (defmethod render-datatype Matrix [graphics datatype & options]
-;;   (let [options (merge *render-options* (apply hash-map options))
-        
-;;         reader-fn (or (:reader options) read-datapoint)
-;;         zoom (or (:zoom options) (:zoom *options*))
-;;         origin (location->coords center zoom)
-;;         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
-;;         offsets (coord-delta center (coords->location upper-left zoom) zoom)]
-;;     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
-;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
-;;         (. graphics setColor
-;;            (if (water-color? (Color. (. map getRGB x y)))
-;;              (value->color (:value (reader-fn datatype valid-time location :nil 0)))
-;;              (Color. (. map getRGB x y))))
-;;         (. graphics fillRect x y 1 1)))))
-
-
-
-;; ;; (clear *display*)
-;; (import ucar.nc2.dt.image.ImageDatasetFactory)
-;; (. (ImageDatasetFactory.) openDataset (:service *nww3*))
-
-;; (. (.getGraphics *display*) drawImage (. (ImageDatasetFactory.) openDataset (:service *nww3*)) 0 0 nil)
-
-;; (render-static-map *display* (make-location 0 110) :width 400 :height 200 :zoom 2)
-;; (render-datatype2 *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 3 :width 100 :height 100 :maptype "roadmap")
-;; (render-datatype2 *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 5 0) :zoom 1 :width 300 :height 300 :maptype "roadmap" :reader read-datapoint)
-
-;; (defmulti render-data 
-;;   (fn [component data]
-;;     (cond
-;;      (isa? (class data) incanter.Matrix) :matrix
-;;      (seq? data) :seq
-;;      (vector? data) :vector)))
-
-;; (defmethod render-data :matrix [component matrix]
-;;   (let [graphics (.getGraphics component)
-;;         width (:size (:longitude-axis (meta matrix)))
-;;         height (:size (:latitude-axis (meta matrix)))]     
-;;     (doseq [x (range width) y (range height) :let [value (sel matrix x y)] :when (not (.isNaN value))]
-;;       (. graphics setColor (value->color value))
-;;       (. graphics fillRect x (- (+ (* -1 y) height) 1) 1 1))))
-
-;; (defmethod render-data :seq [component sequence]
-;;   (render-data component (with-meta (apply vector sequence) (meta sequence))))
-
-;; (defmethod render-data :vector [component vector]
-;;   (let [graphics (.getGraphics component)
-;;         width (:size (:longitude-axis (meta vector)))
-;;         height (:size (:latitude-axis (meta vector)))]     
-;;     (doseq [index (range (count vector))
-;;             :let [value (nth vector index)
-;;                   x (mod index width)
-;;                   y (/ index width)]
-;;             :when (not (.isNaN value))]      
-;;       (. graphics setColor (value->color value))
-;;       (. graphics fillRect x (+ (* -1 y) height) 1 1))))
-
-;; (defn render-datatype [component datatype]
-;;   (render-data component (read-seq datatype (first (valid-times datatype)))))
-
-;; (defn render-datatypes [component & [datatypes]]
-;;   (doseq [datatype datatypes] (render-datatype component datatype)))
-
-
-
-
-;; (defn render-map [graphics center valid-time & options]
-;;   (let [map (apply static-map-image center options)
-;;         options (apply hash-map options)
-;;         zoom (or (:zoom options) (:zoom *options*))
-;;         origin (location->coords center zoom)
-;;         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
-;;         offsets (coord-delta center (coords->location upper-left zoom) zoom)
-;;         ]
-;;     (. graphics drawImage map 0 0 nil)
-;;     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
-;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
-;;         (if (water-color? (Color. (. map getRGB x y)))
-;;           (let [data (read-datapoint *datatype* valid-time location)]
-;;             (. graphics setColor (value->color (:value data)))
-;;             (. graphics fillRect x y 1 1)))))
-;;     map))
-
-;; (render-map (.getGraphics *display*) {:latitude 50 :longitude 0} (nth (valid-times *datatype*) 5) :zoom 1 :width 500 :height 400 :maptype "terrain")
-
-;; (defn render-image [center valid-time & options]
-;;   (let [image (apply static-map-image center options)
-;;         graphics (.getGraphics image)
-;;         options (apply hash-map options)
-;;         zoom (or (:zoom options) (:zoom *options*))
-;;         origin (location->coords center zoom)
-;;         upper-left {:x (- (:x origin) (/ (.getWidth image) 2)) :y (- (:y origin) (/ (.getHeight image) 2))}
-;;         offsets (coord-delta center (coords->location upper-left zoom) zoom)
-;;         ]
-;;     (doseq [y (range 0 (.getHeight image)) x (range 0 (.getWidth image))]
-;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
-;;         (if (water-color? (Color. (. image getRGB x y)))
-;;           (let [data (read-datapoint *datatype* valid-time location)]
-;;             (. graphics setColor (value->color (:value data)))
-;;             (. graphics fillRect x y 1 1)))))
-;;     image))
-
-
-
-;; (render-datatype (.getGraphics *display*) *datatype* (make-location 0 0) (nth (valid-times *datatype*) 5) :zoom 2 :width 500 :height 250 :maptype "roadmap")
-;; (render-datatype (.getGraphics *display*) *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0))
+;; (def *nww3* (nth *datatypes* 0))
+;; (def *matrix* (read-matrix *nww3*))
 
 
 ;; (clear *display*)
-;; (render-map (.getGraphics *display*) (make-location 0 0) :width 500 :height 250)
+;; (render-static-map (.getGraphics *display*) (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getWidth *display*))
+;; (render-datatype (.getGraphics *display*) *matrix* :center (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getWidth *display*))
 
+;; (save-datatype-image "/tmp/test.png" *matrix* :zoom 2 :center (make-location 0 100) :width 10 :height 10)
+;; (save-datatype-images "/tmp" *nww3* :zoom 2 :center (make-location 0 100) :width 1 :height 1)
 
-;; (def *display* (create-display 500 250))
-;; (clear *display*)
-;; (render-map (.getGraphics *display*) {:latitude 0 :longitude 0} (nth (valid-times *datatype*) 5)
-;;             :zoom 2 :width 500 :height 250 :maptype "roadmap")
-
-;; (render-datatype *display* *datatype*)
-;; ;; (*datatype*)
-
-;; (def *display* (create-display 500 300))
-;; (clear *display*)
-;; (time (render-datatype *display* *datatype*))
-;; (clear *display*)
-;; (render-data *display* (read-matrix *datatype* (first (valid-times *datatype*))))
-;; (render-data *display* (read-seq *datatype* (first (valid-times *datatype*))))
-
-;; (interpolate-bilinear *datatype* (first (valid-times *datatype*)) (make-location 0 0))
-
-;; (take 5 (render-map *display* {:latitude 0 :longitude 0} :zoom 2 :width 200 :height 100))
-;; (nth (render-map *display* {:latitude 0 :longitude 0} :zoom 2 :width 360 :height 180) 359)
-;; (nth (render-map *display* {:latitude 0 :longitude 0} :zoom 2 :width 360 :height 180) 1)
-
-;; (x-coord-delta -180 180 0)
-;; (longitude-delta -180 180 0)
-;; (latitude-delta -180 180 0)
-
-
-;; (def *map* (static-map-image (make-location 0 0) :width 500 :height 400 :zoom 2))
-;; (. (.getGraphics *display*) drawImage *map* 0 0 nil)
-;; (. (.getGraphics *display*) drawImage (remove-water *map*) 0 0 nil)
-
-;; (def *data* (read-datatype *datatype* (first (valid-times *datatype*))))
-
-;; (time (render-datatypes *display* *datatypes*))
-
-;; (defn remove-water [source]
-;;   (let [target (make-buffered-image (.getWidth source) (.getHeight source))
-;;         graphics (.getGraphics target)]
-;;     (. graphics drawImage source 0 0 nil)
-;;     (. graphics setColor Color/black)
-;;     (doseq [x (range 0 (.getWidth source)) y (range 0 (.getHeight source))]
-;;       (if (= (Color. (. target getRGB x y)) (Color. 153 179 204))
-;;         (. graphics fillRect x y 1 1)))
-;;     target))

@@ -1,5 +1,11 @@
 (ns netcdf.test.utils
+  (:import java.io.File)
   (:use clojure.test netcdf.utils))
+
+(deftest test-file-extension
+  (is (nil? (file-extension "filename")))
+  (is (= (file-extension "test.png") "png"))
+  (is (= (file-extension (File. "test.png")) "png")))
 
 (deftest test-with-meta+
   (let [obj [1 2] m {:key "val"}]
