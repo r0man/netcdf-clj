@@ -74,17 +74,8 @@
     (is (seq? sequence))
     (is (= (count sequence) 45216))
     (let [m (meta sequence)]
-      (is (= (:description m) (description datatype)))
-      (is (= (:valid-time m) valid-time))
-      (is (= (:variable m) (:variable datatype)))
-      (is (= (:lat-max m) 78))
-      (is (= (:lat-min m) -78))
-      (is (= (:lat-size m) 157))
-      (is (= (:lat-step m) (:lat-step datatype)))
-      (is (= (:lon-max m) 358.75))
-      (is (= (:lon-min m) 0))
-      (is (= (:lon-size m) 288))
-      (is (= (:lon-step m) (:lon-step datatype))))))
+      (is (= (:datatype m) datatype))
+      (is (= (:valid-time m) valid-time)))))
 
 (deftest test-read-matrix
   (let [datatype (open-example-datatype)
@@ -139,22 +130,13 @@
 (deftest test-read-matrix
   (let [datatype (open-example-datatype)
         matrix (read-matrix datatype)]
-    ;; (println (sel matrix :rows (range 5) :cols (range 5)))
+    ;; (println (sel matrix :rows (range 15) :cols (range 15)))
     (is (matrix? matrix))
     (is (= (count matrix) 157))
     (is (every? #(= % 288) (map count matrix)))    
     (let [m (meta matrix)]
-      (is (= (:description m) (description datatype)))
-      (is (= (:valid-time m) (first (valid-times datatype))))
-      (is (= (:variable m) (:variable datatype)))
-      (is (= (:lat-max m) 78))
-      (is (= (:lat-min m) -78))
-      (is (= (:lat-size m) 157))
-      (is (= (:lat-step m) (:lat-step datatype)))
-      (is (= (:lon-max m) 358.75))
-      (is (= (:lon-min m) 0))
-      (is (= (:lon-size m) 288))
-      (is (= (:lon-step m) (:lon-step datatype))))))
+      (is (= (:datatype m) datatype))
+      (is (= (:valid-time m) (first (valid-times datatype)))))))
 
 (deftest test-read-at-location-with-datatype
   (let [datatype (open-example-datatype)
@@ -179,19 +161,20 @@
 
 (deftest test-read-at-location-with-matrix
   (let [datatype (open-example-datatype)
+        matrix (read-matrix datatype)
         valid-time (first (valid-times datatype))]
-    (let [data (read-at-location datatype (make-location 0 0) :valid-time valid-time)]
-      (is (location? (:actual-location data)))
-      (is (= (:requested-location data) (make-location 0 0)))
+    (let [data (read-at-location matrix (make-location 75 0) :valid-time valid-time)]
+      (is (= (:actual-location data) (make-location 75 0)))
+      (is (= (:requested-location data) (make-location 75 0)))
       (is (= (:valid-time data) valid-time))
       (is (= (:variable data) *variable*)))
-    (let [data (read-at-location datatype (make-location 78 0) :valid-time valid-time)]
+    (let [data (read-at-location matrix (make-location 78 0) :valid-time valid-time)]
       (is (location? (:actual-location data)))
       (is (= (:requested-location data) (make-location 78 0)))
       (is (= (:valid-time data) valid-time))
       (is (= (:variable data) *variable*))
       (is (.isNaN (:value data))))
-    (let [data (read-at-location datatype (make-location 78 0) :valid-time valid-time :nil -999)]
+    (let [data (read-at-location matrix (make-location 78 0) :valid-time valid-time :nil -999)]
       (is (location? (:actual-location data)))
       (is (= (:requested-location data) (make-location 78 0)))
       (is (= (:valid-time data) valid-time))
@@ -240,4 +223,15 @@
       (is (= (:lon-min subset) 0))
       (is (= (:lon-max subset) 1.25))
       (is (= (:lon-size subset) 2)))))
+
+(deftest test-location->index
+  (let [datatype (open-example-datatype)]
+    (are [latitude longitude x y]
+      (is (= (location->index datatype (make-location latitude longitude)) {:x x :y y}))
+      0 0 0 78
+      78 -180 144 156
+      78 180 144 156
+      78 179 143 156
+      -78 180 144 0
+      -78 179 143 0)))
 

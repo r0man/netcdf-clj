@@ -1,10 +1,9 @@
 (ns netcdf.datatype
   (:import (ucar.nc2.dt.grid GeoGrid GridDataset GridAsPointDataset)
+           (ucar.unidata.geoloc LatLonPointImpl LatLonRect ProjectionPointImpl)
            clojure.lang.PersistentStructMap
            incanter.Matrix
-           ucar.ma2.Range
-           ucar.unidata.geoloc.LatLonPointImpl
-           ucar.unidata.geoloc.LatLonRect)
+           ucar.ma2.Range)
   (:use [clojure.contrib.math :only (ceil floor)]
         [clojure.contrib.repl-utils :only (show)]
         clojure.contrib.profile
@@ -13,45 +12,53 @@
 (defstruct datatype :dataset-uri :variable :service)
 (defstruct record :actual-location :distance :unit :valid-time :value :variable)
 
+(defn coord-system
+  "Returns the coordinate system of the datatype."
+  [datatype] (.. (or (:service datatype) datatype) getCoordinateSystem))
+
 (defn bounding-box
   "Returns the bounding box of the datatype."
+  [datatype] (. (coord-system datatype) getLatLonBoundingBox))
+
+(defn description
+  "Returns the description of the datatype."
+  [datatype] (.. (or (:service datatype) datatype) getVariable getDescription))
+
+(defn latitude-axis
+  "Returns the latitude axis of the datatype."
   [datatype]
-  (.. (or (:service datatype) datatype) getCoordinateSystem getLatLonBoundingBox))
-
-(defn description [datatype]
-  (.. (or (:service datatype) datatype) getVariable getDescription))
-
-(defn latitude-axis [datatype]
-  (let [axis (.. (or (:service datatype) datatype) getCoordinateSystem getYHorizAxis) bounds (bounding-box datatype)]
+  (let [axis (. (coord-system datatype) getYHorizAxis) bounds (bounding-box datatype)]
     {:lat-min (.getLatMin bounds)
      :lat-max (.getLatMax bounds)
-     :lat-size (.getSize axis)
+     :lat-size (int (.getSize axis))
      :lat-step (/ (.getHeight bounds) (- (.getSize axis) 1))}))
 
-(defn longitude-axis GeoGrid [datatype]
-  (let [axis (.. (or (:service datatype) datatype) getCoordinateSystem getXHorizAxis) bounds (bounding-box datatype)]
+(defn longitude-axis
+  "Returns the longitude axis of the datatype."
+  [datatype]
+  (let [axis (. (coord-system datatype) getXHorizAxis) bounds (bounding-box datatype)]
     {:lon-min (.getLonMin bounds)
      :lon-max (.getLonMax bounds)
-     :lon-size (.getSize axis)
+     :lon-size (int (.getSize axis))
      :lon-step (/ (.getWidth bounds) (- (.getSize axis) 1))}))
+
+(defn axis
+  "Returns the latitude and longitude axis of the datatype."
+  [datatype] (merge (latitude-axis datatype) (longitude-axis datatype)))
 
 (defn time-index
   "Returns the time index for valid-time."
   [datatype valid-time]
-  (. (. (.getCoordinateSystem (or (:service datatype) datatype)) getTimeAxis1D) findTimeIndexFromDate valid-time))
-
-(defn axis [datatype]
-  (merge (latitude-axis datatype) (longitude-axis datatype)))
+  (. (. (coord-system datatype) getTimeAxis1D) findTimeIndexFromDate valid-time))
 
 (defn make-datatype
   "Make a NetCDF datatype."
   [dataset-uri variable]
   (struct datatype dataset-uri variable))
 
-(defn coord-system [datatype]
-  (.. (:service datatype) getCoordinateSystem))
-
-(defn projection [datatype]
+(defn projection
+  "Returns the projection of the datatype."
+  [datatype]
   (.getProjection (coord-system datatype)))
 
 (defmulti datatype-subset
@@ -89,6 +96,10 @@
   [datatype]
   (not (nil? (:service datatype))))
 
+(defn location->index [datatype location]
+  (let [[x y] (. (coord-system datatype) findXYindexFromLatLon (latitude location) (longitude location) nil)]
+    {:x x :y y}))
+
 (defn open-datatype
   "Open the NetCDF datatype."
   [datatype]
@@ -112,6 +123,9 @@
       (. dataset readData datatype valid-time (:altitude location) (latitude location) (longitude location))
       (. dataset readData datatype valid-time (latitude location) (longitude location)))))
 
+(defn- read-xy-data [datatype valid-time & [z-index]]  
+  (. (:service datatype) readYXData (time-index datatype valid-time) (or z-index 0)))
+
 (defmulti read-at-location
   "Read the NetCDF datatype for the given time and location."
   (fn [datatype location & options]
@@ -130,128 +144,71 @@
         :value (or (and (.isNaN (.dataValue data)) (:nil options)) (.dataValue data))
         :variable (:variable datatype)))))
 
-(defmethod read-at-location Matrix [datatype location & options]
+(defmethod read-at-location Matrix [matrix location & options]
   (if location
-    (let [options (apply hash-map options)
-          row-index 0
-          column-index 0]
+    (let [datatype (:datatype (meta matrix))
+          {:keys [x y]} (location->index datatype location)
+          value (sel matrix y x)]
       (struct-map record
+        :actual-location (. (coord-system datatype) getLatLon x y)
         :requested-location location
-        :value (sel datatype row-index column-index)))))
+        :unit (.getUnitsString (:service datatype))
+        :valid-time (:valid-time (meta matrix))
+        :value (or (and (.isNaN value) (:nil (apply hash-map options))) value)
+        :variable (:variable datatype)))))
 
-(defn- read-xy-data [datatype valid-time & [z-index]]  
-  (. (:service datatype) readYXData (time-index datatype valid-time) (or z-index 0)))
-
-(defmulti read-seq
-  "Read the datatype as a sequence."
-  (fn [datatype & options]
-    (class datatype)))
-
-(defmethod read-seq :default [datatype & options]
-  (let [options (apply hash-map options) valid-time (or (:valid-time options) (first (valid-times datatype)))]
+(defn read-seq
+  "Read the whole datatype as a sequence."
+  [datatype & options]
+  (let [options (apply hash-map options)
+        valid-time (or (:valid-time options) (first (valid-times datatype)))]
     (with-meta (seq (. (read-xy-data datatype valid-time (:z-index options)) copyTo1DJavaArray))
-      (merge (axis datatype) {:description (description datatype) :valid-time valid-time :variable (:variable datatype) }))))
+      {:datatype datatype :valid-time valid-time})))
 
-;; (defn read-matrix [datatype valid-time location & options]
-;;   (let [sequence (apply read-seq datatype valid-time location options)]
-;;     (with-meta (matrix (map :value sequence) (:lon-size (meta sequence))) (meta sequence))))
+(defn read-matrix
+  "Read the whole datatype as a matrix."
+  [datatype & options]
+  (let [sequence (apply read-seq datatype options)]
+    (with-meta
+      (matrix sequence (:lon-size (:datatype (meta sequence))))
+      (meta sequence))))
 
-;; (defn read-matrix [datatype valid-time location & options]
-;;   (let [options (apply hash-map options)
-;;         width (or (:width options) 2)
-;;         height (or (:height options) 2)
-;;         time-index (time-index datatype valid-time)
-;;         bounds (LatLonRect. (LatLonPointImpl. (latitude location) (longitude location))
-;;                             (LatLonPointImpl. (- (latitude location) (* (- height 1) (:lat-step datatype)))
-;;                                               (+ (longitude location) (* (- width 1) (:lon-step datatype)))))
-;;         subset (. (:service datatype) subset (Range. time-index time-index) (Range. 0 0) bounds 1 1 1)
-;;         ]
-;;     (with-meta (.viewRowFlip (matrix (seq (. (. subset readVolumeData time-index) copyTo1DJavaArray)) width ))
-;;       {:description (description datatype)
-;;        :valid-time valid-time
-;;        :variable (:variable datatype)
-;;        :lat-min (.getLatMin bounds)
-;;        :lat-max (.getLatMax bounds)
-;;        :lat-size height
-;;        :lat-step (:lat-step datatype)
-;;        :lon-min (.getLonMin bounds)
-;;        :lon-max (.getLonMax bounds)
-;;        :lon-size width
-;;        :lon-step (:lon-step datatype)})))
+(defn datatype-index [matrix location]
+  (zipmap [:x :y] (. (coord-system datatype) findXYindexFromLatLon (latitude location) (longitude location) nil)))
 
-(defmulti read-matrix
-  "Read the datatype as a matrix."
-  (fn [datatype & options]
-    (let [options (apply hash-map options)]
-      (cond
-       (empty? options) :grid
-       (:location options) :location
-       :else :grid))))
+;; (defn latitude->index [matrix latitude]
+;;   (int (+ (/ longitude (:lon-step (meta matrix)))
+;;           (:lon-max (meta matrix)))))
 
-(defmethod read-matrix :grid [datatype & options]
-  (let [options (apply hash-map options)
-        valid-time (or (:valid-time options) (first (valid-times datatype)))
-        width (int (or (:width options) (:lon-size datatype)))
-        height (int (or (:height options) (:lat-size datatype)))
-        time-index (int (time-index datatype valid-time))
-        z-index (int (or (:z-index options) 0))]
-    (with-meta (.viewRowFlip (matrix (seq (. (. (:service datatype) readYXData time-index z-index) copyTo1DJavaArray)) width))
-      {:description (description datatype)
-       :valid-time valid-time
-       :variable (:variable datatype)
-       :lat-min (:lat-min datatype)
-       :lat-max (:lat-max datatype)
-       :lat-size height
-       :lat-step (:lat-step datatype)
-       :lon-min (:lon-min datatype)
-       :lon-max (:lon-max datatype)
-       :lon-size width
-       :lon-step (:lon-step datatype)})))
+;; (defn longitude->index [matrix location]
+;;   (int (+ (/ latitude (:lat-step (meta matrix)))
+;;           (:lat-max (meta matrix)))))
 
-;; (time (read-matrix *nww3* (first (valid-times *nww3*))))
+;; (defn location->index [matrix location]
+;;   {:x (longitude->index matrix (longitude location))
+;;    :y (latitude->index matrix (latitude location))})
 
-(defmethod read-matrix :location [datatype & options]
-  (let [options (apply hash-map options)
-        valid-time (or (:valid-time options) (first (valid-times datatype)))
-        location (:location options)
-        width (int (or (:width options) (:lon-size datatype)))
-        height (int (or (:height options) (:lat-size datatype)))
-        time-index (int (time-index datatype valid-time))
-        z-index (int (or (:z-index options) 0))]
-    (with-meta (.viewRowFlip (matrix (seq (. (. (:service datatype) readYXData time-index z-index) copyTo1DJavaArray)) width))
-      {:description (description datatype)
-       :valid-time valid-time
-       :variable (:variable datatype)
-       :lat-min (:lat-min datatype)
-       :lat-max (:lat-max datatype)
-       :lat-size height
-       :lat-step (:lat-step datatype)
-       :lon-min (:lon-min datatype)
-       :lon-max (:lon-max datatype)
-       :lon-size width
-       :lon-step (:lon-step datatype)})))
+;; (meta *matrix*)
+
+;; (matrix-index *matrix* (make-location 0 0))
+;; (matrix-index *matrix* (make-location 78 -180))
+;; (matrix-index *matrix* (make-location 78 180))
+;; (matrix-index *matrix* (make-location 78 179))
+;; (matrix-index *matrix* (make-location -78 180))
+;; (matrix-index *matrix* (make-location -78 179))
+;; (matrix-index *matrix* (make-location -78 -180))
 
 
-;; (defmethod read-matrix GeoGrid [datatype & options]
-;;   (let [options (apply hash-map options)
-;;         valid-time (or (:valid-time options) (first (valid-times datatype)))
-;;         location (:location options)
-;;         width (int (or ( options) (:lon-size datatype)))
-;;         height (int (or (:height options) (:lat-size datatype)))
-;;         time-index (int (time-index datatype valid-time))
-;;         z-index (int (or (:z-index options) 0))]
-;;     (with-meta (.viewRowFlip (matrix (seq (. (. datatype readYXData time-index z-index) copyTo1DJavaArray)) width))
-;;       {:description (description datatype)
-;;        :valid-time valid-time
-;;        :variable (:variable datatype)
-;;        :lat-min (:lat-min datatype)
-;;        :lat-max (:lat-max datatype)
-;;        :lat-size height
-;;        :lat-step (:lat-step datatype)
-;;        :lon-min (:lon-min datatype)
-;;        :lon-max (:lon-max datatype)
-;;        :lon-size width
-;;        :lon-step (:lon-step datatype)})))
+
+
+;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+;; (def *matrix* (read-matrix *nww3*))
+;; (read-at-location *nww3* (make-location 0 0))
+;; (read-at-location *matrix* (make-location 0 0))
+
+;; (matrix-index *nww3* (make-location 78 180))
+;; (matrix-index *nww3* (make-location 78 0))
+
 
 ;; (datatype-subset *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 5 :height 5)
 
