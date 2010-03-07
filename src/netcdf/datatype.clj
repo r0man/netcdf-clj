@@ -126,12 +126,12 @@
 (defn- read-xy-data [datatype valid-time & [z-index]]  
   (. (:service datatype) readYXData (time-index datatype valid-time) (or z-index 0)))
 
-(defmulti read-at-location
+(defmulti read-datapoint
   "Read the NetCDF datatype for the given time and location."
   (fn [datatype location & options]
     (class datatype)))
 
-(defmethod read-at-location PersistentStructMap [datatype location & options]
+(defmethod read-datapoint PersistentStructMap [datatype location & options]
   (if location
     (let [options (apply hash-map options)
           valid-time (or (:valid-time options) (first (valid-times datatype)))
@@ -144,7 +144,7 @@
         :value (or (and (.isNaN (.dataValue data)) (:nil options)) (.dataValue data))
         :variable (:variable datatype)))))
 
-(defmethod read-at-location Matrix [matrix location & options]
+(defmethod read-datapoint Matrix [matrix location & options]
   (if location
     (let [datatype (:datatype (meta matrix))
           {:keys [x y]} (location->index datatype location)
@@ -173,9 +173,6 @@
       (matrix sequence (:lon-size (:datatype (meta sequence))))
       (meta sequence))))
 
-(defn datatype-index [matrix location]
-  (zipmap [:x :y] (. (coord-system datatype) findXYindexFromLatLon (latitude location) (longitude location) nil)))
-
 ;; (defn latitude->index [matrix latitude]
 ;;   (int (+ (/ longitude (:lon-step (meta matrix)))
 ;;           (:lon-max (meta matrix)))))
@@ -203,8 +200,8 @@
 
 ;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 ;; (def *matrix* (read-matrix *nww3*))
-;; (read-at-location *nww3* (make-location 0 0))
-;; (read-at-location *matrix* (make-location 0 0))
+;; (read-datapoint *nww3* (make-location 0 0))
+;; (read-datapoint *matrix* (make-location 0 0))
 
 ;; (matrix-index *nww3* (make-location 78 180))
 ;; (matrix-index *nww3* (make-location 78 0))
@@ -262,30 +259,30 @@
 ;; (println (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0) :width 5))
 ;; (println (meta (read-matrix *nww3* (first (valid-times *nww3*)) (make-location 78 0))))
 
-;; (defn matrix-read-at-location [datatype valid-time location & [width height]]
+;; (defn matrix-read-datapoint [datatype valid-time location & [width height]]
 ;;   (let [width (or width 10) height (or height width)]    
 ;;     (matrix
 ;;      (for [latitude (reverse (range (latitude location) (+ (latitude location) height) (:step (latitude-axis datatype))))
 ;;            longitude (range (longitude location) (+ (longitude location) width) (:step (longitude-axis datatype)))]
-;;        (:value (read-at-location datatype valid-time (make-location latitude longitude))))
+;;        (:value (read-datapoint datatype valid-time (make-location latitude longitude))))
 ;;      width)))
 
-;; (defn matrix-read-at-location [datatype valid-time location & [width height]]
+;; (defn matrix-read-datapoint [datatype valid-time location & [width height]]
 ;;   (let [width (or width 10) height (or height width)]    
 ;;     (matrix
 ;;      (for [latitude (reverse (sample-latitude (latitude location) height (:step (latitude-axis datatype))))
 ;;            longitude (sample-longitude (longitude location) width (:step (longitude-axis datatype)))]
-;;        (:value (read-at-location datatype valid-time (make-location latitude longitude))))
+;;        (:value (read-datapoint datatype valid-time (make-location latitude longitude))))
 ;;      width)))
 
 
-;; (println (matrix-read-at-location *nww3* (first (valid-times *nww3*)) (make-location 78 0) 7))
+;; (println (matrix-read-datapoint *nww3* (first (valid-times *nww3*)) (make-location 78 0) 7))
 ;; (println (matrix-interpolate-bilinear *nww3* (first (valid-times *nww3*)) (make-location 78 0) 7))
 ;; (:value (interpolate-bilinear *nww3* (first (valid-times *nww3*)) (make-location 77 0)))
 
 ;; (defn matrix-read [datatype valid-time & options]
 ;;   (let [options (apply hash-map options)
-;;         read-fn (or (:read-fn options read-at-location))]))
+;;         read-fn (or (:read-fn options read-datapoint))]))
 
 ;; (def *formatter* (java.text.DecimalFormat. "#0.00"))
 
@@ -317,8 +314,8 @@
 
 ;; (:value (interpolate-bilinear *akw* (first (valid-times *akw*)) (make-location 76.9 0)))
 
-;; (:value (read-at-location *akw* (first (valid-times *akw*)) (make-location 78 0)))
-;; (:value (read-at-location *akw* (first (valid-times *akw*)) (make-location 77 0)))
+;; (:value (read-datapoint *akw* (first (valid-times *akw*)) (make-location 78 0)))
+;; (:value (read-datapoint *akw* (first (valid-times *akw*)) (make-location 77 0)))
 
 ;; (. (InterpolationBilinear.)
 ;;                   interpolate
@@ -372,7 +369,7 @@
 
 
   
-;;   (map #(read-at-location datatype valid-time %) (location-rect datatype location 2))
+;;   (map #(read-datapoint datatype valid-time %) (location-rect datatype location 2))
 ;; (location-rect *akw* {:latitude 0 :longitude 0} 3)
 
 
@@ -382,7 +379,7 @@
 
 ;; (defn read-range [datatype valid-time lat-range lon-range]
 ;;   (for [ latitude (reverse lat-range) longitude lon-range]
-;;     (read-at-location datatype valid-time {:latitude latitude :longitude longitude})))
+;;     (read-datapointyyyyyyyyyyyy datatype valid-time {:latitude latitude :longitude longitude})))
 
 ;; (into-array (map :value (read-range *akw* (first (valid-times *akw*)) (range 75 79 1) (range 0 5.0 1.25))))
 

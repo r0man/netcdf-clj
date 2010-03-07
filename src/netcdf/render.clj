@@ -121,7 +121,7 @@
         center {:latitude (latitude center) :longitude (longitude center)}
         map (apply render-static-map component center options)
         options (apply hash-map options)
-        reader-fn (or (:reader options) read-at-location)
+        reader-fn (or (:reader options) read-datapoint)
         zoom (or (:zoom options) (:zoom *options*))
         origin (location->coords center zoom)
         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
@@ -139,7 +139,7 @@
         center {:latitude (latitude center) :longitude (longitude center)}
         graphics (.getGraphics image)
         options (apply hash-map options)
-        reader-fn (or (:reader options) read-at-location)
+        reader-fn (or (:reader options) read-datapoint)
         zoom (or (:zoom options) (:zoom *options*))
         origin (location->coords center zoom)
         upper-left {:x (- (:x origin) (/ (.getWidth image) 2)) :y (- (:y origin) (/ (.getHeight image) 2))}
@@ -173,7 +173,7 @@
 ;; (defn render-datatype2 [graphics datatype valid-time center & options]
 ;;   (let [map (apply render-static-map graphics center options)
 ;;         options (apply hash-map options)
-;;         reader-fn (or (:reader options) read-at-location)
+;;         reader-fn (or (:reader options) read-datapoint)
 ;;         zoom (or (:zoom options) (:zoom *options*))
 ;;         origin (location->coords center zoom)
 ;;         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
@@ -212,7 +212,7 @@
 ;; (defmethod render-datatype Matrix [graphics datatype & options]
 ;;   (let [options (merge *render-options* (apply hash-map options))
         
-;;         reader-fn (or (:reader options) read-at-location)
+;;         reader-fn (or (:reader options) read-datapoint)
 ;;         zoom (or (:zoom options) (:zoom *options*))
 ;;         origin (location->coords center zoom)
 ;;         upper-left {:x (- (:x origin) (/ (.getWidth map) 2)) :y (- (:y origin) (/ (.getHeight map) 2))}
@@ -235,7 +235,7 @@
 
 ;; (render-static-map *display* (make-location 0 110) :width 400 :height 200 :zoom 2)
 ;; (render-datatype2 *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 0 0) :zoom 3 :width 100 :height 100 :maptype "roadmap")
-;; (render-datatype2 *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 5 0) :zoom 1 :width 300 :height 300 :maptype "roadmap" :reader read-at-location)
+;; (render-datatype2 *display* *nww3* (nth (valid-times *nww3*) 5) (make-location 5 0) :zoom 1 :width 300 :height 300 :maptype "roadmap" :reader read-datapoint)
 
 ;; (defmulti render-data 
 ;;   (fn [component data]
@@ -288,7 +288,7 @@
 ;;     (doseq [y (range 0 (.getHeight map)) x (range 0 (.getWidth map))]
 ;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
 ;;         (if (water-color? (Color. (. map getRGB x y)))
-;;           (let [data (read-at-location *datatype* valid-time location)]
+;;           (let [data (read-datapoint *datatype* valid-time location)]
 ;;             (. graphics setColor (value->color (:value data)))
 ;;             (. graphics fillRect x y 1 1)))))
 ;;     map))
@@ -307,7 +307,7 @@
 ;;     (doseq [y (range 0 (.getHeight image)) x (range 0 (.getWidth image))]
 ;;       (let [location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)]
 ;;         (if (water-color? (Color. (. image getRGB x y)))
-;;           (let [data (read-at-location *datatype* valid-time location)]
+;;           (let [data (read-datapoint *datatype* valid-time location)]
 ;;             (. graphics setColor (value->color (:value data)))
 ;;             (. graphics fillRect x y 1 1)))))
 ;;     image))

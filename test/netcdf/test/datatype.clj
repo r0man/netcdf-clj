@@ -138,43 +138,43 @@
       (is (= (:datatype m) datatype))
       (is (= (:valid-time m) (first (valid-times datatype)))))))
 
-(deftest test-read-at-location-with-datatype
+(deftest test-read-datapoint-with-datatype
   (let [datatype (open-example-datatype)
         valid-time (first (valid-times datatype))]
-    (let [data (read-at-location datatype (make-location 0 0) :valid-time valid-time)]
+    (let [data (read-datapoint datatype (make-location 0 0) :valid-time valid-time)]
       (is (location? (:actual-location data)))
       (is (= (:requested-location data) (make-location 0 0)))
       (is (= (:valid-time data) valid-time))
       (is (= (:variable data) *variable*)))
-    (let [data (read-at-location datatype (make-location 78 0) :valid-time valid-time)]
+    (let [data (read-datapoint datatype (make-location 78 0) :valid-time valid-time)]
       (is (location? (:actual-location data)))
       (is (= (:requested-location data) (make-location 78 0)))
       (is (= (:valid-time data) valid-time))
       (is (= (:variable data) *variable*))
       (is (.isNaN (:value data))))
-    (let [data (read-at-location datatype (make-location 78 0) :valid-time valid-time :nil -999)]
+    (let [data (read-datapoint datatype (make-location 78 0) :valid-time valid-time :nil -999)]
       (is (location? (:actual-location data)))
       (is (= (:requested-location data) (make-location 78 0)))
       (is (= (:valid-time data) valid-time))
       (is (= (:variable data) *variable*))
       (is (= (:value data) -999)))))
 
-(deftest test-read-at-location-with-matrix
+(deftest test-read-datapoint-with-matrix
   (let [datatype (open-example-datatype)
         matrix (read-matrix datatype)
         valid-time (first (valid-times datatype))]
-    (let [data (read-at-location matrix (make-location 75 0) :valid-time valid-time)]
+    (let [data (read-datapoint matrix (make-location 75 0) :valid-time valid-time)]
       (is (= (:actual-location data) (make-location 75 0)))
       (is (= (:requested-location data) (make-location 75 0)))
       (is (= (:valid-time data) valid-time))
       (is (= (:variable data) *variable*)))
-    (let [data (read-at-location matrix (make-location 78 0) :valid-time valid-time)]
+    (let [data (read-datapoint matrix (make-location 78 0) :valid-time valid-time)]
       (is (location? (:actual-location data)))
       (is (= (:requested-location data) (make-location 78 0)))
       (is (= (:valid-time data) valid-time))
       (is (= (:variable data) *variable*))
       (is (.isNaN (:value data))))
-    (let [data (read-at-location matrix (make-location 78 0) :valid-time valid-time :nil -999)]
+    (let [data (read-datapoint matrix (make-location 78 0) :valid-time valid-time :nil -999)]
       (is (location? (:actual-location data)))
       (is (= (:requested-location data) (make-location 78 0)))
       (is (= (:valid-time data) valid-time))
