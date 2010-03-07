@@ -127,7 +127,7 @@
   (. (:service datatype) readYXData (time-index datatype valid-time) (or z-index 0)))
 
 (defmulti read-datapoint
-  "Read the NetCDF datatype for the given time and location."
+  "Read the NetCDF datatype at the location."
   (fn [datatype location & options]
     (class datatype)))
 
@@ -148,15 +148,77 @@
   (if location
     (let [datatype (:datatype (meta matrix))
           {:keys [x y]} (location->index datatype location)
-          in-bounds (and (>= x 0) (>= y 0))
-          value (if in-bounds (sel matrix y x) Double/NaN)]
+          value (and (>= x 0) (>= y 0) (sel matrix y x))]
       (struct-map record
-        :actual-location (if in-bounds (. (coord-system datatype) getLatLon x y))
+        :actual-location (if value (. (coord-system datatype) getLatLon x y))
         :requested-location location
         :unit (.getUnitsString (:service datatype))
         :valid-time (:valid-time (meta matrix))
         :value (or (and (.isNaN value) (:nil (apply hash-map options))) value)
         :variable (:variable datatype)))))
+
+(defmulti interpolate-datapoint
+  "Interpolate the NetCDF datatype at the location."
+  (fn [datatype location & options]
+    (class datatype)))
+
+(defmethod interpolate-datapoint PersistentStructMap [datatype location & options])
+
+(defn find-xy-index [datatype location]
+  (seq (. (coord-system datatype) findXYindexFromLatLon (latitude location) (longitude location) nil)))
+
+(defn sample-location [datatype location]
+  (let [[x y] (find-xy-index datatype location)]
+    (. (coord-system datatype) getLatLon x y)))
+
+ (sample-location *nww3* (make-location 78.1 0))
+(.getY (sample-location *nww3* (make-location 78.1 0)))
+
+(defn location-sample [datatype location width height]
+  (let [central-sample (sample-location datatype location)]
+    (with-meta
+      (for [latitude
+            (range
+             (- (latitude central-sample) (* (- height 1) (:lat-step datatype)))
+             (+ (latitude central-sample) (:lat-step datatype))
+             (:lat-step datatype))
+            longitude
+            (range
+             (longitude central-sample)
+             (+ (longitude central-sample) (* (- width 0) (:lon-step datatype)))
+             (:lon-step datatype))]
+        [latitude longitude])
+      {:central-sample central-sample})))
+
+(defn interpolation-sample [datatype location width height]
+  (let [locations (location-sample (:datatype (meta datatype)) location width height)
+        central-sample (:central-sample (meta locations))]
+    (with-meta
+      locations
+      {:x-fract 0 :y-fract 0})))
+
+;; (:lon-step (:datatype (meta *matrix*)))
+;; (location-sample *matrix* (make-location 77.5 0) 2 2)
+;; (interpolation-sample *matrix* (make-location 77.5 0) 2 2)
+;; (interpolation-sample *matrix* (make-location 78 0) 4 4)
+;; (meta *matrix*)
+(defmethod interpolate-datapoint Matrix [matrix location & options]
+  (if location
+    (let [datatype (:datatype (meta matrix))
+          {:keys [x y]} (location->index datatype location)]
+      (println x)
+      (println y)
+      (println (interpolation-sample matrix x y 4 4))
+      )))
+
+;; (println (sel *matrix* 154 1))
+;; (println (sel *matrix* :rows (range 153 155) :cols (range 1 3)))
+
+;; (interpolate-datapoint *matrix* (make-location 76 1.25))
+
+(def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+(def *matrix* (read-matrix *nww3*))
+
 
 (defn read-seq
   "Read the whole datatype as a sequence."

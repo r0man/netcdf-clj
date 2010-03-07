@@ -152,14 +152,14 @@
             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
             )))
 
-;; (def *nww3* (nth *datatypes* 0))
-;; (def *matrix* (read-matrix *nww3*))
-
+(def *nww3* (nth *datatypes* 0))
+(def *matrix* (read-matrix *nww3*))
+;; (def *display* (create-display (:width *render-options*) (:height *render-options*)))
 
 ;; (clear *display*)
-;; (render-static-map (.getGraphics *display*) (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getWidth *display*))
+;; ;; (render-static-map (.getGraphics *display*) (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getWidth *display*))
 ;; (render-datatype (.getGraphics *display*) *matrix* :center (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getWidth *display*))
 
 ;; (save-datatype-image "/tmp/test.png" *matrix* :zoom 2 :center (make-location 0 100) :width 10 :height 10)
-;; (save-datatype-images "/tmp" *nww3* :zoom 2 :center (make-location 0 100) :width 1 :height 1)
+;; (save-datatype-images "/tmp" *nww3* :zoom 2 :center (make-location 0 100) :width 512 :height 256)
 
