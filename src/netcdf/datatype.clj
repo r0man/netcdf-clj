@@ -6,6 +6,7 @@
            ucar.ma2.Range)
   (:use [clojure.contrib.math :only (ceil floor)]
         [clojure.contrib.repl-utils :only (show)]
+        [clojure.contrib.seq-utils :only (flatten)]
         clojure.contrib.profile
         netcdf.interpolation
         incanter.core netcdf.location netcdf.utils))
@@ -195,24 +196,26 @@
 
 ;; (sample-locations *nww3* (make-location 77.1 0.1) 2 2)
 
-(defn sample-locations [datatype location width height]
-  (let [datatype (or (:datatype (meta datatype)) datatype) north-west (central-sample datatype location)]    
+(defn sample-locations [datatype location & options]
+  (let [options (apply hash-map options)
+        datatype (or (:datatype (meta datatype)) datatype) north-west (central-sample datatype location)]    
     (reverse
-     (for [latitude (latitude-range (latitude north-west) height (:lat-step datatype))
-           longitude (reverse (longitude-range (longitude north-west) width (:lon-step datatype)))]
+     (for [latitude (latitude-range (latitude north-west) (or (:height options) 2) (:lat-step datatype))
+           longitude (reverse (longitude-range (longitude north-west) (or (:width options) 2) (:lon-step datatype)))]
        (make-location latitude longitude)))))
 
-(defn interpolation-sample [datatype location width height]
-  (map #(read-datapoint datatype %) (sample-locations datatype location width height)))
+(defn interpolation-sample [datatype location & options]
+  (map #(apply read-datapoint datatype % options) (apply sample-locations datatype location options)))
 
-(defn interpolation-sample-matrix [datatype location width height]
-  (matrix (map #(if (.isNaN %) 0 %) (map :value (interpolation-sample datatype location width height))) width))
+(defn interpolation-sample-matrix [datatype location & options]
+  (matrix (map #(if (.isNaN %) 0 %) (map :value (apply interpolation-sample datatype location options)))
+          (or (:width (apply hash-map options)) 2)))
 
 (defn interpolate-datapoint [datatype location & options]
   (if-let [central-sample (central-sample datatype location)]
     (let [options (apply hash-map options)
           datatype (or (:datatype (meta datatype)) datatype)
-          sample (interpolation-sample-matrix datatype central-sample 2 2)
+          sample (apply interpolation-sample-matrix datatype central-sample (flatten (seq options)))
           value (interpolate sample (x-fract datatype location) (y-fract datatype location))]
       (struct-map record
         :actual-location location
