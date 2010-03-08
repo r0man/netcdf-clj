@@ -7,6 +7,7 @@
   (:use [clojure.contrib.math :only (ceil floor)]
         [clojure.contrib.repl-utils :only (show)]
         clojure.contrib.profile
+        netcdf.interpolation
         incanter.core netcdf.location netcdf.utils))
 
 (defstruct datatype :dataset-uri :variable :service)
@@ -157,68 +158,83 @@
         :value (or (and (.isNaN value) (:nil (apply hash-map options))) value)
         :variable (:variable datatype)))))
 
-(defmulti interpolate-datapoint
-  "Interpolate the NetCDF datatype at the location."
-  (fn [datatype location & options]
-    (class datatype)))
+;; (defmulti interpolate-datapoint
+;;   "Interpolate the NetCDF datatype at the location."
+;;   (fn [datatype location & options]
+;;     (class datatype)))
 
-(defmethod interpolate-datapoint PersistentStructMap [datatype location & options])
+;; (defmethod interpolate-datapoint PersistentStructMap [datatype location & options])
 
 (defn find-xy-index [datatype location]
   (seq (. (coord-system datatype) findXYindexFromLatLon (latitude location) (longitude location) nil)))
 
-(defn sample-location [datatype location]
-  (let [[x y] (find-xy-index datatype location)]
-    (. (coord-system datatype) getLatLon x y)))
+(defn central-sample [datatype location]
+  (let [datatype (or (:datatype (meta datatype)) datatype)
+        lat-step (:lat-step datatype)
+        lon-step (:lon-step datatype)]
+    (make-location
+     (* lat-step (ceil (/ (latitude location) lat-step)))
+     (* lon-step (floor (/ (longitude location) lon-step))))))
 
- (sample-location *nww3* (make-location 78.1 0))
-(.getY (sample-location *nww3* (make-location 78.1 0)))
+(defn x-fract [datatype location]
+  (let [datatype (or (:datatype (meta datatype)) datatype)]    
+    (/ (- (longitude location) (longitude (central-sample datatype location))) (:lon-step datatype))))
 
-(defn location-sample [datatype location width height]
-  (let [central-sample (sample-location datatype location)]
-    (with-meta
-      (for [latitude
-            (range
-             (- (latitude central-sample) (* (- height 1) (:lat-step datatype)))
-             (+ (latitude central-sample) (:lat-step datatype))
-             (:lat-step datatype))
-            longitude
-            (range
-             (longitude central-sample)
-             (+ (longitude central-sample) (* (- width 0) (:lon-step datatype)))
-             (:lon-step datatype))]
-        [latitude longitude])
-      {:central-sample central-sample})))
+(defn y-fract [datatype location]
+  (let [datatype (or (:datatype (meta datatype)) datatype)]    
+    (/ (- (latitude (central-sample datatype location)) (latitude location))
+       (:lat-step datatype))))
+
+;; (interpolate-datapoint *matrix* (make-location 75.9 0))
+;; (central-sample *matrix* (make-location 75.9 0.2))
+
+;; (central-sample *nww3* (make-location 78 0.75))
+;; (x-fract *nww3* (make-location 78 1.24))
+;; (y-fract *nww3* (make-location 77.9 0.1))
+;; (x-fract *nww3* (make-location 78 1))
+
+;; (sample-locations *nww3* (make-location 77.1 0.1) 2 2)
+
+(defn sample-locations [datatype location width height]
+  (let [datatype (or (:datatype (meta datatype)) datatype) north-west (central-sample datatype location)]    
+    (reverse
+     (for [latitude (latitude-range (latitude north-west) height (:lat-step datatype))
+           longitude (reverse (longitude-range (longitude north-west) width (:lon-step datatype)))]
+       (make-location latitude longitude)))))
 
 (defn interpolation-sample [datatype location width height]
-  (let [locations (location-sample (:datatype (meta datatype)) location width height)
-        central-sample (:central-sample (meta locations))]
-    (with-meta
-      locations
-      {:x-fract 0 :y-fract 0})))
+  (map #(read-datapoint datatype %) (sample-locations datatype location width height)))
 
-;; (:lon-step (:datatype (meta *matrix*)))
-;; (location-sample *matrix* (make-location 77.5 0) 2 2)
+(defn interpolation-sample-matrix [datatype location width height]
+  (matrix (map #(if (.isNaN %) 0 %) (map :value (interpolation-sample datatype location width height))) width))
+
+(defn interpolate-datapoint [datatype location & options]
+  (if-let [central-sample (central-sample datatype location)]
+    (do
+      ;; (println (interpolation-sample-matrix datatype central-sample 2 2))
+      ;; (println (x-fract datatype location))
+      ;; (println (y-fract datatype location))      
+      (interpolate
+       (interpolation-sample-matrix datatype central-sample 2 2)
+       (x-fract datatype location)
+       (y-fract datatype location)))))
+
+;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+;; (def *matrix* (read-matrix *nww3*))
+
+;; (println (sample-locations *nww3* (make-location 77.5 0) 2 2))
+
+;; (sample-longitude-range 0 1.25 2)
+;; (sample-latitude-range 78 1 2)
+;; (interpolation-sample *matrix* (make-location 78 0) 2 2)
+
+;; ;; (:lon-step (:datatype (meta *matrix*)))
 ;; (interpolation-sample *matrix* (make-location 77.5 0) 2 2)
-;; (interpolation-sample *matrix* (make-location 78 0) 4 4)
+
 ;; (meta *matrix*)
-(defmethod interpolate-datapoint Matrix [matrix location & options]
-  (if location
-    (let [datatype (:datatype (meta matrix))
-          {:keys [x y]} (location->index datatype location)]
-      (println x)
-      (println y)
-      (println (interpolation-sample matrix x y 4 4))
-      )))
 
 ;; (println (sel *matrix* 154 1))
 ;; (println (sel *matrix* :rows (range 153 155) :cols (range 1 3)))
-
-;; (interpolate-datapoint *matrix* (make-location 76 1.25))
-
-(def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
-(def *matrix* (read-matrix *nww3*))
-
 
 (defn read-seq
   "Read the whole datatype as a sequence."

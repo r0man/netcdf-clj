@@ -107,9 +107,9 @@
         zoom (:zoom options)
         map (static-map-image {:latitude (latitude center) :longitude (longitude center)} :width width :height height :zoom zoom)]
     (doseq [{:keys [x y location]} (locations center width height zoom)]
-      (let [value (:value (read-datapoint datatype (make-location (:latitude location) (:longitude location))))]
-        (. graphics setColor (value->color value))
-        (if (water-color? (Color. (. map getRGB x y))) 
+      (if (water-color? (Color. (. map getRGB x y))) 
+        (let [value (interpolate-datapoint datatype (make-location (:latitude location) (:longitude location)))]
+          (. graphics setColor (value->color value))         
           (. graphics fillRect x y 1 1))))))
 
 (defn datatype-image
@@ -140,7 +140,6 @@
           matrix (read-matrix datatype :valid-time valid-time)]
       (apply save-datatype-image filename matrix options))))
 
-
 (def *datatypes*
      (map #(open-datatype (apply make-datatype %))
           '(
@@ -154,11 +153,11 @@
 
 (def *nww3* (nth *datatypes* 0))
 (def *matrix* (read-matrix *nww3*))
-;; (def *display* (create-display (:width *render-options*) (:height *render-options*)))
+(def *display* (create-display (:width *render-options*) (:height *render-options*)))
 
 ;; (clear *display*)
-;; ;; (render-static-map (.getGraphics *display*) (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getWidth *display*))
-;; (render-datatype (.getGraphics *display*) *matrix* :center (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getWidth *display*))
+;; (render-static-map (.getGraphics *display*) (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getHeight *display*))
+;; (time (render-datatype (.getGraphics *display*) *matrix* :center (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getHeight *display*)))
 
 ;; (save-datatype-image "/tmp/test.png" *matrix* :zoom 2 :center (make-location 0 100) :width 10 :height 10)
 ;; (save-datatype-images "/tmp" *nww3* :zoom 2 :center (make-location 0 100) :width 512 :height 256)

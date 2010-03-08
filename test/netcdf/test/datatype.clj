@@ -237,3 +237,20 @@
       90 0 0 -1
       -90 0 0 -1)))
 
+(deftest test-sample-locations-2x2
+  (let [datatype (open-example-datatype)]
+    (is (= (sample-locations datatype (make-location 78 0) 2 2)
+           (map #(apply make-location %)
+                [[78.0 0.0] [78.0 1.25]
+                 [77.0 0.0] [77.0 1.25]])))))
+
+;; (deftest test-sample-locations-4x4
+;;   (let [datatype (open-example-datatype)]
+;;     (is (= (sample-locations datatype (make-location 78 0) 4 4)
+;;            (map #(apply make-location %)
+;;                 [[78.0 0.0] [78.0 1.25] [77.0 0.0] [77.0 1.25]
+;;                  [78.0 0.0] [78.0 1.25] [77.0 0.0] [77.0 1.25]
+;;                  [78.0 0.0] [78.0 1.25] [77.0 0.0] [77.0 1.25]
+;;                  [78.0 0.0] [78.0 1.25] [77.0 0.0] [77.0 1.25]
+;;                  ])))))
+
