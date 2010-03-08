@@ -140,20 +140,20 @@
           matrix (read-matrix datatype :valid-time valid-time)]
       (apply save-datatype-image filename matrix options))))
 
-(def *datatypes*
-     (map #(open-datatype (apply make-datatype %))
-          '(
-            ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
-            ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
-            )))
+;; (def *datatypes*
+;;      (map #(open-datatype (apply make-datatype %))
+;;           '(
+;;             ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
+;;             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
+;;             )))
 
-(def *nww3* (nth *datatypes* 0))
-(def *matrix* (read-matrix *nww3*))
-(def *display* (create-display (:width *render-options*) (:height *render-options*)))
+;; (def *nww3* (nth *datatypes* 0))
+;; (def *matrix* (read-matrix *nww3*))
+;; (def *display* (create-display (:width *render-options*) (:height *render-options*)))
 
 ;; (clear *display*)
 ;; (render-static-map (.getGraphics *display*) (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getHeight *display*))
