@@ -210,14 +210,17 @@
 
 (defn interpolate-datapoint [datatype location & options]
   (if-let [central-sample (central-sample datatype location)]
-    (do
-      ;; (println (interpolation-sample-matrix datatype central-sample 2 2))
-      ;; (println (x-fract datatype location))
-      ;; (println (y-fract datatype location))      
-      (interpolate
-       (interpolation-sample-matrix datatype central-sample 2 2)
-       (x-fract datatype location)
-       (y-fract datatype location)))))
+    (let [options (apply hash-map options)
+          datatype (or (:datatype (meta datatype)) datatype)
+          sample (interpolation-sample-matrix datatype central-sample 2 2)
+          value (interpolate sample (x-fract datatype location) (y-fract datatype location))]
+      (struct-map record
+        :actual-location location
+        :requested-location location
+        :unit (.getUnitsString (:service datatype))
+        :valid-time (or (:valid-time options) (:valid-time (meta datatype)))
+        :value (or (and (.isNaN value) (:nil options)) value)
+        :variable (:variable datatype)))))
 
 ;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 ;; (def *matrix* (read-matrix *nww3*))

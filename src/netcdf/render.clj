@@ -108,7 +108,7 @@
         map (static-map-image {:latitude (latitude center) :longitude (longitude center)} :width width :height height :zoom zoom)]
     (doseq [{:keys [x y location]} (locations center width height zoom)]
       (if (water-color? (Color. (. map getRGB x y))) 
-        (let [value (interpolate-datapoint datatype (make-location (:latitude location) (:longitude location)))]
+        (let [value (:value (interpolate-datapoint datatype (make-location (:latitude location) (:longitude location))))]
           (. graphics setColor (value->color value))         
           (. graphics fillRect x y 1 1))))))
 
@@ -140,16 +140,16 @@
           matrix (read-matrix datatype :valid-time valid-time)]
       (apply save-datatype-image filename matrix options))))
 
-;; (def *datatypes*
-;;      (map #(open-datatype (apply make-datatype %))
-;;           '(
-;;             ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
-;;             )))
+(def *datatypes*
+     (map #(open-datatype (apply make-datatype %))
+          '(
+            ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
+            )))
 
 ;; (def *nww3* (nth *datatypes* 0))
 ;; (def *matrix* (read-matrix *nww3*))
