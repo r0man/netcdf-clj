@@ -14,22 +14,38 @@
 (defn parse-longitude [str]
   (parse-double str))
 
-(defn make-location
-  "Make a location with the given latitude and longitude."
-  [latitude longitude]
+(defmulti make-location
+  "Make a location with the given latitude and longitude."  
+  (fn [& args]
+    (map class args)))
+
+(defmethod make-location [clojure.lang.PersistentArrayMap] [location]
+  (make-location (latitude location) (longitude location)))
+
+(defmethod make-location [String String] [latitude longitude]
   (LatLonPointImpl. (parse-latitude latitude) (parse-longitude longitude)))
 
+(defmethod make-location :default [latitude longitude]
+  (LatLonPointImpl. latitude longitude))
+
 (defn latitude [location]
-  (.getLatitude location))
+  (cond
+   (isa? (class location) LatLonPointImpl) (.getLatitude location)
+   :else (:latitude location)))
 
 (defn longitude [location]
-  (.getLongitude location))
+  (cond
+   (isa? (class location) LatLonPointImpl) (.getLongitude location)
+   :else (:longitude location)))
 
 (defn location? [location]
   (and location (latitude location) (longitude location) location))
 
 (defn location->array [location]
   [(latitude location) (longitude location)])
+
+(defn location->map [location]
+  {:latitude (latitude location) :longitude (longitude location)})
 
 (defn parse-location [lat-lon-str]
   (let [[latitude longitude] (re-split #",|;|\s+" lat-lon-str)]

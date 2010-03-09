@@ -9,6 +9,9 @@
   (let [location (make-location 52.523 13.411)]
     (is (= (latitude location) 52.523))
     (is (= (longitude location) 13.411)))
+  (let [location (make-location {:latitude 52.523 :longitude 13.411})]
+    (is (= (latitude location) 52.523))
+    (is (= (longitude location) 13.411)))  
   (let [location (make-location "52.523" "13.411")]
     (is (= (latitude location) 52.523))
     (is (= (longitude location) 13.411))))
@@ -145,3 +148,5 @@
   (is (= (location-rect (make-location 0 0) :width 2 :height 1)
          [(make-location 0 0) (make-location 0 1)])))
 
+(deftest test-location->map
+  (is (= (location->map (make-location 1 2)) {:latitude 1 :longitude 2})))
