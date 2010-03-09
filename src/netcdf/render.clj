@@ -11,6 +11,7 @@
         netcdf.interpolation
         netcdf.location
         netcdf.utils
+        clojure.contrib.profile
         google.maps.static
         google.maps.projection
         incanter.core
@@ -84,13 +85,11 @@
 (defn make-buffered-image [width height & [type]]  
   (BufferedImage. width height (or type BufferedImage/TYPE_INT_ARGB)))
 
-(defn locations [center width height zoom]
-  (let [center (if (map? center) center {:latitude (latitude center) :longitude (longitude center)})
-        origin (location->coords center zoom)
-        upper-left {:x (- (:x origin) (/ width 2)) :y (- (:y origin) (/ height 2))}
-        offsets (coord-delta center (coords->location upper-left zoom) zoom)]
-    (for [y (range 0 height) x (range 0 width)]
-      {:x x :y y :location (coords->location {:x (+ x (:x origin) (:x offsets)) :y (+ y (:y origin) (:y offsets))} zoom)})))
+(defn image-coords->location [center x y width height zoom]
+  (let [center-xy (location->coords (location->map center) zoom)]
+    (coords->location
+     {:x (+ x (:x center-xy) (/ width -2))
+      :y (+ y (:y center-xy) (/ height -2))} zoom)))
 
 (defn render-static-map
   "Renders a static Google Map in the graphics context and returns the
@@ -105,10 +104,10 @@
         width (:width options)
         height (:height options)
         zoom (:zoom options)
-        map (static-map-image {:latitude (latitude center) :longitude (longitude center)} :width width :height height :zoom zoom)]
-    (doseq [{:keys [x y location]} (locations center width height zoom)]
+        map (static-map-image (location->map center) :width width :height height :zoom zoom)]
+    (doseq [y (range 0 height) x (range 0 width)]
       (if (water-color? (Color. (. map getRGB x y))) 
-        (let [value (:value (interpolate-datapoint datatype (make-location (:latitude location) (:longitude location))))]
+        (let [value (:value (read-datapoint datatype (image-coords->location center x y width height zoom)))]
           (. graphics setColor (value->color value))         
           (. graphics fillRect x y 1 1))))))
 
@@ -140,16 +139,16 @@
           matrix (read-matrix datatype :valid-time valid-time)]
       (apply save-datatype-image filename matrix options))))
 
-;; (def *datatypes*
-;;      (map #(open-datatype (apply make-datatype %))
-;;           '(
-;;             ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
-;;             ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
-;;             )))
+(def *datatypes*
+     (map #(open-datatype (apply make-datatype %))
+          '(
+            ("/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/akw.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/enp.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/nah.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/nph.06.nc" "htsgwsfc")
+            ("/home/roman/.weather/20100215/wna.06.nc" "htsgwsfc")
+            )))
 
 ;; (def *nww3* (nth *datatypes* 0))
 ;; (def *matrix* (read-matrix *nww3*))
@@ -159,7 +158,11 @@
 
 ;; (clear *display*)
 ;; (render-static-map (.getGraphics *display*) (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getHeight *display*))
-;; (time (render-datatype (.getGraphics *display*) *matrix* :center (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getHeight *display*)))
+;; (time (render-datatype (.getGraphics *display*) *matrix*))
+;; (take 100 (render-datatype (.getGraphics *display*) *matrix*))
+
+ ;; (time (render-datatype (.getGraphics *display*) *matrix* :center (:center *render-options*) :zoom (:zoom *render-options*) :width (.getWidth *display*) :height (.getHeight *display*))))
+
 
 ;; (save-datatype-image "/tmp/test.png" *matrix* :zoom 2 :center (make-location 0 100) :width 10 :height 10)
 ;; (save-datatype-images "/tmp" *nww3* :zoom 2 :center (make-location 0 100) :width 512 :height 256)

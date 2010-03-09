@@ -30,3 +30,31 @@
 (deftest test-save-datatype-image
   (let [filename "/tmp/save-datatype-image.png"]
     (is (= (save-datatype-image filename *datatype* :width 20 :height 10) filename))))
+
+(deftest test-image-coords->location
+  (let [center {:latitude 0 :longitude 0}]
+    (are [width height zoom x y latitude longitude]
+      (is (= (image-coords->location center x y width height zoom) {:latitude latitude :longitude longitude}))
+      256 256 0 0 0 85.05112877980659 -180
+      256 256 0 1 0 85.05112877980659 -178.59375
+      256 256 0 128 0 85.05112877980659 0
+      256 256 0 256 0 85.05112877980659 -180
+      256 256 0 0 1 84.92832092949963 -180
+      256 256 0 0 128 0 -180
+      256 256 0 0 256 -85.05112877980659 -180
+      256 256 1 0 0 66.51326044311185 -90
+      256 256 1 1 0 66.51326044311185 -89.29687500000006
+      256 256 1 128 0 66.51326044311185 0
+      256 256 1 256 0 66.51326044311185 90
+      256 256 1 0 1 66.23145747862573 -90
+      256 256 1 0 128 0 -90
+      256 256 1 0 256 -66.51326044311185 -90
+
+      512 256 2 0 0 40.979898069620134 -90
+      512 256 2 512 0 40.979898069620134 90
+      512 256 2 256 128 0 0
+      512 256 2 0 256 -40.979898069620134 -90
+      512 256 2 512 256 -40.979898069620134 90
+)))
+
+
