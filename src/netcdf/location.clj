@@ -14,6 +14,16 @@
 (defn parse-longitude [str]
   (parse-double str))
 
+(defn latitude [location]
+  (cond
+   (isa? (class location) LatLonPointImpl) (.getLatitude location)
+   :else (:latitude location)))
+
+(defn longitude [location]
+  (cond
+   (isa? (class location) LatLonPointImpl) (.getLongitude location)
+   :else (:longitude location)))
+
 (defmulti make-location
   "Make a location with the given latitude and longitude."  
   (fn [& args]
@@ -27,16 +37,6 @@
 
 (defmethod make-location :default [latitude longitude]
   (LatLonPointImpl. latitude longitude))
-
-(defn latitude [location]
-  (cond
-   (isa? (class location) LatLonPointImpl) (.getLatitude location)
-   :else (:latitude location)))
-
-(defn longitude [location]
-  (cond
-   (isa? (class location) LatLonPointImpl) (.getLongitude location)
-   :else (:longitude location)))
 
 (defn location? [location]
   (and location (latitude location) (longitude location) location))
