@@ -9,36 +9,36 @@
      ~@body))
 
 (defmulti interpolate
-  (fn [matrix x-fract y-fract]
+  (fn [#^Matrix matrix #^Float x-fract #^Float y-fract]
     (keyword (str (ncol matrix) "x" (nrow matrix)))))
 
-(defmethod interpolate :2x2 [matrix x-fract y-fract]
+(defmethod interpolate :2x2 [#^Matrix matrix #^Float x-fract #^Float y-fract]
   (. *interpolation* interpolate
-     (double (sel matrix 0 0)) ; the central sample
-     (double (sel matrix 0 1)) ; the sample to the right of the central sample
-     (double (sel matrix 1 0)) ; the sample below the central sample
-     (double (sel matrix 1 1)) ; the sample below and to the right of the central sample
+     (sel matrix 0 0) ; the central sample
+     (sel matrix 0 1) ; the sample to the right of the central sample
+     (sel matrix 1 0) ; the sample below the central sample
+     (sel matrix 1 1) ; the sample below and to the right of the central sample
      (float x-fract)
      (float y-fract)))
 
-(defmethod interpolate :4x4 [matrix x-fract y-fract]
+(defmethod interpolate :4x4 [#^Matrix matrix #^Float x-fract #^Float y-fract]
   (. *interpolation* interpolate
-     (double (sel matrix 0 0)) ; the sample above and to the left of the central sample
-     (double (sel matrix 0 1)) ; the sample above the central sample
-     (double (sel matrix 0 2)) ; the sample above and one to the right of the central sample
-     (double (sel matrix 0 3)) ; the sample above and two to the right of the central sample
-     (double (sel matrix 1 0)) ; the sample to the left of the central sample 
-     (double (sel matrix 1 1)) ; the central sample
-     (double (sel matrix 1 2)) ; the sample to the right of the central sample
-     (double (sel matrix 1 3)) ; the sample two to the right of the central sample
-     (double (sel matrix 2 0)) ; the sample below and one to the left of the central sample
-     (double (sel matrix 2 1)) ; the sample below the central sample
-     (double (sel matrix 2 2)) ; the sample below and one to the right of the central sample
-     (double (sel matrix 2 3)) ; the sample below and two to the right of the central sample
-     (double (sel matrix 3 0)) ; the sample two below and one to the left of the central sample
-     (double (sel matrix 3 1)) ; the sample two below the central sample
-     (double (sel matrix 3 2)) ; the sample two below and one to the right of the central sample
-     (double (sel matrix 3 3)) ; the sample two below and two to the right of the central sample
+     (sel matrix 0 0) ; the sample above and to the left of the central sample
+     (sel matrix 0 1) ; the sample above the central sample
+     (sel matrix 0 2) ; the sample above and one to the right of the central sample
+     (sel matrix 0 3) ; the sample above and two to the right of the central sample
+     (sel matrix 1 0) ; the sample to the left of the central sample 
+     (sel matrix 1 1) ; the central sample
+     (sel matrix 1 2) ; the sample to the right of the central sample
+     (sel matrix 1 3) ; the sample two to the right of the central sample
+     (sel matrix 2 0) ; the sample below and one to the left of the central sample
+     (sel matrix 2 1) ; the sample below the central sample
+     (sel matrix 2 2) ; the sample below and one to the right of the central sample
+     (sel matrix 2 3) ; the sample below and two to the right of the central sample
+     (sel matrix 3 0) ; the sample two below and one to the left of the central sample
+     (sel matrix 3 1) ; the sample two below the central sample
+     (sel matrix 3 2) ; the sample two below and one to the right of the central sample
+     (sel matrix 3 3) ; the sample two below and two to the right of the central sample
      (float x-fract)
      (float y-fract)))
 
