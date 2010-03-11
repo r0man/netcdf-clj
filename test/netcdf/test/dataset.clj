@@ -8,19 +8,23 @@
 
 (deftest test-open-dataset
   (let [dataset (open-dataset *dataset-uri*)]
-    (is (= (class dataset) ucar.nc2.dataset.NetcdfDataset))))
+    (is (= (class dataset) ucar.nc2.dataset.NetcdfDataset))
+    (.close dataset)))
 
 (deftest test-open-dataset-with-remote
   (let [dataset (open-dataset *remote-uri*)]
-    (is (= (class dataset) ucar.nc2.dataset.NetcdfDataset))))
+    (is (= (class dataset) ucar.nc2.dataset.NetcdfDataset))
+    (.close dataset)))
 
 (deftest test-open-grid-dataset
   (let [dataset (open-grid-dataset *dataset-uri*)]
-    (is (= (class dataset) ucar.nc2.dt.grid.GridDataset))))
+    (is (= (class dataset) ucar.nc2.dt.grid.GridDataset))
+    (.close dataset)))
 
 (deftest test-open-grid-dataset-with-remote
   (let [dataset (open-grid-dataset *remote-uri*)]
-    (is (= (class dataset) ucar.nc2.dt.grid.GridDataset))))
+    (is (= (class dataset) ucar.nc2.dt.grid.GridDataset))
+    (.close dataset)))
 
 (deftest test-copy-dataset
   (let [target "/tmp/.copy-test-all.netcdf"]
@@ -38,11 +42,13 @@
 ;;     (is (= (.exists (java.io.File. target)) true))))
 
 (deftest test-datatypes
-  (let [datatypes (datatypes (open-grid-dataset *dataset-uri*))]
-    (is (> (count datatypes) 0))
-    (is (every? #(isa? (class %) ucar.nc2.dt.grid.GeoGrid) datatypes))))
+  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+    (let [datatypes (datatypes dataset)]
+      (is (> (count datatypes) 0))
+      (is (every? #(isa? (class %) ucar.nc2.dt.grid.GeoGrid) datatypes)))))
 
 (deftest test-valid-times
-  (let [valid-times (valid-times (open-grid-dataset *dataset-uri*))]
-    (is (> (count valid-times) 0))
-    (is (every? #(isa? (class %) java.util.Date) valid-times))))
+  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+    (let [valid-times (valid-times dataset)]
+      (is (> (count valid-times) 0))
+      (is (every? #(isa? (class %) java.util.Date) valid-times)))))
