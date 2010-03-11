@@ -24,15 +24,15 @@
 (deftest test-description
   (is (= (description (open-example-geo-grid)) "** surface sig height of wind waves and swell [m]")))
 
-(deftest test-latitude-axis
-  (let [axis (latitude-axis (open-example-geo-grid))]
+(deftest test-lat-axis
+  (let [axis (lat-axis (open-example-geo-grid))]
     (is (= (:lat-min axis) -78))
     (is (= (:lat-max axis) 78))
     (is (= (:lat-size axis) 157))
     (is (= (:lat-step axis) 1))))
 
-(deftest test-longitude-axis
-  (let [axis (longitude-axis (open-example-geo-grid))]
+(deftest test-lon-axis
+  (let [axis (lon-axis (open-example-geo-grid))]
     (is (= (:lon-min axis) 0))
     (is (= (:lon-max axis) 358.75))
     (is (= (:lon-size axis) 288))
@@ -44,7 +44,7 @@
 
 (deftest test-lat-lon-axis
   (let [geo-grid (open-example-geo-grid)]
-    (is (= (lat-lon-axis geo-grid) (merge (latitude-axis geo-grid) (longitude-axis geo-grid))))))
+    (is (= (lat-lon-axis geo-grid) (merge (lat-axis geo-grid) (lon-axis geo-grid))))))
 
 (deftest test-read-seq
   (let [geo-grid (open-example-geo-grid)
@@ -85,6 +85,32 @@
   (let [valid-times (valid-times (open-example-geo-grid))]
     (is (> (count valid-times) 0))
     (is (every? #(isa? (class %) java.util.Date) valid-times))))
+
+(deftest test-latitude->row
+  (let [matrix (read-matrix (open-example-geo-grid))]
+    (are [latitude row]
+      (is (= (latitude->row matrix latitude) row))
+      78 0
+      0 78
+      -78 156)))
+
+(deftest test-longitude->column
+  (let [matrix (read-matrix (open-example-geo-grid))]
+    (are [longitude column]
+      (is (= (longitude->column matrix longitude) column))
+      0 0
+      (:lon-step (meta matrix)) 1
+      90 72
+      180 144)))
+
+(deftest test-location->row-col
+  (let [matrix (read-matrix (open-example-geo-grid))]
+    (are [latitude longitude row column]
+      (is (= (location->row-col matrix (make-location latitude longitude)) [row column]))
+      78 0 0 0
+      0 0 78 0
+      -78 0 156 0
+      78 1.25 0 1)))
 
 ;; (deftest test-read-matrix
 ;;   (let [geo-grid (open-example-geo-grid)

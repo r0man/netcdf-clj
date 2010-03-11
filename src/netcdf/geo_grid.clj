@@ -1,6 +1,6 @@
 (ns netcdf.geo-grid
   (:import java.util.Date ucar.nc2.dt.grid.GeoGrid incanter.Matrix)
-  (:use incanter.core)
+  (:use incanter.core netcdf.location)
   (:require [netcdf.dataset :as dataset]))
 
 (defn coord-system
@@ -15,7 +15,7 @@
   "Returns the description of the geo grid."
   [#^GeoGrid geo-grid] (.. geo-grid getVariable getDescription))
 
-(defn latitude-axis
+(defn lat-axis
   "Returns the latitude axis of the geo grid."
   [#^GeoGrid geo-grid]
   (let [axis (. (coord-system geo-grid) getYHorizAxis) bounds (bounding-box geo-grid)]
@@ -24,7 +24,7 @@
      :lat-size (int (.getSize axis))
      :lat-step (/ (.getHeight bounds) (- (.getSize axis) 1))}))
 
-(defn longitude-axis
+(defn lon-axis
   "Returns the longitude axis of the geo grid."
   [#^GeoGrid geo-grid]
   (let [axis (. (coord-system geo-grid) getXHorizAxis) bounds (bounding-box geo-grid)]
@@ -35,7 +35,7 @@
 
 (defn lat-lon-axis
   "Returns the latitude and longitude axis of the geo grid."
-  [#^GeoGrid geo-grid] (merge (latitude-axis geo-grid) (longitude-axis geo-grid)))
+  [#^GeoGrid geo-grid] (merge (lat-axis geo-grid) (lon-axis geo-grid)))
 
 (defn open-geo-grid
   "Open the NetCDF geo grid."
@@ -70,3 +70,57 @@
   (let [sequence (apply read-seq geo-grid options)]
     (with-meta (.viewRowFlip (matrix sequence (:lon-size (meta sequence))))
       (meta sequence))))
+
+(defn latitude->row [#^Matrix matrix #^Double latitude]
+  (let [{:keys [lat-max lat-step]} (meta matrix)]
+    (* -1 (- (/ latitude lat-step) lat-max))))
+
+(defn longitude->column [#^Matrix matrix #^Double longitude]
+  (let [{:keys [lon-max lon-step]} (meta matrix)]
+    (/ longitude lon-step)))
+
+(defn location->row-col
+  [#^Matrix matrix location]
+  [(latitude->row matrix (latitude location))
+   (longitude->column matrix (longitude location))])
+
+(defn sel-location
+  "Select the data point in the matrix for the location."
+  [#^Matrix matrix location]
+  (let [[row column] (location->row-col matrix location)]
+    (if (and (> column 0) (< column (ncol matrix))
+             (> row 0) (< row (nrow matrix)))
+      (sel matrix row column))))
+
+(defn sel-location!
+  "Select the data point in the matrix for the location."
+  [#^Matrix matrix location]
+  (let [[row column] (location->row-col matrix location)]
+    (sel matrix row column)))
+
+(time
+ (dotimes [i (* 256 256)]
+   (sel-location *matrix* (make-location 0 0))))
+
+;; (sel-location *matrix* (make-location 80 300))
+;; (location->row-col *matrix* (make-location 79 0))
+
+;; (location->row-col *matrix* (make-location 78 1.25))
+;; (location->row-col *matrix* (make-location 78 90))
+
+;; (longitude->column *matrix* 1.25)
+
+;; (sel-location *matrix* (make-location -79 10))
+
+;; (println (meta *matrix*))
+
+;; (def *matrix* (read-matrix (open-geo-grid "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+
+;; (count *matrix*)
+
+;; (println
+;;  (sel *matrix*
+;;       (range 0 5)
+;;       (range 0 5)))
+
+
