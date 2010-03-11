@@ -133,46 +133,24 @@
   (fn [datatype location & options]
     (class datatype)))
 
-(defmethod read-datapoint PersistentStructMap [datatype location & options]
-  (if location
-    (let [options (apply hash-map options)
-          valid-time (or (:valid-time options) (first (valid-times datatype)))
-          data (read-data datatype valid-time location)]
-      (struct-map record
-        :actual-location (make-location (.lat data) (.lon data))
-        :requested-location location
-        :unit (.getUnitsString (:service datatype))
-        :valid-time valid-time
-        :value (or (and (.isNaN (.dataValue data)) (:nil options)) (.dataValue data))
-        :variable (:variable datatype)))))
+(defmethod read-datapoint PersistentStructMap [datatype location & options]  
+  (let [options (apply hash-map options)
+        valid-time (or (:valid-time options) (first (valid-times datatype)))
+        value (.dataValue (read-data datatype valid-time location))]
+    (if (.isNaN value) (or (:nil options) value) value)))
 
 (defmethod read-datapoint Matrix [matrix location & options]
-  (if location
-    (let [datatype (:datatype (meta matrix))
-          {:keys [x y]} (location->index datatype location)
-          value (and (>= x 0) (>= y 0) (sel matrix y x))]
-      (struct-map record
-        :actual-location (if value (. (coord-system datatype) getLatLon x y))
-        :requested-location location
-        :unit (.getUnitsString (:service datatype))
-        :valid-time (:valid-time (meta matrix))
-        :value (or (and (.isNaN value) (:nil (apply hash-map options))) value)
-        :variable (:variable datatype)))))
-
-;; (defmulti interpolate-datapoint
-;;   "Interpolate the NetCDF datatype at the location."
-;;   (fn [datatype location & options]
-;;     (class datatype)))
-
-;; (defmethod interpolate-datapoint PersistentStructMap [datatype location & options])
+  (let [options (apply hash-map options)
+        {:keys [x y]} (location->index (:datatype (meta matrix)) location)
+        value (and (>= x 0) (>= y 0) (sel matrix y x))]
+    (if (.isNaN value) (or (:nil options) value) value)))
 
 (defn find-xy-index [datatype location]
   (seq (. (coord-system datatype) findXYindexFromLatLon (latitude location) (longitude location) nil)))
 
 (defn central-sample [datatype location]
   (let [datatype (or (:datatype (meta datatype)) datatype)
-        lat-step (:lat-step datatype)
-        lon-step (:lon-step datatype)]
+        lat-step (:lat-step datatype) lon-step (:lon-step datatype)]
     (make-location
      (* lat-step (ceil (/ (latitude location) lat-step)))
      (* lon-step (floor (/ (longitude location) lon-step))))))
@@ -186,6 +164,53 @@
     (/ (- (latitude (central-sample datatype location)) (latitude location))
        (:lat-step datatype))))
 
+(defn sample-locations [datatype location & options]
+  (let [options (apply hash-map options)
+        datatype (or (:datatype (meta datatype)) datatype) north-west (central-sample datatype location)]    
+    (reverse
+     (for [latitude (latitude-range (latitude north-west) (or (:height options) 2) (:lat-step datatype))
+           longitude (reverse (longitude-range (longitude north-west) (or (:width options) 2) (:lon-step datatype)))]
+       (make-location latitude longitude)))))
+
+(defmulti interpolation-sample
+  (fn [datatype location & options]
+    (class datatype)))
+
+(defmethod interpolation-sample Matrix [datatype location & options]
+  (matrix (map #(if (.isNaN %) 0 %) (apply interpolation-sample datatype location options))
+          (or (:width (apply hash-map options)) 2)))
+
+(defmethod interpolation-sample Matrix [matrix location & options]
+  (let [{:keys [ width height]} (apply hash-map options)
+        {:keys  [x y]} (location->index (:datatype (meta matrix)) location)]
+    (sel matrix
+         :rows (range y (+ y (or height 2)))
+         :cols (range x (+ x (or width 2))))))
+
+(defmethod interpolation-sample :default [datatype location & options]
+  (map #(apply read-datapoint datatype % options) (apply sample-locations datatype location options)))
+
+(defn interpolate-datapoint [datatype location & options]
+  (if-let [central-sample (central-sample datatype location)]
+    (let [sample (apply interpolation-sample datatype central-sample options)]
+      (interpolate sample (x-fract datatype location) (y-fract datatype location)))))
+
+(defn read-seq
+  "Read the whole datatype as a sequence."
+  [datatype & options]
+  (let [options (apply hash-map options)
+        valid-time (or (:valid-time options) (first (valid-times datatype)))]
+    (with-meta (seq (. (read-xy-data datatype valid-time (:z-index options)) copyTo1DJavaArray))
+      {:datatype datatype :valid-time valid-time})))
+
+(defn read-matrix
+  "Read the whole datatype as a matrix."
+  [datatype & options]
+  (let [sequence (apply read-seq datatype options)]
+    (with-meta
+      (matrix sequence (:lon-size (:datatype (meta sequence))))
+      (meta sequence))))
+
 ;; (interpolate-datapoint *matrix* (make-location 75.9 0))
 ;; (central-sample *matrix* (make-location 75.9 0.2))
 
@@ -195,35 +220,6 @@
 ;; (x-fract *nww3* (make-location 78 1))
 
 ;; (sample-locations *nww3* (make-location 77.1 0.1) 2 2)
-
-(defn sample-locations [datatype location & options]
-  (let [options (apply hash-map options)
-        datatype (or (:datatype (meta datatype)) datatype) north-west (central-sample datatype location)]    
-    (reverse
-     (for [latitude (latitude-range (latitude north-west) (or (:height options) 2) (:lat-step datatype))
-           longitude (reverse (longitude-range (longitude north-west) (or (:width options) 2) (:lon-step datatype)))]
-       (make-location latitude longitude)))))
-
-(defn interpolation-sample [datatype location & options]
-  (map #(apply read-datapoint datatype % options) (apply sample-locations datatype location options)))
-
-(defn interpolation-sample-matrix [datatype location & options]
-  (matrix (map #(if (.isNaN %) 0 %) (map :value (apply interpolation-sample datatype location options)))
-          (or (:width (apply hash-map options)) 2)))
-
-(defn interpolate-datapoint [datatype location & options]
-  (if-let [central-sample (central-sample datatype location)]
-    (let [options (apply hash-map options)
-          datatype (or (:datatype (meta datatype)) datatype)
-          sample (apply interpolation-sample-matrix datatype central-sample (flatten (seq options)))
-          value (interpolate sample (x-fract datatype location) (y-fract datatype location))]
-      (struct-map record
-        :actual-location location
-        :requested-location location
-        :unit (.getUnitsString (:service datatype))
-        :valid-time (or (:valid-time options) (:valid-time (meta datatype)))
-        :value (or (and (.isNaN value) (:nil options)) value)
-        :variable (:variable datatype)))))
 
 ;; (def *nww3* (open-datatype (make-datatype "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 ;; (def *matrix* (read-matrix *nww3*))
@@ -241,22 +237,6 @@
 
 ;; (println (sel *matrix* 154 1))
 ;; (println (sel *matrix* :rows (range 153 155) :cols (range 1 3)))
-
-(defn read-seq
-  "Read the whole datatype as a sequence."
-  [datatype & options]
-  (let [options (apply hash-map options)
-        valid-time (or (:valid-time options) (first (valid-times datatype)))]
-    (with-meta (seq (. (read-xy-data datatype valid-time (:z-index options)) copyTo1DJavaArray))
-      {:datatype datatype :valid-time valid-time})))
-
-(defn read-matrix
-  "Read the whole datatype as a matrix."
-  [datatype & options]
-  (let [sequence (apply read-seq datatype options)]
-    (with-meta
-      (matrix sequence (:lon-size (:datatype (meta sequence))))
-      (meta sequence))))
 
 ;; (defn latitude->index [matrix latitude]
 ;;   (int (+ (/ longitude (:lon-step (meta matrix)))
