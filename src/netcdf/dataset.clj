@@ -3,16 +3,16 @@
            (ucar.nc2 FileWriter NetcdfFile)
            (ucar.nc2.dt.grid GridDataset GridAsPointDataset)))
 
-(defn- write-dimensions [dataset writer]
+(defn- write-dimensions [#^NetcdfDataset dataset #^FileWriter writer]
   (let [dimensions (.getDimensions dataset)]
     (dorun (map #(. writer writeDimension %) dimensions))
     (dorun (map #(. writer writeVariable (.findVariable dataset (.getName %))) dimensions))))
 
-(defn- write-global-attributes [dataset writer]
+(defn- write-global-attributes [#^NetcdfDataset dataset #^FileWriter writer]
   (dorun (map #(. writer writeGlobalAttribute %) (.getGlobalAttributes dataset))))
 
-(defn- write-variables [dataset writer variables]
-  (dorun (map #(. writer writeVariable (.findVariable dataset %1)) variables)))
+(defn- write-variables [#^NetcdfDataset dataset #^FileWriter writer variables]
+  (dorun (map #(. writer writeVariable (.findVariable dataset (str %1))) variables)))
 
 (defmacro with-file-writer [symbol filename & body]
   `(let [~symbol (FileWriter. ~filename false)]
@@ -22,7 +22,7 @@
 
 (defn datatypes
   "Returns all datatypes in the NetCDF dataset."
-  [dataset] (.getGrids dataset))
+  [#^NetcdfDataset dataset] (.getGrids dataset))
 
 (defn open-grid-dataset
   "Open the NetCDF dataset as a grid dataset."
@@ -34,7 +34,7 @@
 
 (defn valid-times
   "Returns the valid times in the NetCDF dataset."
-  [dataset] (sort (.getDates (GridAsPointDataset. (.getGrids dataset)))))
+  [#^NetcdfDataset dataset] (sort (.getDates (GridAsPointDataset. (.getGrids dataset)))))
 
 (defn copy-dataset
   "Copy the NetCDF dataset from source to target."
