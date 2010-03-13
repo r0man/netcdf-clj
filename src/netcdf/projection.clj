@@ -1,34 +1,12 @@
 (ns netcdf.projection
-  (:import clojure.lang.PersistentStructMap
-           ucar.unidata.geoloc.projection.Mercator
-           ucar.unidata.geoloc.LatLonPointImpl
-           ucar.unidata.geoloc.ProjectionPointImpl)
+  (:import ucar.unidata.geoloc.Projection
+           (ucar.unidata.geoloc LatLonPointImpl ProjectionPointImpl))
   (:use netcdf.location netcdf.point))
 
-(def *projection* (Mercator.))
+(defn location->xy [#^Projection projection location]
+  (let [point (. projection latLonToProj location (ProjectionPointImpl.))]
+    [(. point getX) (. point getY)]))
 
-(defmacro with-projection [projection & body]
-  `(binding [*projection* ~projection]
-     ~@body))
+(defn location->row-column [#^Projection projection location]
+  (reverse (location->xy projection location)))
 
-(defmulti location->point
-  "Convert location to projection coordinates."
-  class)
-
-(defmethod location->point LatLonPointImpl [location]
-  (let [point (. *projection* latLonToProj location (ProjectionPointImpl.))]
-    (make-point (. point getX) (. point getY))))
-
-(defmethod location->point PersistentStructMap [location]
-  (location->point (LatLonPointImpl. (:latitude location) (:longitude location))))
-
-(defmulti point->location
-  "Convert projection coordinates to a location."
-  class)
-
-(defmethod point->location ProjectionPointImpl [point]
-  (let [location (. *projection* projToLatLon point (LatLonPointImpl.))]
-    (make-location (. location getLatitude) (. location getLongitude))))
-
-(defmethod point->location PersistentStructMap [point]
-  (point->location (ProjectionPointImpl. (:x point) (:y point))))
