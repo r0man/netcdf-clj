@@ -1,0 +1,452 @@
+<?xml version="1.0"?>
+  <serverdirectory count="1343">
+    <dataset protocol="dods" rank="1">
+      <name>/aofs/ofs</name>
+      <description>ofs_atl.t00z.f048.grb</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/aofs/ofs</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/aofs/ofs.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/aofs/ofs.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="2">
+      <name>/waves/nww3/nww320090907/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z07sep2009, downloaded Sep 07 07:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1219">
+      <name>/waves/nww3/nww320090907/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z07sep2009, downloaded Sep 07 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1220">
+      <name>/waves/nww3/nww320090907/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z07sep2009, downloaded Sep 07 16:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1221">
+      <name>/waves/nww3/nww320090907/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z07sep2009, downloaded Sep 07 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1222">
+      <name>/waves/nww3/nww320090908/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z08sep2009, downloaded Sep 08 07:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1223">
+      <name>/waves/nww3/nww320090908/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z08sep2009, downloaded Sep 08 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1224">
+      <name>/waves/nww3/nww320090908/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z08sep2009, downloaded Sep 08 16:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1225">
+      <name>/waves/nww3/nww320090908/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z08sep2009, downloaded Sep 08 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090908/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1226">
+      <name>/waves/nww3/nww320090909/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z09sep2009, downloaded Sep 09 07:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1227">
+      <name>/waves/nww3/nww320090909/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z09sep2009, downloaded Sep 09 10:44 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1228">
+      <name>/waves/nww3/nww320090909/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z09sep2009, downloaded Sep 09 16:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1229">
+      <name>/waves/nww3/nww320090909/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z09sep2009, downloaded Sep 09 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090909/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1230">
+      <name>/waves/nww3/nww320090917/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z17sep2009, downloaded Sep 17 07:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1231">
+      <name>/waves/nww3/nww320090917/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z17sep2009, downloaded Sep 17 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1232">
+      <name>/waves/nww3/nww320090917/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z17sep2009, downloaded Sep 17 16:44 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1233">
+      <name>/waves/nww3/nww320090917/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z17sep2009, downloaded Sep 17 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090917/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1234">
+      <name>/waves/nww3/nww320090919/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z19sep2009, downloaded Sep 19 07:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1235">
+      <name>/waves/nww3/nww320090919/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z19sep2009, downloaded Sep 19 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1236">
+      <name>/waves/nww3/nww320090919/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z19sep2009, downloaded Sep 19 16:44 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1237">
+      <name>/waves/nww3/nww320090919/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z19sep2009, downloaded Sep 19 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090919/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1238">
+      <name>/waves/nww3/nww320090926/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z26sep2009, downloaded Sep 26 07:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1239">
+      <name>/waves/nww3/nww320090926/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z26sep2009, downloaded Sep 26 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1240">
+      <name>/waves/nww3/nww320090926/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z26sep2009, downloaded Sep 26 16:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1241">
+      <name>/waves/nww3/nww320090926/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z26sep2009, downloaded Sep 26 22:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090926/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1242">
+      <name>/waves/nww3/nww320090927/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z27sep2009, downloaded Sep 27 07:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1243">
+      <name>/waves/nww3/nww320090927/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z27sep2009, downloaded Sep 27 10:44 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1244">
+      <name>/waves/nww3/nww320090927/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z27sep2009, downloaded Sep 27 16:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1245">
+      <name>/waves/nww3/nww320090927/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z27sep2009, downloaded Sep 27 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090927/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1246">
+      <name>/waves/nww3/nww320091024/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z24oct2009, downloaded Oct 24 07:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1247">
+      <name>/waves/nww3/nww320091024/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z24oct2009, downloaded Oct 24 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1248">
+      <name>/waves/nww3/nww320091024/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z24oct2009, downloaded Oct 24 16:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1249">
+      <name>/waves/nww3/nww320091024/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z24oct2009, downloaded Oct 24 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091024/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1250">
+      <name>/waves/nww3/nww320091031/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z31oct2009, downloaded Oct 31 07:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1251">
+      <name>/waves/nww3/nww320091031/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z31oct2009, downloaded Oct 31 10:41 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1252">
+      <name>/waves/nww3/nww320091031/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z31oct2009, downloaded Oct 31 16:41 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1253">
+      <name>/waves/nww3/nww320091031/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z31oct2009, downloaded Oct 31 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091031/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1254">
+      <name>/waves/nww3/nww320091113/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z13nov2009, downloaded Nov 13 08:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1255">
+      <name>/waves/nww3/nww320091113/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z13nov2009, downloaded Nov 13 10:41 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1256">
+      <name>/waves/nww3/nww320091113/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z13nov2009, downloaded Nov 13 16:41 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1257">
+      <name>/waves/nww3/nww320091113/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z13nov2009, downloaded Nov 13 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091113/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1258">
+      <name>/waves/nww3/nww320091114/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z14nov2009, downloaded Nov 14 08:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1259">
+      <name>/waves/nww3/nww320091114/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z14nov2009, downloaded Nov 14 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1260">
+      <name>/waves/nww3/nww320091114/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z14nov2009, downloaded Nov 14 16:41 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1261">
+      <name>/waves/nww3/nww320091114/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z14nov2009, downloaded Nov 14 22:41 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091114/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1262">
+      <name>/waves/nww3/nww320091120/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z20nov2009, downloaded Nov 20 08:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1263">
+      <name>/waves/nww3/nww320091120/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z20nov2009, downloaded Nov 20 10:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1264">
+      <name>/waves/nww3/nww320091120/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z20nov2009, downloaded Nov 20 16:46 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1265">
+      <name>/waves/nww3/nww320091120/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z20nov2009, downloaded Nov 20 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091120/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1266">
+      <name>/waves/nww3/nww320091121/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z21nov2009, downloaded Nov 21 08:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1267">
+      <name>/waves/nww3/nww320091121/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z21nov2009, downloaded Nov 21 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1268">
+      <name>/waves/nww3/nww320091121/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z21nov2009, downloaded Nov 21 16:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1269">
+      <name>/waves/nww3/nww320091121/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z21nov2009, downloaded Nov 21 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091121/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1270">
+      <name>/waves/nww3/nww320091122/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z22nov2009, downloaded Nov 22 08:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1271">
+      <name>/waves/nww3/nww320091122/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z22nov2009, downloaded Nov 22 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1272">
+      <name>/waves/nww3/nww320091122/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z22nov2009, downloaded Nov 22 16:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1273">
+      <name>/waves/nww3/nww320091122/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z22nov2009, downloaded Nov 22 22:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091122/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1274">
+      <name>/waves/nww3/nww320091123/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z23nov2009, downloaded Nov 23 08:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1275">
+      <name>/waves/nww3/nww320091123/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z23nov2009, downloaded Nov 23 10:42 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1276">
+      <name>/waves/nww3/nww320091123/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z23nov2009, downloaded Nov 23 17:09 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_12z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1277">
+      <name>/waves/nww3/nww320091123/nww3_18z</name>
+      <description>WAVE_nww3 Global wave model fcst from 18Z23nov2009, downloaded Nov 23 22:41 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_18z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_18z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091123/nww3_18z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1278">
+      <name>/waves/nww3/nww320091124/nww3_00z</name>
+      <description>WAVE_nww3 Global wave model fcst from 00Z24nov2009, downloaded Nov 24 08:00 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091124/nww3_00z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091124/nww3_00z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091124/nww3_00z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1279">
+      <name>/waves/nww3/nww320091124/nww3_06z</name>
+      <description>WAVE_nww3 Global wave model fcst from 06Z24nov2009, downloaded Nov 24 10:40 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091124/nww3_06z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091124/nww3_06z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091124/nww3_06z.das</das>
+   </dataset>
+    <dataset protocol="dods" rank="1280">
+      <name>/waves/nww3/nww320091124/nww3_12z</name>
+      <description>WAVE_nww3 Global wave model fcst from 12Z24nov2009, downloaded Nov 24 16:41 UTC</description>
+      <dods>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091124/nww3_12z</dods>
+      <dds>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091124/nww3_12z.dds</dds>
+      <das>http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320091124/nww3_12z.das</das>
+   </dataset>
+</serverdirectory>
+
