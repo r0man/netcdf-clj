@@ -13,6 +13,10 @@
 (deftest test-inventory-url
   (is (= (inventory-url *repository*) (str (:root *repository*) "/xml"))))
 
+(deftest test-latest-reference-time
+  (is (= (latest-reference-time *repository*)
+         (last (reference-times *repository*)))))
+
 (deftest test-make-repository
   (let [repository (make-repository "akw" "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw" "Alaskan Waters")]
     (is (= (:name repository ) "akw"))
@@ -48,6 +52,10 @@
   (let [time (dataset-url->time "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z")]
     (is (= time (date 2009 9 7 0 0 0)))))
 
+(deftest test-reference-times
+  (let [reference-times (reference-times *repository*)]
+    (is (not (empty? reference-times)))))
+
 (deftest test-valid-time->reference-time
   (are [valid-time reference-time]
     (is (= (valid-time->reference-time valid-time) reference-time))
@@ -56,20 +64,3 @@
     (date 2010 3 25 6 0) (date 2010 3 25 6 0)
     (date 2010 3 25 11 59) (date 2010 3 25 6 0)
     (date 2010 3 25 12 0) (date 2010 3 25 12 0)))
-
-
-
-
-;; (deftest test-dataset-url
-;;   (is (= (dataset-url *repository* *time*) (dataset-dataset-url *repository* *time*))))
-
-;; (deftest test-local-directory
-;;   (is (= (local-directory *repository* *time*)
-;;          (str *local-repository-root* File/separator (:name *repository*) File/separator (format-date *time* "yyyyMMdd")))))
-
-;; (deftest test-local-filename
-;;   (is (= (local-filename *repository* *time* "htsgwsfc")
-;;          (str (local-directory *repository* *time*) File/separator "htsgwsfc.nc"))))
-
-;; (deftest test-local-dataset-url
-;;   (is (= (local-dataset-url *repository* *time*) (local-filename *repository* *time*))))

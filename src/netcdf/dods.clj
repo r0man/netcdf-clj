@@ -44,31 +44,8 @@
 (defn parse-reference-times [xml root]
   (map dataset-url->time (sort (filter #(. % startsWith root) (parse-dods xml)))))
 
-;; (def *local-repository-root* (str (. System getProperty "user.home") File/separator ".weather"))
+(defn reference-times [repository]
+  (parse-reference-times (inventory-url repository) (:root repository)))
 
-;; (defn latest-reference-times [repository]
-;;   (last (parse-reference-times (inventory-url repository) (:root repository))))
-
-;; (defn latest-reference-time [repository]
-;;   (latest-remote-reference-time repository))
-
-;; (defn local-directory [repository valid-time]
-;;   (str *local-repository-root*
-;;        File/separator
-;;        (:name repository)
-;;        File/separator
-;;        (format-date (valid-time->reference-time valid-time) "yyyyMMdd")))
-
-;; (defn local-filename [repository valid-time variable]
-;;   (str (local-directory repository valid-time) File/separator variable ".nc"))
-
-;; (defn local-dataset-url [repository valid-time]
-;;   (local-filename repository valid-time))
-
-;; (defn remote-dataset-url [repository valid-time]
-;;   (remote-filename repository valid-time))
-
-;; (defn dataset-url [repository valid-time]
-;;   (let [local (local-dataset-url repository valid-time)]
-;;     (if (file-exists? local) local (remote-dataset-url repository valid-time))))
-
+(defn latest-reference-time [repository]
+  (last (reference-time repository)))
