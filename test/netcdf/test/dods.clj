@@ -10,6 +10,9 @@
 (def *dods* "file:///home/roman/workspace/netcdf-clj/test/fixtures/dods.xml")
 (def *time* (date 2010 3 25 6 0 0)) ;;; CHECK UTC !!!
 
+(deftest test-inventory-url
+  (is (= (inventory-url *repository*) (str (:root *repository*) "/xml"))))
+
 (deftest test-make-repository
   (let [repository (make-repository "akw" "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw" "Alaskan Waters")]
     (is (= (:name repository ) "akw"))
@@ -34,18 +37,15 @@
   (is (= (dataset-filename *repository* *time*)
          (str (:name *repository*) "_" (format-date *time* "HH") "z"))))
 
-(deftest test-dataset-uri
-  (is (= (dataset-uri *repository* *time*)
+(deftest test-dataset-url
+  (is (= (dataset-url *repository* *time*)
          (str "http://nomad5.ncep.noaa.gov:9090/dods/waves/"
               (:name *repository*) "/"
               (dataset-directory *repository* *time*) "/"
               (dataset-filename *repository* *time*)))))
 
-(deftest test-server-directory
-  (is (= (server-directory *repository*) (str (:root *repository*) "/xml"))))
-
-(deftest test-uri->time
-  (let [time (uri->time "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z")]
+(deftest test-dataset-url->time
+  (let [time (dataset-url->time "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z")]
     (is (= time (date 2009 9 7 0 0 0)))))
 
 (deftest test-valid-time->reference-time
@@ -60,8 +60,8 @@
 
 
 
-;; (deftest test-dataset-uri
-;;   (is (= (dataset-uri *repository* *time*) (dataset-dataset-uri *repository* *time*))))
+;; (deftest test-dataset-url
+;;   (is (= (dataset-url *repository* *time*) (dataset-dataset-url *repository* *time*))))
 
 ;; (deftest test-local-directory
 ;;   (is (= (local-directory *repository* *time*)
@@ -71,5 +71,5 @@
 ;;   (is (= (local-filename *repository* *time* "htsgwsfc")
 ;;          (str (local-directory *repository* *time*) File/separator "htsgwsfc.nc"))))
 
-;; (deftest test-local-dataset-uri
-;;   (is (= (local-dataset-uri *repository* *time*) (local-filename *repository* *time*))))
+;; (deftest test-local-dataset-url
+;;   (is (= (local-dataset-url *repository* *time*) (local-filename *repository* *time*))))
