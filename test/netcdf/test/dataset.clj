@@ -3,7 +3,7 @@
 
 (def *dataset-uri* "/home/roman/.weather/20100215/akw.06.nc")
 ;;; TODO: Compute url with current date
-(def *remote-uri* "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw/akw20100311/akw_00z")
+(def *remote-uri* "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw/akw20100326/akw_00z")
 (def *variable* "htsgwsfc")
 
 (deftest test-open-dataset
