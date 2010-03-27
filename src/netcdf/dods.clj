@@ -48,4 +48,4 @@
   (parse-reference-times (inventory-url repository) (:root repository)))
 
 (defn latest-reference-time [repository]
-  (last (reference-time repository)))
+  (last (reference-times repository)))

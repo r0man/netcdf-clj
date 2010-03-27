@@ -56,6 +56,9 @@
   (let [reference-times (reference-times *repository*)]
     (is (not (empty? reference-times)))))
 
+(deftest test-latest-reference-time
+  (is (not (nil? (latest-reference-time *repository*)))))
+
 (deftest test-valid-time->reference-time
   (are [valid-time reference-time]
     (is (= (valid-time->reference-time valid-time) reference-time))
