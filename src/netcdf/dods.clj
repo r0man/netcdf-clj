@@ -7,6 +7,8 @@
         clojure.contrib.zip-filter.xml
         incanter.chrono))
 
+(def *local-root* (str (System/getProperty "user.home") File/separator ".netcdf"))
+
 (defstruct repository :name :root :description)
 
 (defn inventory-url [repository]
@@ -49,3 +51,11 @@
 
 (defn latest-reference-time [repository]
   (last (reference-times repository)))
+
+(defn local-filename [repository valid-time & [variable]]
+  (let [reference-time (valid-time->reference-time valid-time)]
+    (str *local-root* File/separator
+         (:name repository) File/separator
+         (if variable (str variable File/separator))
+         (format-date reference-time "yyyyMMdd") File/separator
+         "t" (format-date reference-time "HH") "z.nc")))

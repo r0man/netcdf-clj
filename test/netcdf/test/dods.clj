@@ -67,3 +67,17 @@
     (date 2010 3 25 6 0) (date 2010 3 25 6 0)
     (date 2010 3 25 11 59) (date 2010 3 25 6 0)
     (date 2010 3 25 12 0) (date 2010 3 25 12 0)))
+
+(deftest test-local-filename
+  (let [reference-time (valid-time->reference-time *time*)]
+    (is (= (local-filename *repository* *time*)
+           (str *local-root* File/separator
+                (:name *repository*) File/separator
+                (format-date *time* "yyyyMMdd") File/separator
+                "t" (format-date *time* "HH") "z.nc")))
+    (is (= (local-filename *repository* *time* "htsgwsfc")
+           (str *local-root* File/separator
+                (:name *repository*) File/separator
+                "htsgwsfc" File/separator
+                (format-date *time* "yyyyMMdd") File/separator
+                "t" (format-date *time* "HH") "z.nc")))))
