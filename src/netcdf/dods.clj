@@ -7,6 +7,7 @@
   (:use clojure.contrib.str-utils
         clojure.contrib.zip-filter.xml
         incanter.chrono
+        netcdf.utils
         [clojure.contrib.str-utils2 :only (join)]))
 
 (def *local-root* (str (System/getProperty "user.home") File/separator ".netcdf"))
@@ -63,6 +64,6 @@
 (defn download-variable [repository variable & [reference-time]]
   (let [reference-time (or reference-time (latest-reference-time repository))
         uri (local-uri repository reference-time variable)]
-    (if-not (.exists (java.io.File. uri))
+    (if-not (file-exists? uri)
       (dataset/copy-dataset (dataset-url repository reference-time) uri [variable]))
     uri))
