@@ -2,6 +2,10 @@
   (:import java.io.File)
   (:use clojure.test netcdf.utils))
 
+(deftest test-file-exists?
+  (is (file-exists? (System/getProperty "user.home")))
+  (is (not (file-exists? "not-existing-file"))))
+
 (deftest test-file-extension
   (is (nil? (file-extension "filename")))
   (is (= (file-extension "test.png") "png"))

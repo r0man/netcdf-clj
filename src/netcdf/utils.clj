@@ -1,5 +1,8 @@
 (ns netcdf.utils)
 
+(defn file-exists? [filename]
+  (.exists (java.io.File. filename)))
+
 (defn file-extension
   "Returns the filename extension."
   [filename] (last (re-find #"\.(.[^.]+)$" (str filename))))
