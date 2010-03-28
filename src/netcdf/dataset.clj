@@ -15,22 +15,23 @@
   (dorun (map #(. writer writeVariable (.findVariable dataset (str %1))) variables)))
 
 (defmacro with-file-writer [symbol filename & body]
-  `(let [~symbol (FileWriter. ~filename false)]
-     (.mkdirs (.getParentFile (java.io.File. ~filename)))
-     ~@body
-     (. ~symbol finish)))
+  (let [filename# filename symbol# symbol]
+    `(let [~symbol# (FileWriter. (str ~filename#) false)]
+       (.mkdirs (.getParentFile (java.io.File. ~filename#)))
+       ~@body
+       (. ~symbol# finish))))
 
-(defn datatypes
-  "Returns all datatypes in the NetCDF dataset."
+(defn grids
+  "Returns all grids in the NetCDF dataset."
   [#^NetcdfDataset dataset] (.getGrids dataset))
 
 (defn open-grid-dataset
   "Open the NetCDF dataset as a grid dataset."
-  [uri] (. GridDataset open uri))
+  [uri] (. GridDataset open (str uri)))
 
 (defn open-dataset
   "Open the NetCDF dataset."
-  [uri] (. NetcdfDataset openDataset uri))
+  [uri] (. NetcdfDataset openDataset (str uri)))
 
 (defn valid-times
   "Returns the valid times in the NetCDF dataset."
@@ -40,7 +41,7 @@
   "Copy the NetCDF dataset from source to target."
   ([source target]
      (with-open [dataset (open-grid-dataset source)]
-       (copy-dataset source target (map #(.getName %) (datatypes dataset)))))
+       (copy-dataset source target (map #(.getName %) (grids dataset)))))
   ([source target variables]
      (with-open [dataset (open-dataset source)]
        (with-file-writer writer target
