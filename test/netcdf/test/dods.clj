@@ -1,14 +1,12 @@
 (ns netcdf.test.dods
-  (:import java.util.Calendar java.io.File)
-  (:use clojure.test
-        clojure.contrib.str-utils
-        netcdf.dods
-        incanter.chrono))
+  (:import java.util.Calendar java.io.File java.net.URI)
+  (:use clojure.test clojure.contrib.str-utils netcdf.dods incanter.chrono))
 
 (def *repository* (make-repository "akw" "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw" "Alaskan Waters"))
 
 (def *dods* "file:///home/roman/workspace/netcdf-clj/test/fixtures/dods.xml")
-(def *time* (date 2010 3 25 6 0 0)) ;;; CHECK UTC !!!
+(def *valid-time* (date 2010 3 25 6 0 0)) ;;; CHECK UTC !!!
+(def *variable* "htsgwsfc")
 
 (deftest test-inventory-url
   (is (= (inventory-url *repository*) (str (:root *repository*) "/xml"))))
@@ -34,23 +32,26 @@
     (is (= (last times) (date 2009 11 24 12 0 0)))))
 
 (deftest test-dataset-directory
-  (is (= (dataset-directory *repository* *time*)
-         (str (:name *repository*) (format-date *time* "yyyyMMdd")))))
+  (is (= (dataset-directory *repository* *valid-time*)
+         (str (:name *repository*) (format-date *valid-time* "yyyyMMdd")))))
 
 (deftest test-dataset-filename
-  (is (= (dataset-filename *repository* *time*)
-         (str (:name *repository*) "_" (format-date *time* "HH") "z"))))
+  (is (= (dataset-filename *repository* *valid-time*)
+         (str (:name *repository*) "_" (format-date *valid-time* "HH") "z"))))
 
 (deftest test-dataset-url
-  (is (= (dataset-url *repository* *time*)
+  (is (= (dataset-url *repository* *valid-time*)
          (str "http://nomad5.ncep.noaa.gov:9090/dods/waves/"
               (:name *repository*) "/"
-              (dataset-directory *repository* *time*) "/"
-              (dataset-filename *repository* *time*)))))
+              (dataset-directory *repository* *valid-time*) "/"
+              (dataset-filename *repository* *valid-time*)))))
 
 (deftest test-dataset-url->time
-  (let [time (dataset-url->time "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z")]
-    (is (= time (date 2009 9 7 0 0 0)))))
+  (let [url "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z"]
+    (let [time (dataset-url->time url)]
+      (is (= time (date 2009 9 7 0 0 0))))
+    (let [time (dataset-url->time (URI. url))]
+      (is (= time (date 2009 9 7 0 0 0))))))
 
 (deftest test-reference-times
   (let [reference-times (reference-times *repository*)]
@@ -68,16 +69,17 @@
     (date 2010 3 25 11 59) (date 2010 3 25 6 0)
     (date 2010 3 25 12 0) (date 2010 3 25 12 0)))
 
-(deftest test-local-filename
-  (let [reference-time (valid-time->reference-time *time*)]
-    (is (= (local-filename *repository* *time*)
-           (str *local-root* File/separator
-                (:name *repository*) File/separator
-                (format-date *time* "yyyyMMdd") File/separator
-                "t" (format-date *time* "HH") "z.nc")))
-    (is (= (local-filename *repository* *time* "htsgwsfc")
-           (str *local-root* File/separator
-                (:name *repository*) File/separator
-                "htsgwsfc" File/separator
-                (format-date *time* "yyyyMMdd") File/separator
-                "t" (format-date *time* "HH") "z.nc")))))
+(deftest test-local-uri  
+  (let [uri (local-uri *repository* *valid-time*)]
+    (is (isa? (class uri) java.net.URI))
+    (is (= (str uri) (str "file://"  *local-root* File/separator (:name *repository*) File/separator
+                          (format-date *valid-time* "yyyyMMdd") File/separator "t" (format-date *valid-time* "HH") "z.nc"))))
+  (let [uri (local-uri *repository* *valid-time* *variable*)]
+    (is (isa? (class uri) java.net.URI))
+    (is (= (str uri) (str "file://" *local-root* File/separator (:name *repository*) File/separator
+                          *variable* File/separator (format-date *valid-time* "yyyyMMdd") File/separator "t" (format-date *valid-time* "HH") "z.nc")))))
+
+(deftest test-download-variable
+  (let [uri (download-variable *repository* *variable* *valid-time*)]
+    (is (.exists (File. uri)))))
+

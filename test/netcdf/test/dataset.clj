@@ -39,14 +39,14 @@
     (.close dataset)))
 
 (deftest test-copy-dataset
-  (let [target "/tmp/.copy-test-all.netcdf"]
+  (let [target "/tmp/netcdf-clj-test/.copy-test-all.netcdf"]
     (copy-dataset *dataset-uri* target)
-    (is (= (.exists (java.io.File. target)) true))))
+    (is (.exists (java.io.File. target)))))
 
 (deftest test-copy-dataset-with-uri
-  (let [target (URI. "file:///tmp/.copy-test-all.netcdf")]
+  (let [target (URI. "file:///tmp/netcdf-clj-test/.copy-test-all.netcdf")]
     (copy-dataset (URI. (str "file://" *dataset-uri*)) target)
-    (is (= (.exists (java.io.File. target)) true))))
+    (is (.exists (java.io.File. target)))))
 
 (deftest test-copy-dataset-selected-variables
   (let [target "/tmp/.copy-test-selected.netcdf"]
