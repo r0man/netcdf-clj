@@ -10,6 +10,7 @@
            (java.awt.event KeyListener)
            (javax.swing JFrame JOptionPane JPanel))
   (:use [clojure.contrib.seq-utils :only (flatten includes?)]
+        [clj-time.format :only (formatters show-formatters unparse)]
         netcdf.datatype
         netcdf.interpolation
         netcdf.location
@@ -17,8 +18,7 @@
         clojure.contrib.profile
         google.maps.static
         google.maps.projection
-        incanter.core
-        incanter.chrono))
+        incanter.core))
 
 (def *render-options* {:center (make-location 0 0) :zoom 4 :width 512 :height 256})
 
@@ -164,7 +164,7 @@
 
 (defn save-datatype-images [directory datatype & options]
   (for [valid-time (valid-times datatype)]
-    (let [filename (str directory "/" (str-time valid-time :basic-date-time-no-ms) ".png")
+    (let [filename (str directory "/" (unparse (formatters :basic-date-time-no-ms) valid-time) ".png")
           matrix (read-matrix datatype :valid-time valid-time)]
       (apply save-datatype-image filename matrix options))))
 
