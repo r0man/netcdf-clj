@@ -1,13 +1,6 @@
 (ns netcdf.test.datatype
-  (:use clojure.test incanter.core incanter.datasets netcdf.datatype netcdf.location)
+  (:use clojure.test incanter.core netcdf.datatype netcdf.location netcdf.test.helper)
   (:require [netcdf.dataset :as dataset]))
-
-(def *dataset-uri* "/home/roman/.weather/20100215/akw.06.nc")
-(def *dataset-uri* "/home/roman/.weather/20100215/nww3.06.nc")
-(def *variable* "htsgwsfc")
-
-(def *datatype* (make-datatype *dataset-uri* *variable*))
-(def *valid-time* (first (valid-times *datatype*)))
 
 (defn make-example-datatype []
   (make-datatype *dataset-uri* *variable*))
@@ -161,13 +154,8 @@
     (is (= (time-index datatype (first (valid-times datatype))) 0))
     (is (= (time-index datatype (last (valid-times datatype))) (- (count (valid-times datatype)) 1)))))
 
-(deftest test-valid-times-with-closed-datatype
+(deftest test-valid-times
   (let [valid-times (valid-times *datatype*)]
-    (is (> (count valid-times) 0))
-    (is (every? #(isa? (class %) java.util.Date) valid-times))))
-
-(deftest test-valid-times-with-open-datatype
-  (let [valid-times (valid-times (open-datatype *datatype*))]
     (is (> (count valid-times) 0))
     (is (every? #(isa? (class %) java.util.Date) valid-times))))
 

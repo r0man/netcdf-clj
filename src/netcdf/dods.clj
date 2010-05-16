@@ -6,7 +6,8 @@
             [netcdf.dataset :as dataset])
   (:use clojure.contrib.str-utils
         clojure.contrib.zip-filter.xml
-        incanter.chrono
+        clj-time.core
+        clj-time.format
         netcdf.utils
         [clojure.contrib.str-utils2 :only (join)]))
 
@@ -21,24 +22,29 @@
   (struct repository name root description))
 
 (defn valid-time->reference-time [valid-time]
-  (date (valid-time :year)
-        (valid-time :month)
-        (valid-time :day)
-        (* (int (/ (valid-time :hour) 6)) 6)
-        0))
+  (date-time
+   (year valid-time)
+   (month valid-time)
+   (day valid-time)
+   (* (int (/ (hour valid-time) 6)) 6)
+   0))
 
 (defn dataset-directory [repository valid-time]
-  (str (:name repository) (format-date (valid-time->reference-time valid-time) "yyyyMMdd")))
+  (str (:name repository) (unparse (formatters :basic-date) (valid-time->reference-time valid-time))))
 
 (defn dataset-filename [repository valid-time]
-  (str (:name repository) "_" (format-date (valid-time->reference-time valid-time) "HH") "z"))
+  (str (:name repository) "_" (unparse (formatters :hour) (valid-time->reference-time valid-time)) "z"))
 
 (defn dataset-url [repository valid-time]
   (str (:root repository) "/" (dataset-directory repository valid-time) "/" (dataset-filename repository valid-time)))
 
 (defn dataset-url->time [uri]
   (if-let [[_ year month day hour] (re-find #".*(\d{4})(\d{2})(\d{2})/.*(\d{2})z?.*$" (str uri))]
-    (parse-date (str year month day hour) "yyyyMMddHH")))
+    (date-time
+     (parse-integer year)
+     (parse-integer month)
+     (parse-integer day)
+     (parse-integer hour))))
 
 (defn- feed-to-zip [uri]
   (zip/xml-zip (xml/parse uri)))
@@ -59,7 +65,8 @@
   (let [reference-time (valid-time->reference-time valid-time)]
     (URI. (str "file://" *local-root* File/separator (:name repository) File/separator
                (if variable (str variable File/separator))
-               (format-date reference-time "yyyyMMdd") File/separator "t" (format-date reference-time "HH") "z.nc"))))
+               (unparse (formatters :basic-date) reference-time) File/separator "t"
+               (unparse (formatters :hour) reference-time) "z.nc"))))
 
 (defn download-variable [repository variable & [reference-time]]
   (let [reference-time (or reference-time (latest-reference-time repository))

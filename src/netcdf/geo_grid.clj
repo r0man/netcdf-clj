@@ -84,7 +84,7 @@
 (defn location->row-column [#^Matrix matrix location]
   (let [{:keys [ lat-step lon-step projection]} (meta matrix)
         [row column] (projection/location->row-column projection location )]
-    [(int (/ (+ (* row -1) (int (/ (nrow *matrix*) 2))) lat-step))
+    [(int (/ (+ (* row -1) (int (/ (nrow matrix) 2))) lat-step))
      (int (/ column lon-step))]))
 
 (defn sel-location
@@ -101,7 +101,7 @@
   [#^Matrix matrix location]   
   (apply sel matrix (location->row-column matrix location)))
 
-(def *matrix* (read-matrix (open-geo-grid "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
+;; (def *matrix* (read-matrix (open-geo-grid "/home/roman/.weather/20100215/nww3.06.nc" "htsgwsfc")))
 
 ;; (set! *warn-on-reflection* true)
 ;; (sel-location *matrix* (make-location 0 0))

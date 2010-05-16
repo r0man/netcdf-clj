@@ -1,10 +1,7 @@
 (ns netcdf.test.geo-grid
   (:import ucar.unidata.geoloc.Projection)
-  (:use clojure.test incanter.core incanter.datasets netcdf.geo-grid netcdf.location)
+  (:use clojure.test incanter.core netcdf.geo-grid netcdf.location netcdf.test.helper)
   (:require [netcdf.dataset :as dataset]))
-
-(def *dataset-uri* "/home/roman/.weather/20100215/nww3.06.nc")
-(def *variable* "htsgwsfc")
 
 (defn open-example-geo-grid []
   (open-geo-grid *dataset-uri* *variable*))

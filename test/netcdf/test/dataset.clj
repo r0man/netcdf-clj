@@ -1,71 +1,80 @@
 (ns netcdf.test.dataset
-  (:import java.net.URI)
-  (:use clojure.test netcdf.dataset))
+  (:use clojure.test netcdf.dataset netcdf.test.helper))
 
-(def *dataset-uri* "/home/roman/.netcdf/akw/htsgwsfc/20100328/t00z.nc")
+;; (defn make-example-dataset []
+;;   (make-dataset *dataset-uri*))
 
-;;; TODO: Compute url with current date
-(def *remote-uri* "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw/akw20100326/akw_00z")
-(def *variable* "htsgwsfc")
+;; (deftest test-make-dataset
+;;   (let [dataset (make-example-dataset)]
+;;     (is (= (:uri dataset) *dataset-uri*))
+;;     (is (nil? (:service dataset))))
+;;   (let [dataset (make-dataset *remote-uri*)]
+;;     (is (= (:uri dataset) *remote-uri*))
+;;     (is (nil? (:service dataset)))))
 
 (deftest test-open-dataset
   (let [dataset (open-dataset *dataset-uri*)]
-    (is (= (class dataset) ucar.nc2.dataset.NetcdfDataset))
-    (.close dataset)))
+    (is (= (:uri dataset) *dataset-uri*))
+    (is (= (class (:service dataset)) ucar.nc2.dataset.NetcdfDataset))))
 
-(deftest test-open-dataset-with-uri
-  (let [dataset (open-dataset (URI. (str "file://" *dataset-uri*)))]
-    (is (= (class dataset) ucar.nc2.dataset.NetcdfDataset))
-    (.close dataset)))
+;; (deftest test-open-dataset-with-remote
+;;   (let [dataset (open-dataset (make-dataset *remote-uri*))]
+;;     (is (= (:uri dataset) *remote-uri*))
+;;     (is (= (class (:service dataset)) ucar.nc2.dataset.NetcdfDataset))))
 
-(deftest test-open-dataset-with-remote
-  (let [dataset (open-dataset *remote-uri*)]
-    (is (= (class dataset) ucar.nc2.dataset.NetcdfDataset))
-    (.close dataset)))
+;; (deftest test-dataset-open?
+;;   (let [dataset (make-example-dataset)]
+;;     (is (not (dataset-open? dataset-open?)))
+;;     (is (dataset-open? (open-dataset dataset)))))
 
-(deftest test-open-grid-dataset
-  (let [dataset (open-grid-dataset *dataset-uri*)]
-    (is (= (class dataset) ucar.nc2.dt.grid.GridDataset))
-    (.close dataset)))
+;; (deftest test-open-grid-dataset
+;;   (let [dataset (open-grid-dataset (make-example-dataset))]
+;;     (is (= (:uri dataset) *dataset-uri*))
+;;     (is (= (class (:service dataset)) ucar.nc2.dt.grid.GridDataset))))
 
-(deftest test-open-grid-dataset-with-uri
-  (let [dataset (open-grid-dataset (URI. (str "file://" *dataset-uri*)))]
-    (is (= (class dataset) ucar.nc2.dt.grid.GridDataset))
-    (.close dataset)))
+;; (deftest test-open-grid-dataset-with-remote
+;;   (let [dataset (open-grid-dataset (make-dataset *remote-uri*))]
+;;     (is (= (:uri dataset) *remote-uri*))
+;;     (is (= (class (:service dataset)) ucar.nc2.dt.grid.GridDataset))))
 
-(deftest test-open-grid-dataset-with-remote
-  (let [dataset (open-grid-dataset *remote-uri*)]
-    (is (= (class dataset) ucar.nc2.dt.grid.GridDataset))
-    (.close dataset)))
+;; (deftest test-close-datatset
+;;   (let [dataset (open-dataset (make-example-dataset))]
+;;     (close-dataset dataset))
+;;   (let [dataset (open-grid-dataset (make-example-dataset))]
+;;     (close-dataset dataset)))
 
-(deftest test-copy-dataset
-  (let [target "/tmp/netcdf-clj-test/.copy-test-all.netcdf"]
-    (copy-dataset *dataset-uri* target)
-    (is (.exists (java.io.File. target)))))
-
-(deftest test-copy-dataset-with-uri
-  (let [target (URI. "file:///tmp/netcdf-clj-test/.copy-test-all.netcdf")]
-    (copy-dataset (URI. (str "file://" *dataset-uri*)) target)
-    (is (.exists (java.io.File. target)))))
-
-(deftest test-copy-dataset-selected-variables
-  (let [target "/tmp/.copy-test-selected.netcdf"]
-    (copy-dataset *dataset-uri* target ["htsgwsfc"])
-    (is (= (.exists (java.io.File. target)) true))))
-
-;; (deftest test-copy-dataset-from-remote
+;; (deftest test-copy-dataset
 ;;   (let [target "/tmp/.copy-test.netcdf"]
-;;     (copy-dataset *remote-uri* target)
+;;     (copy-dataset *dataset-uri* target)
 ;;     (is (= (.exists (java.io.File. target)) true))))
 
-(deftest test-grids
-  (with-open [dataset (open-grid-dataset *dataset-uri*)]
-    (let [grids (grids dataset)]
-      (is (> (count grids) 0))
-      (is (every? #(isa? (class %) ucar.nc2.dt.grid.GeoGrid) grids)))))
+;; (deftest test-copy-dataset-selected-variables
+;;   (let [target "/tmp/.copy-test.netcdf"]
+;;     (copy-dataset *dataset-uri* target ["htsgwsfc"])
+;;     (is (= (.exists (java.io.File. target)) true))))
 
-(deftest test-valid-times
-  (with-open [dataset (open-grid-dataset *dataset-uri*)]
-    (let [valid-times (valid-times dataset)]
-      (is (> (count valid-times) 0))
-      (is (every? #(isa? (class %) java.util.Date) valid-times)))))
+;; ;; (deftest test-copy-dataset-from-remote
+;; ;;   (let [target "/tmp/.copy-test.netcdf"]
+;; ;;     (copy-dataset *remote-uri* target)
+;; ;;     (is (= (.exists (java.io.File. target)) true))))
+
+;; (deftest test-datatype
+;;   (let [datatype (datatype (open-grid-dataset (make-example-dataset)) *variable*)]
+;;     (is (= (:dataset-uri datatype) *dataset-uri*))
+;;     (is (= (:variable datatype) *variable*))
+;;     (is (isa? (class (:service datatype)) ucar.nc2.dt.grid.GeoGrid))))
+
+;; (deftest test-datatypes
+;;   (let [datatypes (datatypes (open-grid-dataset (make-example-dataset)))]
+;;     (is (> (count datatypes) 0))
+;;     (is (every? #(isa? (class (:service %)) ucar.nc2.dt.grid.GeoGrid) datatypes))))
+
+;; (deftest test-read-dataset
+;;   (let [dataset (open-grid-dataset (make-example-dataset))
+;;         records (read-dataset dataset (first (valid-times dataset)))]
+;;     (is (> (count records) 0))))
+
+;; (deftest test-valid-times
+;;   (let [valid-times (valid-times (open-grid-dataset (make-example-dataset)))]
+;;     (is (> (count valid-times) 0))
+;;     (is (every? #(isa? (class %) java.util.Date) valid-times))))

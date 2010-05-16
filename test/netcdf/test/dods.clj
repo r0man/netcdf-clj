@@ -1,12 +1,10 @@
 (ns netcdf.test.dods
   (:import java.util.Calendar java.io.File java.net.URI)
-  (:use clojure.test clojure.contrib.str-utils netcdf.dods incanter.chrono))
+  (:use clojure.test clojure.contrib.str-utils netcdf.dods netcdf.test.helper clj-time.core clj-time.format))
 
 (def *repository* (make-repository "akw" "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw" "Alaskan Waters"))
 
 (def *dods* "file:///home/roman/workspace/netcdf-clj/test/fixtures/dods.xml")
-(def *valid-time* (date 2010 3 25 6 0 0)) ;;; CHECK UTC !!!
-(def *variable* "htsgwsfc")
 
 (deftest test-inventory-url
   (is (= (inventory-url *repository*) (str (:root *repository*) "/xml"))))
@@ -28,16 +26,16 @@
 
 (deftest test-parse-reference-times
   (let [times (parse-reference-times *dods* "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3")]
-    (is (= (first times) (date 2009 9 7 0 0 0)))
-    (is (= (last times) (date 2009 11 24 12 0 0)))))
+    (is (= (first times) (date-time 2009 9 7 0 0 0)))
+    (is (= (last times) (date-time 2009 11 24 12 0 0)))))
 
 (deftest test-dataset-directory
   (is (= (dataset-directory *repository* *valid-time*)
-         (str (:name *repository*) (format-date *valid-time* "yyyyMMdd")))))
+         (str (:name *repository*) (unparse (formatters :basic-date) *valid-time*)))))
 
 (deftest test-dataset-filename
   (is (= (dataset-filename *repository* *valid-time*)
-         (str (:name *repository*) "_" (format-date *valid-time* "HH") "z"))))
+         (str (:name *repository*) "_" (unparse (formatters :hour) *valid-time*) "z"))))
 
 (deftest test-dataset-url
   (is (= (dataset-url *repository* *valid-time*)
@@ -49,9 +47,9 @@
 (deftest test-dataset-url->time
   (let [url "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z"]
     (let [time (dataset-url->time url)]
-      (is (= time (date 2009 9 7 0 0 0))))
+      (is (= time (date-time 2009 9 7 0 0 0))))
     (let [time (dataset-url->time (URI. url))]
-      (is (= time (date 2009 9 7 0 0 0))))))
+      (is (= time (date-time 2009 9 7 0 0 0))))))
 
 (deftest test-reference-times
   (let [reference-times (reference-times *repository*)]
@@ -63,21 +61,21 @@
 (deftest test-valid-time->reference-time
   (are [valid-time reference-time]
     (is (= (valid-time->reference-time valid-time) reference-time))
-    (date 2010 3 25 0 0) (date 2010 3 25 0 0)
-    (date 2010 3 25 5 59) (date 2010 3 25 0 0)
-    (date 2010 3 25 6 0) (date 2010 3 25 6 0)
-    (date 2010 3 25 11 59) (date 2010 3 25 6 0)
-    (date 2010 3 25 12 0) (date 2010 3 25 12 0)))
+    (date-time 2010 3 25 0 0) (date-time 2010 3 25 0 0)
+    (date-time 2010 3 25 5 59) (date-time 2010 3 25 0 0)
+    (date-time 2010 3 25 6 0) (date-time 2010 3 25 6 0)
+    (date-time 2010 3 25 11 59) (date-time 2010 3 25 6 0)
+    (date-time 2010 3 25 12 0) (date-time 2010 3 25 12 0)))
 
 (deftest test-local-uri  
   (let [uri (local-uri *repository* *valid-time*)]
     (is (isa? (class uri) java.net.URI))
     (is (= (str uri) (str "file://"  *local-root* File/separator (:name *repository*) File/separator
-                          (format-date *valid-time* "yyyyMMdd") File/separator "t" (format-date *valid-time* "HH") "z.nc"))))
+                          (unparse (formatters :basic-date) *valid-time*) File/separator "t" (unparse (formatters :hour) *valid-time*) "z.nc"))))
   (let [uri (local-uri *repository* *valid-time* *variable*)]
     (is (isa? (class uri) java.net.URI))
     (is (= (str uri) (str "file://" *local-root* File/separator (:name *repository*) File/separator
-                          *variable* File/separator (format-date *valid-time* "yyyyMMdd") File/separator "t" (format-date *valid-time* "HH") "z.nc")))))
+                          *variable* File/separator (unparse (formatters :basic-date) *valid-time*) File/separator "t" (unparse (formatters :hour) *valid-time*) "z.nc")))))
 
 (deftest test-download-variable
   (let [uri (download-variable *repository* *variable* *valid-time*)]
