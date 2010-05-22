@@ -32,7 +32,11 @@
     (is (= (longitude location) 13.41)))
   (let [location (parse-location "52.52\t13.41")]
     (is (= (latitude location) 52.52))
-    (is (= (longitude location) 13.41))))
+    (is (= (longitude location) 13.41)))
+  (let [location (parse-location "52.52,13.41")]
+    (is (= (latitude location) 52.52))
+    (is (= (longitude location) 13.41)))
+  )
 
 (deftest test-destination-point
   (let [location (destination-point *berlin* 30 100)]
@@ -153,8 +157,8 @@
 
 (deftest test-parse-dms
   (are [string result]
-    (is (= (parse-dms string)) result)
-    "51° 28' 40.12\" s" 51.57811111111111
+    (is (= (parse-dms string) result))
+    "51° 28' 40.12\" n" 51.57811111111111
     "51° 28' 40.12\" N" 51.57811111111111
     "000° 00' 0.531\" w" -0.0014750000000000002
     "000° 00' 0.531\" W" -0.0014750000000000002))

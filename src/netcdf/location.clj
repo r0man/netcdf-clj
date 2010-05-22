@@ -10,7 +10,7 @@
 
 (defn parse-dms [string]
   (let [[degrees minutes seconds] (map parse-double (re-split #"[^0-9.,]+" (re-sub #"[NSEW]$" "" (re-gsub #"^-" "" string))))]
-    (* (if (re-matches #"(^-).*|(.*[WS])$" string) -1.0 1.0)
+    (* (if (re-matches #"(?i)(^-).*|(.*[WS])$" string) -1.0 1.0)
        (cond
         (and degrees minutes seconds)
         (+ (/ degrees 1) (/ minutes 60) (/ seconds 360))
