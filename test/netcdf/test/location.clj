@@ -21,9 +21,6 @@
   (is (not (location? nil))))
 
 (deftest test-parse-location
-  (let [location (parse-location "52.52 13.41")]
-    (is (= (latitude location) 52.52))
-    (is (= (longitude location) 13.41)))
   (let [location (parse-location "52.52,13.41")]
     (is (= (latitude location) 52.52))
     (is (= (longitude location) 13.41)))
@@ -33,10 +30,9 @@
   (let [location (parse-location "52.52\t13.41")]
     (is (= (latitude location) 52.52))
     (is (= (longitude location) 13.41)))
-  (let [location (parse-location "52.52,13.41")]
-    (is (= (latitude location) 52.52))
-    (is (= (longitude location) 13.41)))
-  )
+  (let [location (parse-location "51° 28' 40.12\" N, 000° 00' 0.531\" W")]
+    (is (= (latitude location) 51.57811111111111))
+    (is (= (longitude location) -0.0014750000000000002))))
 
 (deftest test-destination-point
   (let [location (destination-point *berlin* 30 100)]
