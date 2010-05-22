@@ -150,3 +150,8 @@
 
 (deftest test-location->map
   (is (= (location->map (make-location 1 2)) {:latitude 1 :longitude 2})))
+
+
+(deftest test-parse-dms
+  (is (= (parse-dms "51° 28' 40.12\" N") 51.57811111111111))
+  (is (= (parse-dms "000° 00' 0.531\" W") -0.0014750000000000002)))
