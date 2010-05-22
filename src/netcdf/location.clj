@@ -1,6 +1,6 @@
 (ns netcdf.location
   (:import (ucar.unidata.geoloc Bearing LatLonPointImpl))
-  (:use [clojure.contrib.str-utils :only (re-split re-gsub)]
+  (:use [clojure.contrib.str-utils :only (re-split re-sub)]
         [clojure.contrib.str-utils2 :only (trim)]))
 
 (defn parse-double [string]
@@ -10,7 +10,7 @@
        (catch NumberFormatException exception nil)))
 
 (defn parse-dms [string]
-  (let [[degrees minutes seconds] (map parse-double (re-split #"[^0-9.,]+" (re-sub #"[NSEW]$" "" (re-gsub #"^-" "" (trim string)))))]
+  (let [[degrees minutes seconds] (map parse-double (re-split #"[^0-9.,]+" (re-sub #"[NSEW]$" "" (re-sub #"^-" "" (trim string)))))]
     (* (if (re-matches #"(?i)(^-).*|(.*[WS])$" string) -1.0 1.0)
        (cond
         (and degrees minutes seconds)
