@@ -15,9 +15,11 @@
        (cond
         (and degrees minutes seconds)
         (+ (/ degrees 1) (/ minutes 60) (/ seconds 360))
-        (and degrees minutes seconds)
+        (and degrees minutes)
         (+ (/ degrees 1) (/ minutes 60))
         :else degrees))))
+
+(parse-dms "8° 44.707' S")
 
 (defn parse-latitude [str]
   (parse-dms str))
