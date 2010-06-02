@@ -1,6 +1,7 @@
 (ns netcdf.test.helper
   (:import java.io.File)
-  (:use clj-time.core clj-time.format)
+  (:use [clj-time.core :only (date-time year month day days minus now)]
+        clj-time.format)
   (:require [netcdf.datatype :as datatype]
             [netcdf.dataset :as dataset]))
 
