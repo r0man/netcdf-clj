@@ -6,10 +6,11 @@
            ucar.ma2.Range)
   (:use [clojure.contrib.math :only (ceil floor)]
         [clojure.contrib.repl-utils :only (show)]
-        [clojure.contrib.seq-utils :only (flatten)]
+        [incanter.core :only (matrix sel)]
         clojure.contrib.profile
         netcdf.interpolation
-        incanter.core netcdf.location netcdf.utils))
+        netcdf.location
+        netcdf.utils))
 
 (defstruct datatype :dataset-uri :variable :service)
 (defstruct record :actual-location :distance :unit :valid-time :value :variable)

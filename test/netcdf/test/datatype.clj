@@ -1,5 +1,6 @@
 (ns netcdf.test.datatype
-  (:use clojure.test incanter.core netcdf.datatype netcdf.location netcdf.test.helper)
+  (:use [incanter.core :only (matrix? sel ncol nrow)]
+        clojure.test netcdf.datatype netcdf.location netcdf.test.helper)
   (:require [netcdf.dataset :as dataset]))
 
 (defn make-example-datatype []
