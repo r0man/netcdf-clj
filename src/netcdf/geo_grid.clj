@@ -3,7 +3,8 @@
            ucar.nc2.dt.grid.GeoGrid
            ucar.unidata.geoloc.ProjectionPointImpl
            java.util.Date)
-  (:use incanter.core netcdf.location)
+  (:use [incanter.core :only (matrix ncol nrow sel)]
+        netcdf.location)
   (:require [netcdf.dataset :as dataset]
             [netcdf.projection :as projection]))
 

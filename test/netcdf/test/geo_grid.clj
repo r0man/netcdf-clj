@@ -1,6 +1,7 @@
 (ns netcdf.test.geo-grid
   (:import ucar.unidata.geoloc.Projection)
-  (:use clojure.test incanter.core netcdf.geo-grid netcdf.location netcdf.test.helper)
+  (:use [incanter.core :only (matrix?)]
+        clojure.test netcdf.geo-grid netcdf.location netcdf.test.helper)
   (:require [netcdf.dataset :as dataset]))
 
 (defn open-example-geo-grid []
