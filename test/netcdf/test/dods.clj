@@ -1,6 +1,10 @@
 (ns netcdf.test.dods
   (:import java.util.Calendar java.io.File java.net.URI)
-  (:use clojure.test clojure.contrib.str-utils netcdf.dods netcdf.test.helper clj-time.core clj-time.format))
+  (:use [clj-time.core :only (date-time year month day hour)]
+        clj-time.format
+        netcdf.dods
+        netcdf.test.helper
+        clojure.test))
 
 (def *repository* (make-repository "akw" "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw" "Alaskan Waters"))
 

@@ -4,12 +4,11 @@
             [clojure.xml :as xml]
             clojure.contrib.zip-filter
             [netcdf.dataset :as dataset])
-  (:use clojure.contrib.str-utils
+  (:use [clojure.contrib.string :only (join)]
+        [clj-time.core :only (date-time year month day hour)]
         clojure.contrib.zip-filter.xml
-        clj-time.core
         clj-time.format
-        netcdf.utils
-        [clojure.contrib.str-utils2 :only (join)]))
+        netcdf.utils))
 
 (def *local-root* (str (System/getProperty "user.home") File/separator ".netcdf"))
 
