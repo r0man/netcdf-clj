@@ -1,6 +1,6 @@
 (ns netcdf.interpolation
   (:import (javax.media.jai InterpolationBicubic InterpolationBilinear))
-  (:use incanter.core))
+  (:use [incanter.core :only (matrix ncol nrow sel)]))
 
 (def *interpolation* (InterpolationBilinear.))
 
