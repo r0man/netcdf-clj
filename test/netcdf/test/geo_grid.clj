@@ -24,21 +24,21 @@
 
 (deftest test-lat-axis
   (let [axis (lat-axis (open-example-geo-grid))]
-    (is (= (:lat-min axis) -78))
-    (is (= (:lat-max axis) 78))
-    (is (= (:lat-size axis) 157))
-    (is (= (:lat-step axis) 1))))
+    (is (= (:min axis) -78))
+    (is (= (:max axis) 78))
+    (is (= (:size axis) 157))
+    (is (= (:step axis) 1))))
 
 (deftest test-lon-axis
   (let [axis (lon-axis (open-example-geo-grid))]
-    (is (= (:lon-min axis) 0))
-    (is (= (:lon-max axis) 358.75))
-    (is (= (:lon-size axis) 288))
-    (is (= (:lon-step axis) 1.25))))
+    (is (= (:min axis) 0))
+    (is (= (:max axis) 358.75))
+    (is (= (:size axis) 288))
+    (is (= (:step axis) 1.25))))
 
 (deftest test-lat-lon-axis
   (let [geo-grid (open-example-geo-grid)]
-    (is (= (lat-lon-axis geo-grid) (merge (lat-axis geo-grid) (lon-axis geo-grid))))))
+    (is (= (lat-lon-axis geo-grid) {:lat-axis (lat-axis geo-grid) :lon-axis (lon-axis geo-grid)}))))
 
 (deftest test-time-axis
   (let [geo-grid (open-example-geo-grid)]
@@ -54,15 +54,11 @@
         sequence (read-seq geo-grid)]
     (is (seq? sequence))
     (is (= (count sequence) 45216))
-    (let [m (meta sequence)]
-      (is (= (:valid-time m) valid-time))
-      (is (isa? (class (:projection m)) Projection))
-      (is (= (:lat-max m) 78))
-      (is (= (:lat-min m) -78))
-      (is (= (:lat-step m) 1))      
-      (is (= (:lon-max m) 358.75))
-      (is (= (:lon-min m) 0))
-      (is (= (:lon-step m) 1.25)))))
+    (let [meta (meta sequence)]
+      (is (= (:valid-time meta) valid-time))
+      (is (isa? (class (:projection meta)) Projection))
+      (is (= (:lat-axis meta) (lat-axis geo-grid)))
+      (is (= (:lon-axis meta) (lon-axis geo-grid))))))
 
 (deftest test-read-matrix
   (let [geo-grid (open-example-geo-grid)
@@ -70,15 +66,11 @@
     (is (matrix? matrix))
     (is (= (count matrix) 157))
     (is (every? #(= % 288) (map count matrix)))    
-    (let [m (meta matrix)]
-      (is (= (:valid-time m) (first (valid-times geo-grid))))
-      (is (isa? (class (:projection m)) Projection))
-      (is (= (:lat-max m) 78))
-      (is (= (:lat-min m) -78))
-      (is (= (:lat-step m) 1))      
-      (is (= (:lon-max m) 358.75))
-      (is (= (:lon-min m) 0))
-      (is (= (:lon-step m) 1.25)))))
+    (let [meta (meta matrix)]
+      (is (= (:valid-time meta) (first (valid-times geo-grid))))
+      (is (isa? (class (:projection meta)) Projection))
+      (is (= (:lat-axis meta) (lat-axis geo-grid)))
+      (is (= (:lon-axis meta) (lon-axis geo-grid))))))
 
 (deftest test-time-index-with-geo-grid
   (let [geo-grid (open-example-geo-grid)]
