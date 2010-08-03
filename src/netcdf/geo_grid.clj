@@ -8,19 +8,19 @@
         [clj-time.coerce :only (from-date to-date)]))
 
 (defn coord-system
-  "Returns the coordinate system of the geo grid."
+  "Returns the coordinate system of the GeoGrid."
   [#^GeoGrid geo-grid] (.getCoordinateSystem geo-grid))
 
 (defn bounding-box
-  "Returns the bounding box of the geo grid."
+  "Returns the bounding box of the GeoGrid."
   [#^GeoGrid geo-grid] (.getLatLonBoundingBox (coord-system geo-grid)))
 
 (defn description
-  "Returns the description of the geo grid."
+  "Returns the description of the GeoGrid."
   [#^GeoGrid geo-grid] (.. geo-grid getVariable getDescription))
 
 (defn lat-axis
-  "Returns the latitude axis of the geo grid."
+  "Returns the latitude axis of the GeoGrid."
   [#^GeoGrid geo-grid]
   (let [axis (. (coord-system geo-grid) getYHorizAxis)
         bounds (bounding-box geo-grid)]
@@ -30,7 +30,7 @@
      :step (/ (.getHeight bounds) (- (.getSize axis) 1))}))
 
 (defn lon-axis
-  "Returns the longitude axis of the geo grid."
+  "Returns the longitude axis of the GeoGrid."
   [#^GeoGrid geo-grid]
   (let [axis (. (coord-system geo-grid) getXHorizAxis)
         bounds (bounding-box geo-grid)]
@@ -40,46 +40,49 @@
      :step (/ (.getWidth bounds) (- (.getSize axis) 1))}))
 
 (defn lat-lon-axis
-  "Returns the latitude and longitude axis of the geo grid."
+  "Returns the latitude and longitude axis of the GeoGrid."
   [#^GeoGrid geo-grid]
   {:lat-axis (lat-axis geo-grid)
    :lon-axis (lon-axis geo-grid)})
 
 (defn open-geo-grid
-  "Open the NetCDF geo grid."
+  "Open a NetCDF GeoGrid."
   [dataset-uri variable] (. (dataset/open-grid-dataset dataset-uri) findGridDatatype variable))
 
 (defn projection
-  "Returns the projection of the geo grid."
+  "Returns the projection of the GeoGrid."
   [#^GeoGrid geo-grid] (.getProjection (coord-system geo-grid)))
 
 (defn time-axis
-  "Returns the time axis of the geo grid for valid-time."
+  "Returns the time axis of the GeoGrid."
   [#^GeoGrid geo-grid] (.getTimeAxis1D (coord-system geo-grid)))
 
 (defn valid-times
-  "Returns the valid times in the NetCDF geo grid."
+  "Returns the valid times of the NetCDF GeoGrid."
   [#^GeoGrid geo-grid] (map from-date (.getTimeDates (time-axis geo-grid))))
 
 (defn time-index
-  "Returns the time index into the geo grid for valid-time."
+  "Returns the GeoGrid time index for valid-time."
   [#^GeoGrid geo-grid #^DateTime valid-time]
   (. (time-axis geo-grid) findTimeIndexFromDate (to-date valid-time)))
 
 (defn- read-xy-data [#^GeoGrid geo-grid #^DateTime valid-time & [z-index]]  
-  (. geo-grid readYXData (time-index geo-grid valid-time) (or z-index 0)))
+  (seq (.copyTo1DJavaArray (. geo-grid readYXData (time-index geo-grid valid-time) (or z-index 0)))))
 
 (defn read-seq
-  "Read the whole geo grid as a sequence."
-  [#^GeoGrid geo-grid & options]
-  (let [options (apply hash-map options) valid-time (or (:valid-time options) (first (valid-times geo-grid)))]
-    (with-meta (seq (. (read-xy-data geo-grid valid-time (:z-index options)) copyTo1DJavaArray))
-      (merge (lat-lon-axis geo-grid) {:valid-time valid-time :projection (projection geo-grid)}))))
+  "Read the whole GeoGrid as a sequence."
+  [#^GeoGrid geo-grid & {:keys [valid-time z-index]}]
+  (let [valid-time (or valid-time (first (valid-times geo-grid)))]
+    (with-meta (read-xy-data geo-grid valid-time z-index)
+      {:lat-axis (lat-axis geo-grid)
+       :lon-axis (lon-axis geo-grid)
+       :projection (projection geo-grid)
+       :valid-time valid-time})))
 
 (defn read-matrix
-  "Read the whole geo grid as a matrix."
-  [#^GeoGrid geo-grid & options]
-  (let [sequence (apply read-seq geo-grid options)]
+  "Read the whole GeoGrid as a matrix."
+  [#^GeoGrid geo-grid & {:keys [valid-time z-index]}]
+  (let [sequence (read-seq geo-grid :valid-time valid-time :z-index z-index)]
     (with-meta (.viewRowFlip (matrix sequence (:size (:lon-axis (meta sequence)))))
       (meta sequence))))
 

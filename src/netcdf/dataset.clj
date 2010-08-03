@@ -3,16 +3,18 @@
            (ucar.nc2 FileWriter NetcdfFile)
            (ucar.nc2.dt.grid GridDataset GridAsPointDataset)))
 
-(defn- write-dimensions [dataset writer]
-  (let [dimensions (.getDimensions dataset)]
-    (dorun (map #(. writer writeDimension %) dimensions))
-    (dorun (map #(. writer writeVariable (.findVariable dataset (.getName %))) dimensions))))
+(defn- write-dimensions [#^NetcdfDataset dataset #^FileWriter writer]
+  (doseq [dimension (.getDimensions dataset)]
+    (. writer writeDimension dimension)
+    (. writer writeVariable (.findVariable dataset (.getName dimension)))))
 
-(defn- write-global-attributes [dataset writer]
-  (dorun (map #(. writer writeGlobalAttribute %) (.getGlobalAttributes dataset))))
+(defn- write-global-attributes [#^NetcdfDataset dataset #^FileWriter writer]
+  (doseq [attribute (.getGlobalAttributes dataset)]
+    (. writer writeGlobalAttribute attribute)))
 
-(defn- write-variables [dataset writer variables]
-  (dorun (map #(. writer writeVariable (.findVariable dataset (str %1))) variables)))
+(defn- write-variables [#^NetcdfDataset dataset #^FileWriter writer variables]
+  (doseq [variable variables]
+    (. writer writeVariable (.findVariable dataset (str variable)))))
 
 (defmacro with-file-writer [symbol filename & body]
   `(let [file# (java.io.File. ~filename)]
@@ -23,15 +25,15 @@
 
 (defn geo-grids
   "Returns all grids in the NetCDF dataset."
-  [dataset] (.getGrids dataset))
+  [#^GridDataset dataset] (.getGrids dataset))
 
 (defn datatype-names
   "Returns all grids in the NetCDF dataset."
-  [dataset] (map #(.getName %) (geo-grids dataset)))
+  [#^NetcdfDataset dataset] (map #(.getName %) (geo-grids dataset)))
 
 (defn find-geo-grid
   "Find the GeoGrid by name"
-  [dataset name]
+  [#^GridDataset dataset name]
   (first (filter #(= (.getName %) name) (geo-grids dataset))))
 
 (defn open-dataset
@@ -44,7 +46,7 @@
 
 (defn valid-times
   "Returns the valid times in the NetCDF dataset."
-  [dataset] (sort (.getDates (GridAsPointDataset. (.getGrids dataset)))))
+  [#^GridDataset dataset] (sort (.getDates (GridAsPointDataset. (.getGrids dataset)))))
 
 (defn copy-dataset
   "Copy the NetCDF dataset from source to target."
