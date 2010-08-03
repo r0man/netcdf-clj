@@ -1,31 +1,21 @@
 (ns netcdf.test.dataset
+  (:import ucar.nc2.dt.grid.GeoGrid)
   (:use clojure.test netcdf.dataset netcdf.test.helper))
 
-;; (defn make-example-dataset []
-;;   (make-dataset *dataset-uri*))
-
-;; (deftest test-make-dataset
-;;   (let [dataset (make-example-dataset)]
-;;     (is (= (:uri dataset) *dataset-uri*))
-;;     (is (nil? (:service dataset))))
-;;   (let [dataset (make-dataset *remote-uri*)]
-;;     (is (= (:uri dataset) *remote-uri*))
-;;     (is (nil? (:service dataset)))))
-
 (deftest test-open-dataset
-  (let [dataset (open-dataset *dataset-uri*)]
+  (with-open [dataset (open-dataset *dataset-uri*)]
     (is (isa? (class dataset) ucar.nc2.dataset.NetcdfDataset))))
 
 (deftest test-open-dataset-with-remote
-  (let [dataset (open-dataset *remote-uri*)]
+  (with-open [dataset (open-dataset *remote-uri*)]
     (is (isa? (class dataset) ucar.nc2.dataset.NetcdfDataset))))
 
 (deftest test-open-grid-dataset
-  (let [dataset (open-grid-dataset *dataset-uri*)]
+  (with-open [dataset (open-grid-dataset *dataset-uri*)]
     (is (isa? (class dataset) ucar.nc2.dt.grid.GridDataset))))
 
 (deftest test-open-grid-dataset-with-remote
-  (let [dataset (open-grid-dataset *remote-uri*)]
+  (with-open [dataset (open-grid-dataset *remote-uri*)]
     (is (isa? (class dataset) ucar.nc2.dt.grid.GridDataset))))
 
 (deftest test-copy-dataset
@@ -33,12 +23,28 @@
     (copy-dataset *dataset-uri* target)
     (is (= (.exists (java.io.File. target)) true))))
 
-(deftest test-copy-dataset-selected-variables
+(deftest test-copy-dataset-with-some-variables
   (let [target "/tmp/.copy-test.netcdf"]
     (copy-dataset *dataset-uri* target ["htsgwsfc"])
     (is (= (.exists (java.io.File. target)) true))))
 
+(deftest test-datatype-names
+  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+    (is (= (datatype-names dataset) ["htsgwsfc"]))))
+
+(deftest test-find-geo-grid
+  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+    (let [geo-grid (last (geo-grids dataset)) name (.getName geo-grid)]
+      (is (= geo-grid (find-geo-grid dataset name))))))
+
+(deftest test-geo-grids
+  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+    (let [grids (geo-grids dataset)]
+      (is (not (empty? grids)))
+      (is (every? #(isa? (class %) GeoGrid) grids)))))
+
 (deftest test-valid-times
-  (let [valid-times (valid-times (open-grid-dataset *dataset-uri*))]
-    (is (> (count valid-times) 0))
-    (is (every? #(isa? (class %) java.util.Date) valid-times))))
+  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+    (let [valid-times (valid-times dataset)]
+      (is (not (empty? valid-times)))
+      (is (every? #(isa? (class %) java.util.Date) valid-times)))))
