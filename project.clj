@@ -8,10 +8,9 @@
                  [incanter/incanter-core "1.2.3-SNAPSHOT"]
                  [javax.media/jai_core "1.1.3"]
                  [opendap "2.1"]
-                 ;; [org.apache.maven/maven-ant-tasks "2.0.10"]
-                 [org.clojure/clojure "1.2.0-master-SNAPSHOT"]
-                 [org.clojure/clojure-contrib "1.2.0-SNAPSHOT"]
+                 [org.clojure/clojure "1.2.0-RC1"]
+                 [org.clojure/clojure-contrib "1.2.0-RC1"]
                  [org.slf4j/slf4j-log4j12 "1.3.1"]]
   :dev-dependencies [[lein-clojars "0.5.0-SNAPSHOT"]
                      [swank-clojure "1.2.1"]]
-  :repositories [["geosolutions" "http://mvn.geo-solutions.it"]])
+  :repositories {"geosolutions" "http://mvn.geo-solutions.it"})
