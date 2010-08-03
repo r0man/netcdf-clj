@@ -15,16 +15,6 @@
   (dorun (map #(. writer writeVariable (.findVariable dataset (str %1))) variables)))
 
 (defmacro with-file-writer [symbol filename & body]
-  (let [symbol# symbol]
-    `(let [filename# (str ~filename)]
-       (println (.getParentFile (java.io.File. filename#)))
-       (println (.mkdirs (.getParentFile (java.io.File. filename#))))
-       (println filename#)
-       (let [~symbol# (FileWriter. (.toString filename#) false)]
-         ~@body
-         (.finish ~symbol#)))))
-
-(defmacro with-file-writer [symbol filename & body]
   `(let [file# (java.io.File. ~filename)]
      (.mkdirs (.getParentFile file#))
      (let [~symbol (FileWriter. (str file#) false)]
