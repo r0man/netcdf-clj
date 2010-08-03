@@ -80,7 +80,7 @@
 (deftest test-valid-times
   (let [valid-times (valid-times (open-example-geo-grid))]
     (is (> (count valid-times) 0))
-    (is (every? #(isa? (class %) java.util.Date) valid-times))))
+    (is (every? #(isa? (class %) org.joda.time.DateTime) valid-times))))
 
 (deftest test-location->row-column
   (let [matrix (read-matrix (open-example-geo-grid))]

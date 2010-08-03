@@ -1,12 +1,11 @@
 (ns netcdf.geo-grid
   (:import incanter.Matrix
-           ucar.nc2.dt.grid.GeoGrid
-           ucar.unidata.geoloc.ProjectionPointImpl
-           java.util.Date)
-  (:use [incanter.core :only (matrix ncol nrow sel)]
-        netcdf.location)
+           org.joda.time.DateTime
+           ucar.nc2.dt.grid.GeoGrid)
   (:require [netcdf.dataset :as dataset]
-            [netcdf.projection :as projection]))
+            [netcdf.projection :as projection])
+  (:use [incanter.core :only (matrix ncol nrow sel)]
+        [clj-time.coerce :only (from-date to-date)]))
 
 (defn coord-system
   "Returns the coordinate system of the geo grid."
@@ -60,14 +59,14 @@
 
 (defn valid-times
   "Returns the valid times in the NetCDF geo grid."
-  [#^GeoGrid geo-grid] (.getTimeDates (time-axis geo-grid)))
+  [#^GeoGrid geo-grid] (map from-date (.getTimeDates (time-axis geo-grid))))
 
 (defn time-index
   "Returns the time index into the geo grid for valid-time."
-  [#^GeoGrid geo-grid #^Date valid-time]
-  (. (time-axis geo-grid) findTimeIndexFromDate valid-time))
+  [#^GeoGrid geo-grid #^DateTime valid-time]
+  (. (time-axis geo-grid) findTimeIndexFromDate (to-date valid-time)))
 
-(defn- read-xy-data [#^GeoGrid geo-grid #^Date valid-time & [z-index]]  
+(defn- read-xy-data [#^GeoGrid geo-grid #^DateTime valid-time & [z-index]]  
   (. geo-grid readYXData (time-index geo-grid valid-time) (or z-index 0)))
 
 (defn read-seq
