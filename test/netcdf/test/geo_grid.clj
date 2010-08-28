@@ -36,6 +36,14 @@
     (is (= (:size axis) 288))
     (is (= (:step axis) 1.25))))
 
+(deftest test-meta-data
+  (let [grid (open-example-geo-grid)
+        meta (meta-data grid)]
+    (is (= (:name meta) (.getName grid)))
+    (is (= (:description meta) (.getDescription grid)))
+    (is (= (:lat-axis meta) (lat-axis grid)))
+    (is (= (:lon-axis meta) (lon-axis grid)))))
+
 (deftest test-lat-lon-axis
   (let [geo-grid (open-example-geo-grid)]
     (is (= (lat-lon-axis geo-grid) {:lat-axis (lat-axis geo-grid) :lon-axis (lon-axis geo-grid)}))))
@@ -55,10 +63,8 @@
     (is (seq? sequence))
     (is (= (count sequence) 45216))
     (let [meta (meta sequence)]
-      (is (= (:valid-time meta) valid-time))
-      (is (isa? (class (:projection meta)) Projection))
-      (is (= (:lat-axis meta) (lat-axis geo-grid)))
-      (is (= (:lon-axis meta) (lon-axis geo-grid))))))
+      (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
+      (is (= (:valid-time meta) valid-time)))))
 
 (deftest test-read-matrix
   (let [geo-grid (open-example-geo-grid)
@@ -67,53 +73,52 @@
     (is (= (count matrix) 157))
     (is (every? #(= % 288) (map count matrix)))    
     (let [meta (meta matrix)]
-      (is (= (:valid-time meta) (first (valid-times geo-grid))))
-      (is (isa? (class (:projection meta)) Projection))
-      (is (= (:lat-axis meta) (lat-axis geo-grid)))
-      (is (= (:lon-axis meta) (lon-axis geo-grid))))))
+      (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
+      (is (= (:valid-time meta) (first (valid-times geo-grid)))))))
 
 (deftest test-time-index-with-geo-grid
   (let [geo-grid (open-example-geo-grid)]
     (is (= (time-index geo-grid (first (valid-times geo-grid))) 0))
-    (is (= (time-index geo-grid (last (valid-times geo-grid))) (- (count (valid-times geo-grid)) 1)))))
+    (is (= (time-index geo-grid (last (valid-times geo-grid)))
+           (- (count (valid-times geo-grid)) 1)))))
 
 (deftest test-valid-times
   (let [valid-times (valid-times (open-example-geo-grid))]
     (is (> (count valid-times) 0))
     (is (every? #(isa? (class %) org.joda.time.DateTime) valid-times))))
 
-(deftest test-location->row-column
-  (let [matrix (read-matrix (open-example-geo-grid))]
-    (are [latitude longitude row column]
-      (is (= (location->row-column matrix (make-location latitude longitude)) [row column]))
-      78 0 0 0
-      78 0.1 0 0
-      78 1.24 0 0
-      78 1.25 0 1
-      78 180 0 144
-      78 -178.5 0 145
-      78 -1.25 0 287
-      77 0 1 0
-      77.1 0 0 0
-      77.9 0 0 0)))
+;; (deftest test-location->row-column
+;;   (let [matrix (read-matrix (open-example-geo-grid))]
+;;     (are [latitude longitude row column]
+;;       (is (= (location->row-column matrix (make-location latitude longitude)) [row column]))
+;;       78 0 0 0
+;;       78 0.1 0 0
+;;       78 1.24 0 0
+;;       78 1.25 0 1
+;;       78 180 0 144
+;;       78 -178.5 0 145
+;;       78 -1.25 0 287
+;;       77 0 1 0
+;;       77.1 0 0 0
+;;       77.9 0 0 0)))
 
-(deftest test-sel-location
-  (let [matrix (read-matrix (open-example-geo-grid))]
-    (is (.isNaN (sel-location matrix (make-location 78 0))))
-    (is (.isNaN (sel-location matrix (make-location 78 -1.25))))
-    (is (.isNaN (sel-location matrix (make-location -77 0))))
-    (is (.isNaN (sel-location matrix (make-location -77 -1.25))))
-    ;; (is (= (sel-location matrix (make-location 77 0)) 1.809999942779541))
-    ;; (is (= (sel-location matrix (make-location -70 0)) 1.5800000429153442))
-    ))
+;; (deftest test-sel-location
+;;   (let [matrix (read-matrix (open-example-geo-grid))]
+;;     (is (.isNaN (sel-location matrix (make-location 78 0))))
+;;     (is (.isNaN (sel-location matrix (make-location 78 -1.25))))
+;;     (is (.isNaN (sel-location matrix (make-location -77 0))))
+;;     (is (.isNaN (sel-location matrix (make-location -77 -1.25))))
+;;     ;; (is (= (sel-location matrix (make-location 77 0)) 1.809999942779541))
+;;     ;; (is (= (sel-location matrix (make-location -70 0)) 1.5800000429153442))
+;;     ))
 
-(deftest test-sel-location!
-  (let [matrix (read-matrix (open-example-geo-grid))]
-    (is (.isNaN (sel-location! matrix (make-location 78 0))))
-    (is (.isNaN (sel-location! matrix (make-location 78 -1.25))))
-    (is (.isNaN (sel-location! matrix (make-location -77 0))))
-    (is (.isNaN (sel-location! matrix (make-location -77 -1.25))))
-    ;; (is (= (sel-location! matrix (make-location 77 0)) 1.809999942779541))
-    ;; (is (= (sel-location! matrix (make-location -70 0)) 1.5800000429153442))
-    ))
+;; (deftest test-sel-location!
+;;   (let [matrix (read-matrix (open-example-geo-grid))]
+;;     (is (.isNaN (sel-location! matrix (make-location 78 0))))
+;;     (is (.isNaN (sel-location! matrix (make-location 78 -1.25))))
+;;     (is (.isNaN (sel-location! matrix (make-location -77 0))))
+;;     (is (.isNaN (sel-location! matrix (make-location -77 -1.25))))
+;;     ;; (is (= (sel-location! matrix (make-location 77 0)) 1.809999942779541))
+;;     ;; (is (= (sel-location! matrix (make-location -70 0)) 1.5800000429153442))
+;;     ))
 

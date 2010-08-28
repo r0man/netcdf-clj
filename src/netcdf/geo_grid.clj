@@ -45,6 +45,14 @@
   {:lat-axis (lat-axis geo-grid)
    :lon-axis (lon-axis geo-grid)})
 
+(defn meta-data
+  "Returns the meta data of the GeoGrid."
+  [#^GeoGrid geo-grid]
+  {:name (.getName geo-grid)
+   :description (.getDescription geo-grid)
+   :lat-axis (lat-axis geo-grid)
+   :lon-axis (lon-axis geo-grid)})
+
 (defn open-geo-grid
   "Open a NetCDF GeoGrid."
   [dataset-uri variable] (. (dataset/open-grid-dataset dataset-uri) findGridDatatype variable))
@@ -74,10 +82,7 @@
   [#^GeoGrid geo-grid & {:keys [valid-time z-index]}]
   (let [valid-time (or valid-time (first (valid-times geo-grid)))]
     (with-meta (read-xy-data geo-grid valid-time z-index)
-      {:lat-axis (lat-axis geo-grid)
-       :lon-axis (lon-axis geo-grid)
-       :projection (projection geo-grid)
-       :valid-time valid-time})))
+      (assoc (meta-data geo-grid) :valid-time valid-time))))
 
 (defn read-matrix
   "Read the whole GeoGrid as a matrix."
