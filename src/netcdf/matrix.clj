@@ -38,14 +38,17 @@
   "Write the matrix to filename."
   [#^Matrix matrix filename]
   (write-meta-data matrix (meta-data-filename filename))
-  (spit (meta-data-filename filename) (prn-str (serialize-meta (meta matrix))))
   (spit filename (prn-str matrix))
   filename)
+
+(defn- read-seq
+  "Read the matrix sequence from filename."
+  [filename] (deserialize-seq (read-string (slurp filename))))
 
 (defn read-matrix
   "Read the matrix from filename."
   [filename]
-  (let [meta (read-meta-data (meta-data-filename filename))
-        columns (:size (:lon-axis meta))]
-    (with-meta (matrix (deserialize-seq (read-string (slurp filename))) columns)
+  (let [meta (read-meta-data (meta-data-filename filename))]
+    (with-meta
+      (matrix (read-seq filename) (:size (:lon-axis meta)))
       meta)))
