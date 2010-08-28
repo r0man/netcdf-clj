@@ -1,5 +1,6 @@
 (ns netcdf.repository
-  (use [clojure.contrib.def :only (defvar)]))
+  (use [clojure.contrib.def :only (defvar)]
+       [netcdf.dods :only (download-variable)]))
 
 (defvar *repositories* (ref {})
   "The map of repositories.")
@@ -29,6 +30,33 @@
   (dosync (ref-set *repositories* (dissoc @*repositories* (keyword (:name repository)))))
   repository)
 
+(defn global-forecast-system-repositories
+  "Returns the Wave Watch III repositories."
+  [] (remove nil? (map lookup-repository ["gfs-hd"])))
+
+(defn wave-watch-repositories
+  "Returns the Wave Watch III repositories."
+  [] (remove nil? (map lookup-repository ["akw" "enp" "nah" "nph" "nww3" "wna"])))
+
+(defn download-variables [repositories variables]  
+  (doseq [repository repositories]
+    (println (str "* " (:description repository)))
+    (println (str "  Url: " (:url repository)))
+    (doseq [variable variables]
+      (time
+       (do
+         (print (str "  - " variable " "))
+         (println (str (download-variable repository variable)))
+         (print "    "))))))
+
+(defn download-global-forecast-system [& variables]
+  (println "Downloading the Global Forecast System Model ...")
+  (download-variables (global-forecast-system-repositories) (or variables ["tmpsfc"])))
+
+(defn download-wave-watch [& variables]
+  (println "Downloading the Wave Watch III Model ...")
+  (download-variables (wave-watch-repositories) (or variables ["htsgwsfc"])))
+
 (defmacro defrepo
   "Define and register the repository."
   [name url & [description]]
@@ -44,15 +72,15 @@
 
 (defrepo "nah"
   "http://nomad5.ncep.noaa.gov:9090/dods/waves/nah"
-  "Regional Regional Atlantic Hurricane Wave Model")
+  "Regional Atlantic Hurricane Wave Model")
 
 (defrepo "nph"
   "http://nomad5.ncep.noaa.gov:9090/dods/waves/nph"
   "Regional North Pacific Hurricane Wave Model")
 
 (defrepo "nww3"
-  "http://nomad5.ncep.noaa.gov:9090/dods/waves/nph"
-  "Global NOAA Wave Watch III Wave Model")
+  "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3"
+  "Global NOAA Wave Watch III Model")
 
 (defrepo "wna"
   "http://nomad5.ncep.noaa.gov:9090/dods/waves/wna"
@@ -62,10 +90,5 @@
   "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
   "Global Forecast Model")
 
-(defn global-forecast-repositories
-  "Returns the Wave Watch III repositories."
-  [] (map lookup-repository ["gfs-hd"]))
-
-(defn wave-watch-repositories
-  "Returns the Wave Watch III repositories."
-  [] (map lookup-repository ["akw" "enp" "nah" "nph" "nww3" "watch"]))
+;; (download-wave-watch)
+;; (download-global-forecast-system)

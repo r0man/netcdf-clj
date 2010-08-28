@@ -4,8 +4,19 @@
         clojure.test netcdf.geo-grid netcdf.location netcdf.test.helper)
   (:require [netcdf.dataset :as dataset]))
 
+(refer-private 'netcdf.geo-grid)
+
 (defn open-example-geo-grid []
   (open-geo-grid *dataset-uri* *variable*))
+
+(deftest test-normalize-lon-axis
+  (let [axis (normalize-lon-axis {:min 0.0, :max 358.75, :size 288, :step 1.25})]
+    (is (= (:min axis) -179.375))
+    (is (= (:max axis) 179.375))
+    (is (= (:size axis) 288))
+    (is (= (:step axis) 1.25)))
+  (let [axis {:min 170, :max 180, :size 10, :step 1}]
+    (is (= (normalize-lon-axis axis) axis))))
 
 (deftest test-open-geo-grid
   (let [geo-grid (open-example-geo-grid)]
@@ -31,8 +42,10 @@
 
 (deftest test-lon-axis
   (let [axis (lon-axis (open-example-geo-grid))]
-    (is (= (:min axis) 0))
-    (is (= (:max axis) 358.75))
+    ;; (is (= (:min axis) 0)) ; not normalized
+    ;; (is (= (:max axis) 358.75))
+    (is (= (:min axis) -179.375))
+    (is (= (:max axis) 179.375))
     (is (= (:size axis) 288))
     (is (= (:step axis) 1.25))))
 

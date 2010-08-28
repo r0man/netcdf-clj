@@ -72,14 +72,14 @@
     (date-time 2010 3 25 11 59) (date-time 2010 3 25 6 0)
     (date-time 2010 3 25 12 0) (date-time 2010 3 25 12 0)))
 
-(deftest test-local-uri  
-  (let [uri (local-uri *repository* *valid-time*)]
+(deftest test-local-url  
+  (let [uri (local-url *repository* *valid-time*)]
     (is (isa? (class uri) java.net.URI))
-    (is (= (str uri) (str "file://"  *local-url* File/separator (:name *repository*) File/separator
+    (is (= (str uri) (str "file:"  *local-url* File/separator (:name *repository*) File/separator
                           (unparse (formatters :basic-date) *valid-time*) File/separator "t" (unparse (formatters :hour) *valid-time*) "z.nc"))))
-  (let [uri (local-uri *repository* *valid-time* *variable*)]
+  (let [uri (local-url *repository* *valid-time* *variable*)]
     (is (isa? (class uri) java.net.URI))
-    (is (= (str uri) (str "file://" *local-url* File/separator (:name *repository*) File/separator
+    (is (= (str uri) (str "file:" *local-url* File/separator (:name *repository*) File/separator
                           *variable* File/separator (unparse (formatters :basic-date) *valid-time*) File/separator "t" (unparse (formatters :hour) *valid-time*) "z.nc")))))
 
 (deftest test-download-variable

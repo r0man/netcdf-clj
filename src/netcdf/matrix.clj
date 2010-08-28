@@ -85,7 +85,9 @@
       (.setRGB image col row (.getRGB color)))
     image))
 
-;; (def *matrix* (grid/read-matrix (grid/open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc")))
+;; (def *matrix* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/akw/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
+;; (def *matrix* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
+;; (def *matrix* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/wna/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
 
 ;; (time
 ;;  (write-buffered-image (render-matrix *matrix*) "/tmp/test.png"))

@@ -55,16 +55,17 @@
 (defn latest-reference-time [repository]
   (last (reference-times repository)))
 
-(defn local-uri [repository valid-time & [variable]]
+(defn local-url [repository valid-time & [variable]]
   (let [reference-time (valid-time->reference-time valid-time)]
-    (URI. (str "file://" *local-url* File/separator (:name repository) File/separator
+    (URI. (str "file:" *local-url* File/separator (:name repository) File/separator
                (if variable (str variable File/separator))
                (unparse (formatters :basic-date) reference-time) File/separator "t"
                (unparse (formatters :hour) reference-time) "z.nc"))))
 
 (defn download-variable [repository variable & [reference-time]]
   (let [reference-time (or reference-time (latest-reference-time repository))
-        uri (local-uri repository reference-time variable)]
-    (if-not (file-exists? uri)
-      (dataset/copy-dataset (dataset-url repository reference-time) uri [variable]))
-    uri))
+        remote (dataset-url repository reference-time)
+        local (local-url repository reference-time variable)]
+    (if-not (file-exists? local)
+      (dataset/copy-dataset remote local [variable]))
+    local))

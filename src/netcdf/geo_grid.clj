@@ -30,15 +30,24 @@
      :size (int (.getSize axis))
      :step (/ (.getHeight bounds) (- (.getSize axis) 1))}))
 
+(defn- normalize-lon-axis [axis]
+  (if (<= (:max axis) 180)
+    axis
+    (let [diff (/ (- (:max axis) (:min axis)) 2)]
+      (assoc axis
+        :min (- (:min axis) diff)
+        :max (- (:max axis) diff)))))
+
 (defn lon-axis
   "Returns the longitude axis of the GeoGrid."
   [#^GeoGrid geo-grid]
   (let [axis (. (coord-system geo-grid) getXHorizAxis)
         bounds (bounding-box geo-grid)]
-    {:min (.getLonMin bounds)
-     :max (.getLonMax bounds)
-     :size (int (.getSize axis))
-     :step (/ (.getWidth bounds) (- (.getSize axis) 1))}))
+    (normalize-lon-axis
+     {:min (.getLonMin bounds)
+      :max (.getLonMax bounds)
+      :size (int (.getSize axis))
+      :step (/ (.getWidth bounds) (- (.getSize axis) 1))})))
 
 (defn lat-lon-axis
   "Returns the latitude and longitude axis of the GeoGrid."
