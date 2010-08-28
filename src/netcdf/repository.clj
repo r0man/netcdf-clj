@@ -62,4 +62,10 @@
   "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
   "Global Forecast Model")
 
-(lookup-repository "nww3")
+(defn global-forecast-repositories
+  "Returns the Wave Watch III repositories."
+  [] (map lookup-repository ["gfs-hd"]))
+
+(defn wave-watch-repositories
+  "Returns the Wave Watch III repositories."
+  [] (map lookup-repository ["akw" "enp" "nah" "nph" "nww3" "watch"]))
