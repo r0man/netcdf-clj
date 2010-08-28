@@ -3,15 +3,16 @@
   (:use [clj-time.core :only (date-time year month day hour)]
         clj-time.format
         netcdf.dods
+        netcdf.repository
         netcdf.test.helper
         clojure.test))
 
-(def *repository* (make-repository "akw" "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw" "Alaskan Waters"))
+(def *repository* (lookup-repository "akw"))
 
 (def *dods* "file:///home/roman/workspace/netcdf-clj/test/fixtures/dods.xml")
 
 (deftest test-inventory-url
-  (is (= (inventory-url *repository*) (str (:root *repository*) "/xml"))))
+  (is (= (inventory-url *repository*) (str (:url *repository*) "/xml"))))
 
 (deftest test-latest-reference-time
   (is (= (latest-reference-time *repository*)
@@ -21,7 +22,7 @@
   (let [repository (make-repository "akw" "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw" "Alaskan Waters")]
     (is (= (:name repository ) "akw"))
     (is (= (:description repository ) "Alaskan Waters"))
-    (is (= (:root repository ) "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw"))))
+    (is (= (:url repository ) "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw"))))
 
 (deftest test-parse-dods
   (let [dods (parse-dods *dods*)]
@@ -74,11 +75,11 @@
 (deftest test-local-uri  
   (let [uri (local-uri *repository* *valid-time*)]
     (is (isa? (class uri) java.net.URI))
-    (is (= (str uri) (str "file://"  *local-root* File/separator (:name *repository*) File/separator
+    (is (= (str uri) (str "file://"  *local-url* File/separator (:name *repository*) File/separator
                           (unparse (formatters :basic-date) *valid-time*) File/separator "t" (unparse (formatters :hour) *valid-time*) "z.nc"))))
   (let [uri (local-uri *repository* *valid-time* *variable*)]
     (is (isa? (class uri) java.net.URI))
-    (is (= (str uri) (str "file://" *local-root* File/separator (:name *repository*) File/separator
+    (is (= (str uri) (str "file://" *local-url* File/separator (:name *repository*) File/separator
                           *variable* File/separator (unparse (formatters :basic-date) *valid-time*) File/separator "t" (unparse (formatters :hour) *valid-time*) "z.nc")))))
 
 (deftest test-download-variable

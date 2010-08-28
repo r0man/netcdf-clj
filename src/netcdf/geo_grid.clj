@@ -5,7 +5,8 @@
   (:require [netcdf.dataset :as dataset]
             [netcdf.projection :as projection])
   (:use [incanter.core :only (matrix ncol nrow sel)]
-        [clj-time.coerce :only (from-date to-date)]))
+        [clj-time.coerce :only (from-date to-date)]
+        [clj-time.format :only (unparse parse formatters)]))
 
 (defn coord-system
   "Returns the coordinate system of the GeoGrid."
@@ -91,21 +92,51 @@
     (with-meta (.viewRowFlip (matrix sequence (:size (:lon-axis (meta sequence)))))
       (meta sequence))))
 
-(defn location->row-column [#^Matrix matrix location]
-  (let [meta (meta matrix) [row column] (projection/location->row-column (:projection meta) location )]
-    [(int (/ (+ (* row -1) (int (/ (nrow matrix) 2))) (:step (:lat-axis meta))))
-     (int (/ column (:step (:lon-axis meta))))]))
+;; (defn location->row-column [#^Matrix matrix location]
+;;   (let [meta (meta matrix) [row column] (projection/location->row-column (:projection meta) location )]
+;;     [(int (/ (+ (* row -1) (int (/ (nrow matrix) 2))) (:step (:lat-axis meta))))
+;;      (int (/ column (:step (:lon-axis meta))))]))
 
-(defn sel-location
-  "Select the data point in the matrix for the location."
-  [#^Matrix matrix location & options]
-  (let [options (apply hash-map options)
-        [row column] (location->row-column matrix location)]
-    (if (and (>= column 0) (< column (ncol matrix))
-             (>= row 0) (< row (nrow matrix)))
-      (sel matrix row column))))
+;; (defn sel-location
+;;   "Select the data point in the matrix for the location."
+;;   [#^Matrix matrix location & options]
+;;   (let [options (apply hash-map options)
+;;         [row column] (location->row-column matrix location)]
+;;     (if (and (>= column 0) (< column (ncol matrix))
+;;              (>= row 0) (< row (nrow matrix)))
+;;       (sel matrix row column))))
 
-(defn sel-location!
-  "Select the data point in the matrix for the location."
-  [#^Matrix matrix location]   
-  (apply sel matrix (location->row-column matrix location)))
+;; (defn sel-location!
+;;   "Select the data point in the matrix for the location."
+;;   [#^Matrix matrix location]   
+;;   (apply sel matrix (location->row-column matrix location)))
+
+;; (def grid (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100607/t00z.nc" "htsgwsfc"))
+;; (def grid (open-geo-grid "http://nomad5.ncep.noaa.gov:9090/dods/gfs2p5/gfs20100828/gfs2p5_00z" "tmpsfc"))
+
+;; (.getDescription grid)
+
+;; (defn save-matrix-meta [#^GeoGrid geo-grid filename & {:keys [valid-time z-index]}]
+;;   (spit filename
+;;         {:lat-axis (lat-axis geo-grid)
+;;          :lon-axis (lon-axis geo-grid)
+;;          :name (.getName geo-grid)
+;;          :valid-time valid-time}))
+
+;; (defn save-matrix [#^GeoGrid geo-grid filename & {:keys [valid-time z-index]}]
+;;   (let [matrix (read-matrix geo-grid :valid-time valid-time :z-index z-index)
+;;         meta (meta matrix)]
+;;     (spit filename
+;;           (assoc meta
+;;             :valid-time (unparse (formatters :basic-date-time-no-ms) (:valid-time meta))
+;;             :data matrix))))
+
+;; (defn load-matrix [filename]
+;;   (read-string (slurp filename)))
+
+;; (clj-time.format/show-formatters)
+
+;; (save-matrix grid "/tmp/matrix")
+;; (load-matrix "/tmp/matrix")
+
+;; (meta (read-matrix grid))
