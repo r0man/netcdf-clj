@@ -6,7 +6,8 @@
             [netcdf.projection :as projection])
   (:use [incanter.core :only (matrix ncol nrow sel)]
         [clj-time.coerce :only (from-date to-date)]
-        [clj-time.format :only (unparse parse formatters)]))
+        [clj-time.format :only (unparse parse formatters)]
+        netcdf.coord-system))
 
 (defn coord-system
   "Returns the coordinate system of the GeoGrid."
@@ -42,7 +43,8 @@
   "Returns the longitude axis of the GeoGrid."
   [#^GeoGrid geo-grid]
   (let [axis (. (coord-system geo-grid) getXHorizAxis)
-        bounds (bounding-box geo-grid)]
+        bounds (bounding-box geo-grid)
+        projection (.getProjection (coord-system geo-grid))]
     (normalize-lon-axis
      {:min (.getLonMin bounds)
       :max (.getLonMax bounds)
@@ -75,6 +77,10 @@
   "Returns the time axis of the GeoGrid."
   [#^GeoGrid geo-grid] (.getTimeAxis1D (coord-system geo-grid)))
 
+(defn vertical-axis
+  "Returns the vertical axis of the GeoGrid."
+  [#^GeoGrid geo-grid] (.getVerticalAxis (coord-system geo-grid)))
+
 (defn valid-times
   "Returns the valid times of the NetCDF GeoGrid."
   [#^GeoGrid geo-grid] (map from-date (.getTimeDates (time-axis geo-grid))))
@@ -84,22 +90,38 @@
   [#^GeoGrid geo-grid #^DateTime valid-time]
   (. (time-axis geo-grid) findTimeIndexFromDate (to-date valid-time)))
 
-(defn- read-xy-data [#^GeoGrid geo-grid #^DateTime valid-time & [z-index]]  
-  (seq (.copyTo1DJavaArray (. geo-grid readYXData (time-index geo-grid valid-time) (or z-index 0)))))
+(defn z-index
+  "Returns the z-index into the GeoGrid for the z-coordinate."
+  [#^GeoGrid geo-grid z-coord]
+  (if-let [vertical-axis (vertical-axis geo-grid)]
+    (. vertical-axis findCoordElement z-coord) 0))
+
+(defn- read-xy-data [#^GeoGrid geo-grid #^DateTime valid-time & [z-coord]]  
+  (seq (.copyTo1DJavaArray (. geo-grid readYXData (time-index geo-grid valid-time) (or z-coord 0)))))
 
 (defn read-seq
   "Read the whole GeoGrid as a sequence."
-  [#^GeoGrid geo-grid & {:keys [valid-time z-index]}]
+  [#^GeoGrid geo-grid & {:keys [valid-time z-coord]}]
   (let [valid-time (or valid-time (first (valid-times geo-grid)))]
-    (with-meta (read-xy-data geo-grid valid-time z-index)
+    (with-meta (read-xy-data geo-grid valid-time z-coord)
       (assoc (meta-data geo-grid) :valid-time valid-time))))
 
 (defn read-matrix
   "Read the whole GeoGrid as a matrix."
-  [#^GeoGrid geo-grid & {:keys [valid-time z-index]}]
-  (let [sequence (read-seq geo-grid :valid-time valid-time :z-index z-index)]
+  [#^GeoGrid geo-grid & {:keys [valid-time z-coord]}]
+  (let [sequence (read-seq geo-grid :valid-time valid-time :z-coord z-coord)]
     (with-meta (.viewRowFlip (matrix sequence (:size (:lon-axis (meta sequence)))))
       (meta sequence))))
+
+(defn read-location [#^GeoGrid geo-grid location & {:keys [valid-time z-coord]}]
+  (let [t-index (time-index geo-grid (or valid-time (first (valid-times geo-grid))))
+        [x-index y-index] (x-y-index (coord-system geo-grid) location)
+        z-index (z-index geo-grid z-coord)]
+    (.getDouble (. geo-grid readDataSlice t-index z-index y-index x-index) 0)))
+
+;; (def *nww3* (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc"))
+
+;; (read-location *nww3* {:latitude 76 :longitude 0})
 
 ;; (defn location->row-column [#^Matrix matrix location]
 ;;   (let [meta (meta matrix) [row column] (projection/location->row-column (:projection meta) location )]
@@ -125,15 +147,15 @@
 
 ;; (.getDescription grid)
 
-;; (defn save-matrix-meta [#^GeoGrid geo-grid filename & {:keys [valid-time z-index]}]
+;; (defn save-matrix-meta [#^GeoGrid geo-grid filename & {:keys [valid-time z-coord]}]
 ;;   (spit filename
 ;;         {:lat-axis (lat-axis geo-grid)
 ;;          :lon-axis (lon-axis geo-grid)
 ;;          :name (.getName geo-grid)
 ;;          :valid-time valid-time}))
 
-;; (defn save-matrix [#^GeoGrid geo-grid filename & {:keys [valid-time z-index]}]
-;;   (let [matrix (read-matrix geo-grid :valid-time valid-time :z-index z-index)
+;; (defn save-matrix [#^GeoGrid geo-grid filename & {:keys [valid-time z-coord]}]
+;;   (let [matrix (read-matrix geo-grid :valid-time valid-time :z-coord z-coord)
 ;;         meta (meta matrix)]
 ;;     (spit filename
 ;;           (assoc meta

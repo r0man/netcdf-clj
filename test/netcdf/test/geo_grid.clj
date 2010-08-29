@@ -65,6 +65,14 @@
   (let [geo-grid (open-example-geo-grid)]
     (is (isa? (class (time-axis geo-grid)) ucar.nc2.dataset.CoordinateAxis1DTime))))
 
+(deftest test-vertical-axis
+  (let [geo-grid (open-example-geo-grid)]
+    (is (nil? (class (vertical-axis geo-grid)))))) ;; TODO: Use dataset with a vertical axis
+
+(deftest test-z-index
+  (let [grid (open-example-geo-grid)]
+    (is (= (z-index grid 0) 0))))
+
 (deftest test-projection
   (let [projection (projection (open-example-geo-grid))]
     (is (isa? (class projection) ucar.unidata.geoloc.ProjectionImpl))))
@@ -99,6 +107,11 @@
   (let [valid-times (valid-times (open-example-geo-grid))]
     (is (> (count valid-times) 0))
     (is (every? #(isa? (class %) org.joda.time.DateTime) valid-times))))
+
+(deftest test-read-location
+  (let [grid (open-example-geo-grid)
+        value (read-location grid {:latitude 76 :longitude 0})]
+    (is (isa? (class value) Double))))
 
 ;; (deftest test-location->row-column
 ;;   (let [matrix (read-matrix (open-example-geo-grid))]
