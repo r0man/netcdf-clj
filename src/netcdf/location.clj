@@ -66,9 +66,10 @@
   [bounding-box location]  
   (. bounding-box contains (latitude location) (longitude location)))
 
-(defn destination-point [location azimuth-in-deg distance-in-km]
-  (if-let [point (. Bearing findPoint (latitude location) (longitude location) azimuth-in-deg distance-in-km nil)]
-    (make-location (.getLatitude point) (.getLongitude point))))
+;; Missing in NETCDF 4.2?
+;; (defn destination-point [location azimuth-in-deg distance-in-km]
+;;   (if-let [point (. Bearing findPoint (latitude location) (longitude location) azimuth-in-deg distance-in-km nil)]
+;;     (make-location (.getLatitude point) (.getLongitude point))))
 
 (defn distance [from-location to-location]
   (if-let [bearing (. Bearing calculateBearing (latitude from-location) (longitude from-location) (latitude to-location) (longitude to-location) nil)]
