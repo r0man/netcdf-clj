@@ -5,6 +5,7 @@
   (:use clojure.test
         incanter.core
         netcdf.matrix
+        netcdf.image
         netcdf.test.helper))
 
 (refer-private 'netcdf.matrix)
@@ -41,7 +42,14 @@
     (is (= (write-meta-data *matrix* filename) filename))
     (is (.exists (File. filename)))))
 
-(deftest test-render-matrix
-  (let [matrix (render-matrix *matrix*)]
+(deftest test-make-image
+  (let [matrix (make-image *matrix*)]
     (is (isa? (class matrix) BufferedImage))))
 
+(deftest test-render-image
+  (let [image (make-buffered-image (ncol *matrix*) (nrow *matrix*))]
+    (is (= (render-image *matrix* image) image))))
+
+(deftest test-save-as-image
+  (let [image (save-as-image *matrix* "/tmp/test-save-as-image.png")]
+    (is (isa? (class image) BufferedImage))))

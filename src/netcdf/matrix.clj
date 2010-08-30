@@ -75,17 +75,24 @@
    (> value 0.75) (Color. 32 80 255)
    :else (Color. 5 15 217)))
 
-(defn render-matrix [matrix & {:keys [image]}]
-  (let [image (or image (make-buffered-image (.columns matrix) (.rows matrix)))]
-    (doseq [row (range 0 (nrow matrix)) col (range 0 (ncol matrix))
-            :let [value (sel matrix :rows row :cols col)
-                  ;; color (if (.isNaN value) Color/BLACK Color/WHITE)
-                  color (value->color value)
-                  ]]
-      (.setRGB image col row (.getRGB color)))
-    image))
+(defn render-image [matrix image]  
+  (doseq [row (range 0 (nrow matrix)) col (range 0 (ncol matrix))
+          :let [value (sel matrix :rows row :cols col)
+                ;; color (if (.isNaN value) Color/BLACK Color/WHITE)
+                color (value->color value)
+                ]]
+    (.setRGB image col row (.getRGB color)))
+  image)
 
-;; (def *akw* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/akw/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
+(defn make-image [matrix]
+  (let [image (make-buffered-image (ncol matrix) (nrow matrix))]
+    (render-image matrix image)))
+
+(defn save-as-image [matrix filename]
+  (write-buffered-image (make-image matrix) filename))
+;; (make-image *akw*)
+
+(def *akw* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/akw/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
 ;; (def *nww3* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
 ;; (def *wna* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/wna/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
 ;; (def *example* (grid/read-matrix (grid/open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc")))

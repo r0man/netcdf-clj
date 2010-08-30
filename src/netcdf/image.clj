@@ -15,7 +15,7 @@
   [image filename & {:keys [format]}]
   (let [format (or format (file-extension filename) "PNG")]
     (ImageIO/write image format (File. filename))
-    filename))
+    image))
 
 ;; (defn create-display
 ;;   ([] (create-display 360 180))
