@@ -1,5 +1,6 @@
 (ns netcdf.test.matrix
-  (:import java.io.File incanter.Matrix)
+  (:import java.io.File incanter.Matrix
+           java.awt.image.BufferedImage)
   (:require [netcdf.geo-grid :as grid])
   (:use clojure.test
         incanter.core
@@ -39,3 +40,8 @@
   (let [filename "/tmp/test-write-meta-data"]
     (is (= (write-meta-data *matrix* filename) filename))
     (is (.exists (File. filename)))))
+
+(deftest test-render-matrix
+  (let [matrix (render-matrix *matrix*)]
+    (is (isa? (class matrix) BufferedImage))))
+
