@@ -85,12 +85,35 @@
       (.setRGB image col row (.getRGB color)))
     image))
 
-;; (def *matrix* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/akw/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
-;; (def *matrix* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
-;; (def *matrix* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/wna/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
+;; (def *akw* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/akw/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
+;; (def *nww3* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
+;; (def *wna* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/wna/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
+;; (def *example* (grid/read-matrix (grid/open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc")))
+
+;; (defn find-bounds [& matrixes]
+;;   )
+
+;; (defn location->position [#^Matrix matrix location]
+;;   (let [{:keys [lat-axis lon-ax
+;;                 is]} (meta matrix)
+;;         lat-diff (- (:max lat-axis) (:min lat-axis))
+;;         lon-diff (- (:max lon-axis) (:min lon-axis))
+;;         ]
+;;     [lat-diff lon-diff]))
+
+;; (location->position *nww3* {:latitude 0 :longitude 0})
+
+;; (meta *akw*)
+;; (meta *wna*)
+;; (meta *nww3*)
+
 
 ;; (time
-;;  (write-buffered-image (render-matrix *matrix*) "/tmp/test.png"))
+;;  (let [model "nww3"
+;;        matrix *nww3*
+;;        meta (meta matrix)]
+;;    (println meta)
+;;    (write-buffered-image (render-matrix matrix) (str "/tmp/" model ".png"))))
 
 ;; (nrow *matrix*)
 ;; (ncol *matrix*)

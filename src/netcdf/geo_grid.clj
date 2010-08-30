@@ -2,12 +2,11 @@
   (:import incanter.Matrix
            org.joda.time.DateTime
            ucar.nc2.dt.grid.GeoGrid)
-  (:require [netcdf.dataset :as dataset]
-            [netcdf.projection :as projection])
+  (:require [netcdf.dataset :as dataset])
   (:use [incanter.core :only (matrix ncol nrow sel)]
         [clj-time.coerce :only (from-date to-date)]
         [clj-time.format :only (unparse parse formatters)]
-        netcdf.coord-system))
+        [netcdf.coord-system :only (x-y-index)]))
 
 (defn coord-system
   "Returns the coordinate system of the GeoGrid."
@@ -30,14 +29,6 @@
      :max (.getLatMax bounds)
      :size (int (.getSize axis))
      :step (/ (.getHeight bounds) (- (.getSize axis) 1))}))
-
-;; (defn- normalize-lon-axis [axis]
-;;   (if (<= (:max axis) 180)
-;;     axis
-;;     (let [diff (/ (- (:max axis) (:min axis)) 2)]
-;;       (assoc axis
-;;         :min (- (:min axis) diff)
-;;         :max (- (:max axis) diff)))))
 
 (defn lon-axis
   "Returns the longitude axis of the GeoGrid."
@@ -109,7 +100,7 @@
   "Read the whole GeoGrid as a matrix."
   [#^GeoGrid geo-grid & {:keys [valid-time z-coord]}]
   (let [sequence (read-seq geo-grid :valid-time valid-time :z-coord z-coord)]
-    (with-meta (.viewRowFlip (matrix sequence (:size (:lon-axis (meta sequence)))))
+    (with-meta (matrix sequence (:size (:lon-axis (meta sequence))))
       (meta sequence))))
 
 (defn read-location [#^GeoGrid geo-grid location & {:keys [valid-time z-coord]}]
