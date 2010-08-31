@@ -90,9 +90,8 @@
 
 (defn save-as-image [matrix filename]
   (write-buffered-image (make-image matrix) filename))
-;; (make-image *akw*)
 
-(def *akw* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/akw/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
+;; (def *akw* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/akw/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
 ;; (def *nww3* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
 ;; (def *wna* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/wna/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
 ;; (def *example* (grid/read-matrix (grid/open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc")))

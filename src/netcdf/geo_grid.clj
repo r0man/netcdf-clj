@@ -110,6 +110,11 @@
     (.getDouble (. grid readDataSlice t-index z-index y-index x-index) 0)))
 
 ;; (def *nww3* (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc"))
+;; (def *nww3* (open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc"))
+
+;; (meta-data *nww3*)
+;; (bounding-box *nww3*)
+;; (.getDefaultMapAreaLL (projection *nww3*))
 
 ;; (read-location *nww3* {:latitude 76 :longitude 0})
 
