@@ -9,10 +9,10 @@
      ~@body))
 
 (defmulti interpolate
-  (fn [#^Matrix matrix #^Float x-fract #^Float y-fract]
+  (fn [^Matrix matrix ^Float x-fract ^Float y-fract]
     (keyword (str (ncol matrix) "x" (nrow matrix)))))
 
-(defmethod interpolate :2x2 [#^Matrix matrix #^Float x-fract #^Float y-fract]
+(defmethod interpolate :2x2 [^Matrix matrix ^Float x-fract ^Float y-fract]
   (. *interpolation* interpolate
      (sel matrix 0 0) ; the central sample
      (sel matrix 0 1) ; the sample to the right of the central sample
@@ -21,7 +21,7 @@
      (float x-fract)
      (float y-fract)))
 
-(defmethod interpolate :4x4 [#^Matrix matrix #^Float x-fract #^Float y-fract]
+(defmethod interpolate :4x4 [^Matrix matrix ^Float x-fract ^Float y-fract]
   (. *interpolation* interpolate
      (sel matrix 0 0) ; the sample above and to the left of the central sample
      (sel matrix 0 1) ; the sample above the central sample

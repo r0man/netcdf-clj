@@ -29,7 +29,7 @@
 
 (defn write-meta-data
   "Write the matrix meta data to filename."
-  [#^Matrix matrix filename]    
+  [^Matrix matrix filename]    
   (spit filename (prn-str (serialize-meta (meta matrix))))
   filename)
 
@@ -39,7 +39,7 @@
 
 (defn write-matrix
   "Write the matrix to filename."
-  [#^Matrix matrix filename]
+  [^Matrix matrix filename]
   (write-meta-data matrix (meta-data-filename filename))
   (spit filename (prn-str matrix))
   filename)
@@ -56,7 +56,7 @@
       (matrix (read-seq filename) (:size (:lon-axis meta)))
       meta)))
 
-(defn value->color [#^Double value]
+(defn value->color [^Double value]
   (cond
    (.isNaN value) Color/BLACK
    (> value 10.5) (Color. 213 159 0)
@@ -99,7 +99,7 @@
 ;; (defn find-bounds [& matrixes]
 ;;   )
 
-;; (defn location->position [#^Matrix matrix location]
+;; (defn location->position [^Matrix matrix location]
 ;;   (let [{:keys [lat-axis lon-ax
 ;;                 is]} (meta matrix)
 ;;         lat-diff (- (:max lat-axis) (:min lat-axis))

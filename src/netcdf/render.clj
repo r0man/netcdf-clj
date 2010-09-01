@@ -78,7 +78,7 @@
 ;;   (let [color-model (.getColorModel image)]
 ;;     (BufferedImage. color-model (. color-model createCompatibleWritableRaster width height) (.isAlphaPremultiplied color-model) nil)))
 
-;; (defn value->color [#^Double value]
+;; (defn value->color [^Double value]
 ;;   (cond
 ;;    (> value 10.5) (Color. 213 159 0)
 ;;    (> value 9.75) (Color. 213 0 0)
@@ -104,7 +104,7 @@
 ;;     (. graphics setColor (.getBackground component))
 ;;     (. graphics fillRect (.getX bounds) (.getY bounds) (.getWidth bounds) (.getHeight bounds))))
 
-;; (defn image-coords->location [center #^Integer x #^Integer y #^Integer width #^Integer height #^Integer zoom]
+;; (defn image-coords->location [center ^Integer x ^Integer y ^Integer width ^Integer height ^Integer zoom]
 ;;   (let [center-xy (location->coords (location->map center) zoom)]
 ;;     (coords->location
 ;;      {:x (+ x (:x center-xy) (/ width -2))

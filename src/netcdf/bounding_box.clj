@@ -14,5 +14,3 @@
 
 (defmethod make-bounding-box [String String] [location-1 location-2]
   (LatLonRect. (parse-location location-1) (parse-location location-2)))
-
-
