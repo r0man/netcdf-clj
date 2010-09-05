@@ -1,8 +1,8 @@
 (ns netcdf.geo-grid
   (:import incanter.Matrix
            org.joda.time.DateTime
-           ucar.nc2.dt.grid.GeoGrid)
-  (:require [netcdf.dataset :as dataset])
+           ucar.nc2.dt.grid.GeoGrid
+           ucar.nc2.dt.grid.GridDataset)
   (:use [incanter.core :only (matrix ncol nrow sel)]
         [clj-time.coerce :only (from-date to-date)]
         [clj-time.format :only (unparse parse formatters)]
@@ -57,7 +57,7 @@
 
 (defn open-geo-grid
   "Open a NetCDF GeoGrid."
-  [dataset-uri variable] (. (dataset/open-grid-dataset dataset-uri) findGridDatatype variable))
+  [dataset-uri variable] (. (. GridDataset open (str dataset-uri)) findGridDatatype variable))
 
 (defn projection
   "Returns the projection of the GeoGrid."
