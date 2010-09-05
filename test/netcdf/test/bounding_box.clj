@@ -1,16 +1,26 @@
 (ns netcdf.test.bounding-box
-  (:use clojure.test netcdf.bounding-box))
+  (:use clojure.test
+        netcdf.bounding-box
+        netcdf.location))
 
-(deftest test-make-bounding-box-with-string
-  (let [bounds (make-bounding-box "1,2 10,20")]
-    (is (= (.getLatMin bounds) 1))
-    (is (= (.getLatMax bounds) 11))
-    (is (= (.getLonMin bounds) 2))
-    (is (= (.getLonMax bounds) 22))))
-
-(deftest test-make-bounding-box-with-strings
-  (let [bounds (make-bounding-box "1,2" "10,20")]
-    (is (= (.getLatMin bounds) 1))
-    (is (= (.getLatMax bounds) 10))
-    (is (= (.getLonMin bounds) 2))
-    (is (= (.getLonMax bounds) 20))))
+(deftest test-make-bounding
+  (let [bounds (make-bounding-box "-90,-180" "90,180")]
+    (is (= (.getLatMin bounds) -90))
+    (is (= (.getLatMax bounds) 90))
+    (is (= (.getLonMin bounds) -180))
+    (is (= (.getLonMax bounds) 180)))
+  (let [bounds (make-bounding-box "90,180" "-90,-180")]
+    (is (= (.getLatMin bounds) -90))
+    (is (= (.getLatMax bounds) 90))
+    (is (= (.getLonMin bounds) -180))
+    (is (= (.getLonMax bounds) 180)))
+  (let [bounds (make-bounding-box (make-location -90 -180) (make-location 90 180))]
+    (is (= (.getLatMin bounds) -90))
+    (is (= (.getLatMax bounds) 90))
+    (is (= (.getLonMin bounds) -180))
+    (is (= (.getLonMax bounds) 180)))
+  (let [bounds (make-bounding-box (make-location 90 180) (make-location -90 -180))]
+    (is (= (.getLatMin bounds) -90))
+    (is (= (.getLatMax bounds) 90))
+    (is (= (.getLonMin bounds) -180))
+    (is (= (.getLonMax bounds) 180))))
