@@ -21,6 +21,9 @@
 (deftest test-copy-dataset
   (let [target "/tmp/.copy-test.netcdf"]
     (copy-dataset *dataset-uri* target)
+    (is (= (.exists (java.io.File. target)) true)))
+  (let [target "file:/tmp/.copy-test.netcdf"]
+    (copy-dataset *dataset-uri* target)
     (is (= (.exists (java.io.File. target)) true))))
 
 (deftest test-copy-dataset-with-some-variables
