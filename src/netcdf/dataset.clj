@@ -19,7 +19,7 @@
 (defmacro with-file-writer [symbol filename & body]
   `(let [file# (java.io.File. ~filename)]
      (.mkdirs (.getParentFile file#))
-     (let [~symbol (FileWriter. (str file#) false)]
+     (let [~symbol (FileWriter. (.getPath (.toURI file#)) false)]
        ~@body
        (.finish ~symbol))))
 
