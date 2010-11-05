@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<serverdirectory count="5392">
+
+  <dataset protocol="dods" rank="5029">
+    <name>/wave/akw/akw20101030/akw20101030_00z</name>
+    <description>WAVE_AKW Regional Alaska Waters wave model fcst from 00Z30oct2010, downloaded Oct 30 04:28 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z.das</das>
+  </dataset>
+  <dataset protocol="dods" rank="5030">
+    <name>/wave/akw/akw20101030/akw20101030_06z</name>
+    <description>WAVE_AKW Regional Alaska Waters wave model fcst from 06Z30oct2010, downloaded Oct 30 10:28 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_06z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_06z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_06z.das</das>
+  </dataset>
+
+  <dataset protocol="dods" rank="5055">
+    <name>/wave/enp/enp20101030/enp20101030_00z</name>
+    <description>WAVE_ENP Regional Eastern North Pacific wave model fcst from 00Z30oct2010, downloaded Oct 30 04:29 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/wave/enp/enp20101030/enp20101030_00z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/wave/enp/enp20101030/enp20101030_00z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/wave/enp/enp20101030/enp20101030_00z.das</das>
+  </dataset>
+  <dataset protocol="dods" rank="5056">
+    <name>/wave/enp/enp20101030/enp20101030_06z</name>
+    <description>WAVE_ENP Regional Eastern North Pacific wave model fcst from 06Z30oct2010, downloaded Oct 30 10:29 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/wave/enp/enp20101030/enp20101030_06z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/wave/enp/enp20101030/enp20101030_06z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/wave/enp/enp20101030/enp20101030_06z.das</das>
+  </dataset>
+
+  <dataset protocol="dods" rank="5081">
+    <name>/wave/mww3/20101030/multi_1.ak_10m20101030_00z</name>
+    <description>Multi-grid wave model: Alaska 10 arc-min grid from 00Z30oct2010 downloaded Oct 30 04:26 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/wave/mww3/20101030/multi_1.ak_10m20101030_00z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/wave/mww3/20101030/multi_1.ak_10m20101030_00z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/wave/mww3/20101030/multi_1.ak_10m20101030_00z.das</das>
+  </dataset>
+  <dataset protocol="dods" rank="5082">
+    <name>/wave/mww3/20101030/multi_1.ak_10m20101030_06z</name>
+    <description>Multi-grid wave model: Alaska 10 arc-min grid from 06Z30oct2010 downloaded Oct 30 10:26 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/wave/mww3/20101030/multi_1.ak_10m20101030_06z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/wave/mww3/20101030/multi_1.ak_10m20101030_06z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/wave/mww3/20101030/multi_1.ak_10m20101030_06z.das</das>
+  </dataset>
+
+  <dataset protocol="dods" rank="5341">
+    <name>/wave/nww3/nww320101030/nww320101030_00z</name>
+    <description>WAVE_nww3 Global wave model fcst from 00Z30oct2010, downloaded Oct 30 04:39 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.das</das>
+  </dataset>
+  <dataset protocol="dods" rank="5342">
+    <name>/wave/nww3/nww320101030/nww320101030_06z</name>
+    <description>WAVE_nww3 Global wave model fcst from 06Z30oct2010, downloaded Oct 30 10:41 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z.das</das>
+  </dataset>
+
+</serverdirectory>
+

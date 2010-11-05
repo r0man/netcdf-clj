@@ -17,16 +17,18 @@
 
 (def *dataset-uri* (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
 
-
 (def *remote-uri*
-     (str "http://nomad5.ncep.noaa.gov:9090/dods/waves/" *product* "/"
+     (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" *product* "/"
           *product* (unparse (formatters :basic-date) *valid-time*) "/"
-          *product* "_" (unparse (formatters :hour) *valid-time*) "z"))
+          *product* (unparse (formatters :basic-date) *valid-time*) "_"
+          (unparse (formatters :hour) *valid-time*) "z"))
 
-(if-not (.exists (File. *dataset-uri*))
-  (do
-    (println "Downloading test data:" *remote-uri*)
-    (time (dataset/copy-dataset *remote-uri* *dataset-uri* [*variable*]))))
+;; *remote-uri*
+
+;; (if-not (.exists (File. *dataset-uri*))
+;;   (do
+;;     (println "Downloading test data:" *remote-uri*)
+;;     (time (dataset/copy-dataset *remote-uri* *dataset-uri* [*variable*]))))
 
 ;; (def *datatype* (datatype/open-datatype (datatype/make-datatype *dataset-uri* *variable*)))
 

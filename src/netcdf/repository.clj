@@ -1,6 +1,5 @@
 (ns netcdf.repository
-  (use [clojure.contrib.def :only (defvar)]
-       [netcdf.dods :only (download-variable)]))
+  (use [clojure.contrib.def :only (defvar)]))
 
 (defvar *repositories* (ref {})
   "The map of repositories.")
@@ -46,7 +45,8 @@
       (time
        (do
          (print (str "  - " variable " "))
-         (println (str (download-variable repository variable)))
+         (throw (Exception. "FIXME"))
+         ;; (println (str (download-variable repository variable)))
          (print "    "))))))
 
 (defn download-global-forecast-system [& variables]
