@@ -24,6 +24,16 @@
     (is (= (:description repository ) "Alaskan Waters"))
     (is (= (:url repository ) "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw"))))
 
+(deftest test-parse-inventory
+  (let [datasets (parse-inventory "test-resources/dods.xml")]
+    (is (= 4 (count datasets)))
+    (let [dataset (first datasets)]
+      (is (= "/fnl/fnl20101030/fnlflx_00z" (:name dataset)))
+      (is (= "gdas1 flux file at 00Z30oct2010, downloaded Oct 30 06:55 UTC" (:description dataset)))
+      (is (= "http://nomads.ncep.noaa.gov:9090/dods/fnl/fnl20101030/fnlflx_00z.das" (:das dataset)))
+      (is (= "http://nomads.ncep.noaa.gov:9090/dods/fnl/fnl20101030/fnlflx_00z.dds" (:dds dataset)))
+      (is (= "http://nomads.ncep.noaa.gov:9090/dods/fnl/fnl20101030/fnlflx_00z" (:dods dataset))))))
+
 (deftest test-parse-dods
   (let [dods (parse-dods *dods*)]
     (is (= (first dods) "http://nomad5.ncep.noaa.gov:9090/dods/aofs/ofs"))

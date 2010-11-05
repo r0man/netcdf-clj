@@ -49,6 +49,16 @@
 (defn parse-reference-times [xml url]
   (map dataset-url->time (sort (filter #(. % startsWith url) (parse-dods xml)))))
 
+(defn parse-inventory [url]
+  (let [extract (fn [node selector] (first (xml-> node selector text)))]
+    (map (fn [dataset]
+           {:name (extract dataset :name)
+            :description (extract dataset :description)
+            :das (extract dataset :das)
+            :dds (extract dataset :dds)
+            :dods (extract dataset :dods)})
+         (xml-> (feed-to-zip url) :dataset))))
+
 (defn reference-times [repository]
   (parse-reference-times (inventory-url repository) (:url repository)))
 
