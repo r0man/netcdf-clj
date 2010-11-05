@@ -58,4 +58,5 @@
        (with-file-writer writer target
          (write-global-attributes dataset writer)
          (write-dimensions dataset writer)
-         (write-variables dataset writer variables)))))
+         (write-variables dataset writer variables))
+       target)))
