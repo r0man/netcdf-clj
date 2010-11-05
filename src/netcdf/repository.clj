@@ -63,27 +63,27 @@
   (register-repository (make-repository name url description)))
 
 (defrepo "akw"
-  "http://nomad5.ncep.noaa.gov:9090/dods/waves/akw"
+  "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
   "Regional Alaska Waters Wave Model")
 
 (defrepo "enp"
-  "http://nomad5.ncep.noaa.gov:9090/dods/waves/enp"
+  "http://nomads.ncep.noaa.gov:9090/dods/wave/enp"
   "Regional Eastern North Pacific Wave Model")
 
 (defrepo "nah"
-  "http://nomad5.ncep.noaa.gov:9090/dods/waves/nah"
+  "http://nomads.ncep.noaa.gov:9090/dods/wave/nah"
   "Regional Atlantic Hurricane Wave Model")
 
 (defrepo "nph"
-  "http://nomad5.ncep.noaa.gov:9090/dods/waves/nph"
+  "http://nomads.ncep.noaa.gov:9090/dods/wave/nph"
   "Regional North Pacific Hurricane Wave Model")
 
 (defrepo "nww3"
-  "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3"
+  "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
   "Global NOAA Wave Watch III Model")
 
 (defrepo "wna"
-  "http://nomad5.ncep.noaa.gov:9090/dods/waves/wna"
+  "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
   "Regional Western North Atlantic Wave Model")
 
 (defrepo "gfs-hd"
