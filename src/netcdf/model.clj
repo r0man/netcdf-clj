@@ -6,14 +6,14 @@
         [netcdf.dataset :only (copy-dataset)]
         clj-time.format))
 
-(defvar *repositories* (ref {})
-  "The map of repositories.")
+(defvar *models* (ref {})
+  "The map of models.")
 
 (defrecord Model [name url description])
 
 (defn find-model-by-name
   "Lookup a registered model by name."
-  [name] (get @*repositories* (keyword name)))
+  [name] (get @*models* (keyword name)))
 
 (defn make-model [name url & [description]]
   (Model. name url description))
@@ -21,7 +21,7 @@
 (defn register-model
   "Register the model."
   [model]
-  (dosync (ref-set *repositories* (assoc @*repositories* (keyword (:name model)) model)))
+  (dosync (ref-set *models* (assoc @*models* (keyword (:name model)) model)))
   model)
 
 (defn model?
@@ -31,7 +31,7 @@
 (defn unregister-model
   "Unregister the model."
   [model]
-  (dosync (ref-set *repositories* (dissoc @*repositories* (keyword (:name model)))))
+  (dosync (ref-set *models* (dissoc @*models* (keyword (:name model)))))
   model)
 
 (defn reference-times
@@ -62,21 +62,21 @@
   (doseq [variable variables :let [filename (local-path model variable reference-time root-dir)]]
     (copy-variable model variable filename reference-time)))
 
-(defn global-forecast-system-repositories
-  "Returns the Wave Watch III repositories."
+(defn global-forecast-system-models
+  "Returns the Wave Watch III models."
   [] (remove nil? (map find-model-by-name ["gfs-hd"])))
 
-(defn wave-watch-repositories
-  "Returns the Wave Watch III repositories."
+(defn wave-watch-models
+  "Returns the Wave Watch III models."
   [] (remove nil? (map find-model-by-name ["akw" "enp" "nah" "nph" "nww3" "wna"])))
 
 (defn download-global-forecast-system [& variables]
   (println "Downloading the Global Forecast System Model ...")
-  (map #(copy-model (or variables ["tmpsfc"])) (global-forecast-system-repositories)))
+  (map #(copy-model (or variables ["tmpsfc"])) (global-forecast-system-models)))
 
 (defn download-wave-watch [& variables]
   (println "Downloading the Wave Watch III Model ...")
-  (map #(copy-model % (or variables ["htsgwsfc"])) (wave-watch-repositories)))
+  (map #(copy-model % (or variables ["htsgwsfc"])) (wave-watch-models)))
 
 ;; (download-wave-watch)
 
