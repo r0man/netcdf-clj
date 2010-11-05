@@ -3,7 +3,6 @@
   (:use [clj-time.core :only (date-time year month day hour)]
         clj-time.format
         netcdf.dods
-        netcdf.repository
         netcdf.test.helper
         clojure.test
         clojure.contrib.mock))
