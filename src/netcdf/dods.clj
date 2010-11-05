@@ -52,15 +52,17 @@
 
 (defn find-datasets-by-url
   "Returns all datasets whose dods url matches the given url."
-  [url] (filter #(and (:dods %) (.startsWith (:dods %) url))
-                (find-inventory-by-url url)))
+  [url]
+  (sort-by :reference-time
+           (filter #(and (:dods %) (.startsWith (:dods %) url))
+                   (find-inventory-by-url url))))
 
 (defn find-datasets-by-url-and-reference-time
   [url reference-time]
-  (filter #(and (:dods %)
-                (.startsWith (:dods %) url)
-                (= (:reference-time %) reference-time))
-          (find-inventory-by-url url)))
+  (sort-by :reference-time
+           (filter #(and (:dods %) (.startsWith (:dods %) url)
+                         (= (:reference-time %) reference-time))
+                   (find-inventory-by-url url))))
 
 ;; (count (find-dataset-by-url-and-reference-times-by-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"))
 
@@ -68,8 +70,6 @@
 ;; (inventory "file:/home/roman/workspace/netcdf-clj/test-resources/dods/xml")
 
 ;; (def *local-url* (str (System/getProperty "user.home") File/separator ".netcdf"))
-
-
 
 ;; (defn valid-time->reference-time [valid-time]
 ;;   (date-time
@@ -93,8 +93,6 @@
 
 ;; (defn parse-reference-times [xml url]
 ;;   (map parse-reference-time (sort (filter #(. % startsWith url) (parse-dods xml)))))
-
-
 
 ;; (defn reference-times [repository]
 ;;   (parse-reference-times (inventory-url repository) (:url repository)))
@@ -134,11 +132,3 @@
 
 ;; ;; (def uri (java.net.URI. "http://nomads.ncep.noaa.gov:9090/dods/xml"))
 
-
-
-;; ;; (def das (.getDAS (dods.dap.DConnect. "http://nomads.ncep.noaa.gov:9090/dods/fnl/fnl20101030/fnlflx_00z")))
-
-;; ;; (.print das System/out)
-;; ;; (enumeration-seq (.getNames das))
-
-;; ;; (.print (.getAttributeTable das "tmax2m") System/out)

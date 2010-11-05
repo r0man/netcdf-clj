@@ -1,12 +1,13 @@
 (ns netcdf.repository
-  (use [clojure.contrib.def :only (defvar)]))
+  (:require [netcdf.dods :as dods])
+  (:use [clojure.contrib.def :only (defvar)]))
 
 (defvar *repositories* (ref {})
   "The map of repositories.")
 
 (defrecord Repository [name url description])
 
-(defn lookup-repository
+(defn find-repository-by-name
   "Lookup a registered repository by name."
   [name] (get @*repositories* (keyword name)))
 
@@ -31,11 +32,11 @@
 
 (defn global-forecast-system-repositories
   "Returns the Wave Watch III repositories."
-  [] (remove nil? (map lookup-repository ["gfs-hd"])))
+  [] (remove nil? (map find-repository-by-name ["gfs-hd"])))
 
 (defn wave-watch-repositories
   "Returns the Wave Watch III repositories."
-  [] (remove nil? (map lookup-repository ["akw" "enp" "nah" "nph" "nww3" "wna"])))
+  [] (remove nil? (map find-repository-by-name ["akw" "enp" "nah" "nph" "nww3" "wna"])))
 
 (defn download-variables [repositories variables]  
   (doseq [repository repositories]
@@ -56,6 +57,14 @@
 (defn download-wave-watch [& variables]
   (println "Downloading the Wave Watch III Model ...")
   (download-variables (wave-watch-repositories) (or variables ["htsgwsfc"])))
+
+(defn reference-times
+  "Returns all reference times for repository."
+  [repository] (map :reference-time (dods/find-datasets-by-url (:url repository))))
+
+(defn latest-reference-time
+  "Returns the latest reference times for repository."
+  [repository] (last (sort (reference-times repository))))
 
 (defmacro defrepo
   "Define and register the repository."
@@ -89,6 +98,3 @@
 (defrepo "gfs-hd"
   "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
   "Global Forecast Model")
-
-;; (download-wave-watch)
-;; (download-global-forecast-system)
