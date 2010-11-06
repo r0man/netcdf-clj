@@ -44,11 +44,13 @@
   [model] (last (sort (reference-times model))))
 
 (defn local-path [model variable & [reference-time root-dir]]
-  (let [reference-time (or reference-time (latest-reference-time model))]
-    (java.net.URI.
-     (str "file:" (or root-dir ".") File/separator
-          (:name model) File/separator variable File/separator
-          (unparse (formatters :basic-date-time-no-ms) reference-time) ".nc"))))
+  (let [reference-time (or reference-time (latest-reference-time model))]    
+    (str (or root-dir ".") File/separator
+         (:name model) File/separator variable File/separator
+         (unparse (formatters :basic-date-time-no-ms) reference-time) ".nc")))
+
+(defn local-uri [model variable & [reference-time root-dir]]  
+  (java.net.URI. (str "file:" (local-path model variable reference-time root-dir))))
 
 (defn find-dataset [model & [reference-time]]
   (first (dods/find-datasets-by-url-and-reference-time
