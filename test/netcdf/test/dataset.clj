@@ -22,9 +22,6 @@
   (let [target "/tmp/copy-dataset-path-as-string"]
     (copy-dataset *dataset-uri* target)
     (is (= (.exists (java.io.File. target)) true)))
-  (let [target "file:/tmp/copy-dataset-uri-as-string"]
-    (copy-dataset *dataset-uri* target)
-    (is (= (.exists (java.io.File. target)) true)))
   (let [target (java.net.URI. "file:/tmp/copy-dataset-uri")]
     (copy-dataset *dataset-uri* target)
     (is (= (.exists (java.io.File. target)) true))))

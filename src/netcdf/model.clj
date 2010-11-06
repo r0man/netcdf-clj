@@ -6,34 +6,10 @@
         [netcdf.dataset :only (copy-dataset)]
         clj-time.format))
 
-(defvar *models* (ref {})
-  "The map of models.")
-
-(defrecord Model [name url description])
-
 (defn find-model-by-name
   "Lookup a registered model by name."
-  [name] (get @*models* (keyword name)))
-
-(defn make-model [name url & [description]]
-  (Model. name url description))
-
-(defn register-model
-  "Register the model."
-  [model]
-  (println (str "Registering model: " (:name model)))
-  (dosync (ref-set *models* (assoc @*models* (keyword (:name model)) model)))
-  model)
-
-(defn model?
-  "Returns true if arg is a model, otherwise false."
-  [arg] (isa? (class arg) Model))
-
-(defn unregister-model
-  "Unregister the model."
-  [model]
-  (dosync (ref-set *models* (dissoc @*models* (keyword (:name model)))))
-  model)
+  [name] (if-let [var (find-var (symbol (str "netcdf.model/" name)))]
+           (deref var)))
 
 (defn reference-times
   "Returns all reference times for model."
@@ -81,37 +57,36 @@
   (println "Downloading the Wave Watch III Model ...")
   (map #(copy-model % (or variables ["htsgwsfc"])) (wave-watch-models)))
 
-;; (download-wave-watch)
-
 (defmacro defmodel
   "Define and register the model."
   [name url & [description]]
-  (register-model (make-model name url description)))
+  (let [name# name]
+    `(def ~name# ~{:name (str name#) :url url :description description})))
 
-(defmodel "akw"
+(defmodel akw
   "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
   "Regional Alaska Waters Wave Model")
 
-(defmodel "enp"
+(defmodel enp
   "http://nomads.ncep.noaa.gov:9090/dods/wave/enp"
   "Regional Eastern North Pacific Wave Model")
 
-(defmodel "nah"
+(defmodel nah
   "http://nomads.ncep.noaa.gov:9090/dods/wave/nah"
   "Regional Atlantic Hurricane Wave Model")
 
-(defmodel "nph"
+(defmodel nph
   "http://nomads.ncep.noaa.gov:9090/dods/wave/nph"
   "Regional North Pacific Hurricane Wave Model")
 
-(defmodel "nww3"
+(defmodel nww3
   "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
   "Global NOAA Wave Watch III Model")
 
-(defmodel "wna"
+(defmodel wna
   "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
   "Regional Western North Atlantic Wave Model")
 
-(defmodel "gfs-hd"
+(defmodel gfs-hd
   "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
   "Global Forecast Model")
