@@ -52,9 +52,9 @@
 
 (deftest test-local-path
   (is (= (local-path (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6))
-         "./akw/htsgwsfc/20101105T060000Z.nc"))
+         (java.net.URI. "file:./akw/htsgwsfc/20101105T060000Z.nc")))
   (is (= (local-path (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6) "/tmp")
-         "/tmp/akw/htsgwsfc/20101105T060000Z.nc")))
+         (java.net.URI. "file:/tmp/akw/htsgwsfc/20101105T060000Z.nc"))))
 
 (deftest test-find-dataset
   (with-test-inventory

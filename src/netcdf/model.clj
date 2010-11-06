@@ -21,6 +21,7 @@
 (defn register-model
   "Register the model."
   [model]
+  (println (str "Registering model: " (:name model)))
   (dosync (ref-set *models* (assoc @*models* (keyword (:name model)) model)))
   model)
 
@@ -44,9 +45,10 @@
 
 (defn local-path [model variable & [reference-time root-dir]]
   (let [reference-time (or reference-time (latest-reference-time model))]
-    (str (or root-dir ".") File/separator
-         (:name model) File/separator variable File/separator
-         (unparse (formatters :basic-date-time-no-ms) reference-time) ".nc")))
+    (java.net.URI.
+     (str "file:" (or root-dir ".") File/separator
+          (:name model) File/separator variable File/separator
+          (unparse (formatters :basic-date-time-no-ms) reference-time) ".nc"))))
 
 (defn find-dataset [model & [reference-time]]
   (first (dods/find-datasets-by-url-and-reference-time
