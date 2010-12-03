@@ -104,10 +104,11 @@
       (meta sequence))))
 
 (defn read-location [^GeoGrid grid location & {:keys [valid-time z-coord]}]
-  (let [t-index (time-index grid (or valid-time (first (valid-times grid))))
-        z-index (z-index grid z-coord)
-        [x-index y-index] (x-y-index (coord-system grid) location)]
-    (.getDouble (. grid readDataSlice t-index z-index y-index x-index) 0)))
+  (if location
+    (let [t-index (time-index grid (or valid-time (first (valid-times grid))))
+          z-index (z-index grid z-coord)
+          [x-index y-index] (x-y-index (coord-system grid) location)]
+      (.getDouble (. grid readDataSlice t-index z-index y-index x-index) 0))))
 
 ;; (def *nww3* (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc"))
 ;; (def *nww3* (open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc"))

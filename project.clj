@@ -4,7 +4,7 @@
   :dependencies [[clj-time "0.1.0-SNAPSHOT"]
                  [commons-httpclient "3.1"]
                  [essi-unidata/netcdf-java "4.0.41"]
-                 [google-maps "0.2-SNAPSHOT"]
+                 [google-maps "0.4.1-SNAPSHOT"]
                  [incanter/incanter-core "1.2.3-SNAPSHOT"]
                  [javax.media/jai_core "1.1.3"]
                  [opendap "2.1"]

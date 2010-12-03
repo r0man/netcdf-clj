@@ -25,7 +25,7 @@
     (is (isa? (class coord-system) ucar.nc2.dt.grid.GridCoordSys))))
 
 (deftest test-description
-  (is (= (description (open-example-geo-grid)) "** surface sig height of wind waves and swell [m]")))
+  (is (= (description (open-example-geo-grid)) "** surface none significant height of combined wind waves and swell [m]")))
 
 (deftest test-lat-axis
   (let [axis (lat-axis (open-example-geo-grid))]
@@ -36,7 +36,7 @@
 
 (deftest test-lon-axis
   (let [axis (lon-axis (open-example-geo-grid))]
-    (is (= (:min axis) 0)) 
+    (is (= (:min axis) 0))
     (is (= (:max axis) 358.75))
     (is (= (:size axis) 288))
     (is (= (:step axis) 1.25))))
@@ -84,7 +84,7 @@
         matrix (read-matrix geo-grid)]
     (is (matrix? matrix))
     (is (= (count matrix) 157))
-    (is (every? #(= % 288) (map count matrix)))    
+    (is (every? #(= % 288) (map count matrix)))
     (let [meta (meta matrix)]
       (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
       (is (= (:valid-time meta) (first (valid-times geo-grid)))))))

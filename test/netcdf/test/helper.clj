@@ -29,13 +29,9 @@
           *product* (unparse (formatters :basic-date) *valid-time*) "_"
           (unparse (formatters :hour) *valid-time*) "z"))
 
-;; *remote-uri*
-
-;; (if-not (.exists (File. *dataset-uri*))
-;;   (do
-;;     (println "Downloading test data:" *remote-uri*)
-;;     (time (dataset/copy-dataset *remote-uri* *dataset-uri* [*variable*]))))
-
-;; (def *datatype* (datatype/open-datatype (datatype/make-datatype *dataset-uri* *variable*)))
+(if-not (.exists (File. *dataset-uri*))
+  (do
+    (println "Downloading test data:" *remote-uri*)
+    (time (dataset/copy-dataset *remote-uri* *dataset-uri* [*variable*]))))
 
 (def *dataset* (dataset/open-dataset *dataset-uri*))
