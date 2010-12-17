@@ -6,7 +6,8 @@
   (:use [incanter.core :only (matrix ncol nrow sel)]
         [clj-time.coerce :only (from-date to-date)]
         [clj-time.format :only (unparse parse formatters)]
-        [netcdf.coord-system :only (x-y-index)]))
+        [netcdf.coord-system :only (x-y-index)]
+        [clojure.contrib.duck-streams :only (with-out-writer)]))
 
 (defn coord-system
   "Returns the coordinate system of the GeoGrid."
@@ -86,7 +87,7 @@
   (if-let [vertical-axis (vertical-axis grid)]
     (. vertical-axis findCoordElement z-coord) 0))
 
-(defn- read-xy-data [^GeoGrid grid ^DateTime valid-time & [z-coord]]  
+(defn- read-xy-data [^GeoGrid grid ^DateTime valid-time & [z-coord]]
   (seq (.copyTo1DJavaArray (. grid readYXData (time-index grid valid-time) (z-index grid z-coord)))))
 
 (defn read-seq
@@ -103,6 +104,12 @@
     (with-meta (matrix sequence (:size (:lon-axis (meta sequence))))
       (meta sequence))))
 
+(defn read-x-y [^GeoGrid grid x y & {:keys [valid-time z-coord]}]
+  (if (and x y)
+    (let [t-index (time-index grid (or valid-time (first (valid-times grid))))
+          z-index (z-index grid z-coord)]
+      (.getDouble (. grid readDataSlice t-index z-index y x) 0))))
+
 (defn read-location [^GeoGrid grid location & {:keys [valid-time z-coord]}]
   (if location
     (let [t-index (time-index grid (or valid-time (first (valid-times grid))))
@@ -111,6 +118,21 @@
       (.getDouble (. grid readDataSlice t-index z-index y-index x-index) 0))))
 
 ;; (def *nww3* (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc"))
+
+;; (meta (read-seq *nww3*))
+
+;; (def bb (bounding-box *nww3*))
+;; (.getBoundingBox (coord-system *nww3*))
+
+;; (defn write-geo-grid-as-csv [^GeoGrid grid filename & {:keys [valid-time z-coord]}]
+;;   (with-out-writer filename
+;;     (doseq [valid-time (if valid-time [valid-time] (valid-times grid))
+;;             value (read-seq grid :valid-time valid-time :z-coord z-coord)]
+;;       (println (str valid-time "\t" value)))))
+
+;; (time
+;;  (write-geo-grid-as-csv *nww3* "/tmp/test.csv"))
+
 ;; (def *nww3* (open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc"))
 
 ;; (meta-data *nww3*)
@@ -135,7 +157,7 @@
 
 ;; (defn sel-location!
 ;;   "Select the data point in the matrix for the location."
-;;   [^Matrix matrix location]   
+;;   [^Matrix matrix location]
 ;;   (apply sel matrix (location->row-column matrix location)))
 
 ;; (def grid (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100607/t00z.nc" "htsgwsfc"))

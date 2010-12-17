@@ -18,7 +18,7 @@
   (zip/xml-zip (xml/parse uri)))
 
 (defn inventory-url
-  "Returns the url of the xml inventory." 
+  "Returns the url of the xml inventory."
   [url] (replace-re #"/dods.*" "/dods/xml" (str url)))
 
 (defn parse-reference-time [uri]
@@ -42,7 +42,7 @@
        :reference-time (parse-reference-time (extract dataset :dods))})))
 
 (defn find-inventory-by-url
-  "Returns the parsed inventory for the url." 
+  "Returns the parsed inventory for the url."
   [url]
   (let [inventory-url (inventory-url url)]
     (or (get @*cache* inventory-url)

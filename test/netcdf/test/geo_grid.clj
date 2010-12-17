@@ -105,6 +105,10 @@
         value (read-location grid {:latitude 76 :longitude 0})]
     (is (isa? (class value) Double))))
 
+(deftest test-read-x-y
+  (let [grid (open-example-geo-grid) value (read-x-y grid 0 0)]
+    (is (isa? (class value) Double))))
+
 ;; (deftest test-location->row-column
 ;;   (let [matrix (read-matrix (open-example-geo-grid))]
 ;;     (are [latitude longitude row column]
