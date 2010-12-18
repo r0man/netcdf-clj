@@ -21,6 +21,10 @@
   "Returns the description of the GeoGrid."
   [^GeoGrid grid] (.. grid getVariable getDescription))
 
+(defn dimensions
+  "Returns the dimensions of the GeoGrid."
+  [^GeoGrid grid] (seq (.getDimensions grid)))
+
 (defn lat-axis
   "Returns the latitude axis of the GeoGrid."
   [^GeoGrid grid]

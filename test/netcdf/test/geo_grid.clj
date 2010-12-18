@@ -27,6 +27,11 @@
 (deftest test-description
   (is (= (description (open-example-geo-grid)) "** surface none significant height of combined wind waves and swell [m]")))
 
+(deftest test-dimensions
+  (let [dimensions (dimensions (open-example-geo-grid))]
+    (is (seq? dimensions))
+    (is (every? #(isa? (class %) ucar.nc2.Dimension) dimensions))))
+
 (deftest test-lat-axis
   (let [axis (lat-axis (open-example-geo-grid))]
     (is (= (:min axis) -78))
