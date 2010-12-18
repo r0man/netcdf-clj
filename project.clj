@@ -3,7 +3,7 @@
   :url "http://github.com/r0man/netcdf-clj"
   :dependencies [[clj-time "0.2.0-SNAPSHOT"]
                  [commons-httpclient "3.1"]
-                 [edu.ucar/netcdf "4.2"]
+                 [essi-unidata/netcdf-java "4.0.41"]
                  [google-maps "0.4.1-SNAPSHOT"]
                  [incanter/incanter-core "1.2.3-SNAPSHOT"]
                  [javax.media/jai_core "1.1.3"]
@@ -13,7 +13,7 @@
                  [org.slf4j/slf4j-log4j12 "1.3.1"]]
   :dev-dependencies [[clj-time "0.2.0-SNAPSHOT"]
                      [commons-httpclient "3.1"]
-                     [edu.ucar/netcdf "4.2"]
+                     [essi-unidata/netcdf-java "4.0.41"]
                      [google-maps "0.4.1-SNAPSHOT"]
                      [incanter/incanter-core "1.2.3-SNAPSHOT"]
                      [javax.media/jai_core "1.1.3"]
@@ -22,4 +22,5 @@
                      [org.clojure/clojure-contrib "1.2.0"]
                      [org.slf4j/slf4j-log4j12 "1.3.1"]
                      [swank-clojure "1.2.1"]]
-  :tasks [netcdf.tasks])
+  :tasks [netcdf.tasks]
+  :repositories {"unifi.it" "http://ulisse.pin.unifi.it:8081/nexus/content/groups/open.repos/"})

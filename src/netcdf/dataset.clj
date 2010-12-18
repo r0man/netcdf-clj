@@ -60,3 +60,6 @@
          (write-dimensions dataset writer)
          (write-variables dataset writer variables))
        target)))
+
+;; (valid-times (open-grid-dataset
+;; "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101216/nww320101216_00z"))

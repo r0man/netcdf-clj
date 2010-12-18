@@ -58,9 +58,6 @@
     (doseq [variable variables :let [filename (local-path model variable reference-time root-dir)]]
       (copy-variable model variable filename reference-time))))
 
-;; (download-wave-watch)
-;; (download-global-forecast-system)
-
 (defn global-forecast-system-models
   "Returns the Wave Watch III models."
   [] (remove nil? (map find-model-by-name ["gfs-hd"])))
@@ -92,6 +89,10 @@
   [name url & [description]]
   (let [name# name]
     `(def ~name# ~{:name (str name#) :url url :description description})))
+
+;; (latest-reference-time nww3)
+;; (download-wave-watch)
+;; (download-global-forecast-system)
 
 (defmodel akw
   "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
