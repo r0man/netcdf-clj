@@ -54,9 +54,9 @@
         filename))))
 
 (defn copy-model [model variables & {:keys [reference-time root-dir]}]
-  (doseq [variable variables
-          :let [filename (local-path model variable reference-time root-dir)]]
-    (copy-variable model variable filename reference-time)))
+  (let [reference-time (or reference-time (latest-reference-time model))]
+    (doseq [variable variables :let [filename (local-path model variable reference-time root-dir)]]
+      (copy-variable model variable filename reference-time))))
 
 ;; (download-wave-watch)
 ;; (download-global-forecast-system)

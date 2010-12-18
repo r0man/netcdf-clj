@@ -2,12 +2,14 @@
   (:import incanter.Matrix
            org.joda.time.DateTime
            ucar.nc2.dt.grid.GeoGrid
-           ucar.nc2.dt.grid.GridDataset)
+           ucar.nc2.dt.grid.GridDataset
+           ucar.nc2.dt.GridCoordSystem)
   (:use [incanter.core :only (matrix ncol nrow sel)]
         [clj-time.coerce :only (from-date to-date)]
         [clj-time.format :only (unparse parse formatters)]
         [netcdf.coord-system :only (x-y-index)]
-        [clojure.contrib.duck-streams :only (with-out-writer)]))
+        [clojure.contrib.duck-streams :only (write-lines)]
+        [clojure.string :only (join)]))
 
 (defn coord-system
   "Returns the coordinate system of the GeoGrid."
@@ -24,6 +26,17 @@
 (defn dimensions
   "Returns the dimensions of the GeoGrid."
   [^GeoGrid grid] (seq (.getDimensions grid)))
+
+(defn format-record [record & {:keys [separator]}]
+  (join (or separator ",")
+        [(unparse (formatters :basic-date-time-no-ms) (:valid-time record))
+         (:variable record)
+         (.getLatitude (:location record))
+         (.getLongitude (:location record))
+         (:value record)]))
+
+(defn filter-records [records]
+  (remove #(Double/isNaN (:value %)) records))
 
 (defn lat-axis
   "Returns the latitude axis of the GeoGrid."
@@ -91,21 +104,37 @@
   (if-let [vertical-axis (vertical-axis grid)]
     (. vertical-axis findCoordElement z-coord) 0))
 
-(defn- read-xy-data [^GeoGrid grid ^DateTime valid-time & [z-coord]]
+(defn- read-yx-data [^GeoGrid grid ^DateTime valid-time & [z-coord]]
   (seq (.copyTo1DJavaArray (. grid readYXData (time-index grid valid-time) (z-index grid z-coord)))))
 
 (defn read-seq
   "Read the whole GeoGrid as a sequence."
   [^GeoGrid grid & {:keys [valid-time z-coord]}]
   (let [valid-time (or valid-time (first (valid-times grid)))]
-    (with-meta (read-xy-data grid valid-time z-coord)
+    (with-meta (read-yx-data grid valid-time z-coord)
+      (assoc (meta-data grid) :valid-time valid-time))))
+
+(defn read-seq
+  "Read the whole GeoGrid as a sequence."
+  [^GeoGrid grid & {:keys [valid-time z-coord]}]
+  (let [valid-time (or valid-time (first (valid-times grid)))
+        ^GridCoordSystem  coord-system (coord-system grid)
+        ^int t-index (time-index grid valid-time)
+        ^int z-index (z-index grid z-coord)]
+    (with-meta
+      (for [^int x-index (range 0 (.getLength (.getXDimension grid)))
+            ^int y-index (range 0 (.getLength (.getYDimension grid)))]
+        {:location (.getLatLon coord-system x-index y-index)
+         :variable (.getName grid)
+         :valid-time valid-time
+         :value (.getDouble (. grid readDataSlice t-index z-index y-index x-index) 0)})
       (assoc (meta-data grid) :valid-time valid-time))))
 
 (defn read-matrix
   "Read the whole GeoGrid as a matrix."
   [^GeoGrid grid & {:keys [valid-time z-coord]}]
   (let [sequence (read-seq grid :valid-time valid-time :z-coord z-coord)]
-    (with-meta (matrix sequence (:size (:lon-axis (meta sequence))))
+    (with-meta (matrix (map :value sequence) (:size (:lon-axis (meta sequence))))
       (meta sequence))))
 
 (defn read-x-y [^GeoGrid grid x y & {:keys [valid-time z-coord]}]
@@ -121,18 +150,25 @@
           [x-index y-index] (x-y-index (coord-system grid) location)]
       (.getDouble (. grid readDataSlice t-index z-index y-index x-index) 0))))
 
+(defn write-csv [^GeoGrid grid filename & {:keys [remove valid-time z-coord separator]}]
+  (let [format-fn #(format-record % :separator separator)
+        records (read-seq grid :valid-time valid-time :z-coord z-coord)]
+    (write-lines filename (map format-record (if remove (clojure.core/remove remove records) records)))))
+
+;; (defn write-csv-seq [records filename]
+;;   (let [separator (or separator ",")]
+;;     (with-out-writer filename
+;;       (for [record (read-seq grid :valid-time valid-time :z-coord z-coord)]
+;;         (println
+;;          (join
+;;           ))))))
+
 ;; (def *nww3* (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc"))
 
 ;; (meta (read-seq *nww3*))
 
 ;; (def bb (bounding-box *nww3*))
 ;; (.getBoundingBox (coord-system *nww3*))
-
-;; (defn write-geo-grid-as-csv [^GeoGrid grid filename & {:keys [valid-time z-coord]}]
-;;   (with-out-writer filename
-;;     (doseq [valid-time (if valid-time [valid-time] (valid-times grid))
-;;             value (read-seq grid :valid-time valid-time :z-coord z-coord)]
-;;       (println (str valid-time "\t" value)))))
 
 ;; (time
 ;;  (write-geo-grid-as-csv *nww3* "/tmp/test.csv"))
@@ -181,7 +217,7 @@
 ;;         meta (meta matrix)]
 ;;     (spit filename
 ;;           (assoc meta
-;;             :valid-time (unparse (formatters :basic-date-time-no-ms) (:valid-time meta))
+;; :valid-time (unparse (formatters :basic-date-time-no-ms) (:valid-time meta))
 ;;             :data matrix))))
 
 ;; (defn load-matrix [filename]

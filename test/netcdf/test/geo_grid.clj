@@ -1,6 +1,8 @@
 (ns netcdf.test.geo-grid
   (:import ucar.unidata.geoloc.Projection)
   (:use [incanter.core :only (matrix?)]
+        [clj-time.core :only (date-time)]
+        [clojure.contrib.duck-streams :only (read-lines)]
         clojure.test
         netcdf.geo-grid
         netcdf.location
@@ -31,6 +33,26 @@
   (let [dimensions (dimensions (open-example-geo-grid))]
     (is (seq? dimensions))
     (is (every? #(isa? (class %) ucar.nc2.Dimension) dimensions))))
+
+(deftest test-format-record
+  (are [record line]
+    (is (= line (format-record record)))
+    {:location (make-location 1 2)
+     :variable "htsgwsfc"
+     :valid-time (date-time 2010 12 18)
+     :value 1}
+    "20101218T000000Z,htsgwsfc,1.0,2.0,1"
+    {:location (make-location 1 2)
+     :variable "htsgwsfc"
+     :valid-time (date-time 2010 12 18)
+     :value Double/NaN}
+    "20101218T000000Z,htsgwsfc,1.0,2.0,NaN"))
+
+(deftest test-filter-records
+  (is (= [{:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value 1}]
+           (filter-records
+            [{:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value 1}
+             {:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value Double/NaN}]))))
 
 (deftest test-lat-axis
   (let [axis (lat-axis (open-example-geo-grid))]
@@ -64,7 +86,7 @@
 
 (deftest test-vertical-axis
   (let [geo-grid (open-example-geo-grid)]
-    (is (nil? (class (vertical-axis geo-grid)))))) ;; TODO: Use dataset with a vertical axis
+    (is (nil? (class (vertical-axis geo-grid))))))
 
 (deftest test-z-index
   (let [grid (open-example-geo-grid)]
@@ -79,10 +101,16 @@
         valid-time (first (valid-times geo-grid))
         sequence (read-seq geo-grid)]
     (is (seq? sequence))
-    (is (= (count sequence) 45216))
     (let [meta (meta sequence)]
       (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
-      (is (= (:valid-time meta) valid-time)))))
+      (is (= (:valid-time meta) valid-time)))
+    (let [record (first sequence)]
+      (is (= (.getName geo-grid) (:variable record)))
+      (is (location? (:location record)))
+      (is (= (make-location -78 0) (:location record)))
+      (is (= valid-time (:valid-time record)))
+      (is (isa? (class (:value record)) java.lang.Double)))
+    (is (= (count sequence) 45216))))
 
 (deftest test-read-matrix
   (let [geo-grid (open-example-geo-grid)
@@ -114,38 +142,11 @@
   (let [grid (open-example-geo-grid) value (read-x-y grid 0 0)]
     (is (isa? (class value) Double))))
 
-;; (deftest test-location->row-column
-;;   (let [matrix (read-matrix (open-example-geo-grid))]
-;;     (are [latitude longitude row column]
-;;       (is (= (location->row-column matrix (make-location latitude longitude)) [row column]))
-;;       78 0 0 0
-;;       78 0.1 0 0
-;;       78 1.24 0 0
-;;       78 1.25 0 1
-;;       78 180 0 144
-;;       78 -178.5 0 145
-;;       78 -1.25 0 287
-;;       77 0 1 0
-;;       77.1 0 0 0
-;;       77.9 0 0 0)))
-
-;; (deftest test-sel-location
-;;   (let [matrix (read-matrix (open-example-geo-grid))]
-;;     (is (.isNaN (sel-location matrix (make-location 78 0))))
-;;     (is (.isNaN (sel-location matrix (make-location 78 -1.25))))
-;;     (is (.isNaN (sel-location matrix (make-location -77 0))))
-;;     (is (.isNaN (sel-location matrix (make-location -77 -1.25))))
-;;     ;; (is (= (sel-location matrix (make-location 77 0)) 1.809999942779541))
-;;     ;; (is (= (sel-location matrix (make-location -70 0)) 1.5800000429153442))
-;;     ))
-
-;; (deftest test-sel-location!
-;;   (let [matrix (read-matrix (open-example-geo-grid))]
-;;     (is (.isNaN (sel-location! matrix (make-location 78 0))))
-;;     (is (.isNaN (sel-location! matrix (make-location 78 -1.25))))
-;;     (is (.isNaN (sel-location! matrix (make-location -77 0))))
-;;     (is (.isNaN (sel-location! matrix (make-location -77 -1.25))))
-;;     ;; (is (= (sel-location! matrix (make-location 77 0)) 1.809999942779541))
-;;     ;; (is (= (sel-location! matrix (make-location -70 0)) 1.5800000429153442))
-;;     ))
-
+(deftest test-write-csv
+  (let [grid (open-example-geo-grid) filename "/tmp/netcdf.csv"]
+    (testing "all records"
+      (write-csv grid filename)
+      (is (= 45216 (count (read-lines filename)))))
+    (testing "filtered records"
+      (write-csv grid filename :remove #(Double/isNaN (:value %)))
+      (is (= 27699 (count (read-lines filename)))))))
