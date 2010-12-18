@@ -50,17 +50,12 @@
   :url "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
   :variables wave-watch-variables)
 
-(defvar global-forecast-system-models
+(defvar gfs-models
   [gfs-hd] "The models of the Global Forecast System.")
 
 (defvar wave-watch-models
   [nww3 akw enp nah nph wna]
   "The the Wave Watch III models.")
-
-(defn find-model-by-name
-  "Lookup a registered model by name."
-  [name] (if-let [var (find-var (symbol (str "netcdf.model/" name)))]
-           (deref var)))
 
 (defn reference-times
   "Returns all reference times for model."
@@ -87,31 +82,38 @@
   (first (dods/find-datasets-by-url-and-reference-time
           (:url model) (or reference-time (latest-reference-time model)))))
 
-(defn copy-variable [model variable filename & [reference-time]]
+(defn download-variable [model variable & {:keys [reference-time root-dir]}]
   (if-let [reference-time (or reference-time (latest-reference-time model))]
-    (let [start-time (now) dataset (first (dods/find-datasets-by-url-and-reference-time (:url model) reference-time))]
+    (let [start-time (now)
+          dataset (first (dods/find-datasets-by-url-and-reference-time (:url model) reference-time))
+          filename (local-path model (:name variable) reference-time root-dir)]
       (info (str "           Model: " (:description model) " (" (:name model) ")"))
       (info (str "  Reference Time: " (unparse (formatters :rfc822) reference-time)))
       (info (str "        Variable: " (:description variable) " (" (:name variable) ")"))
-      (info (str "        Filename: " filename))
-      (copy-dataset (:dods dataset) filename [(:name variable)])
-      (let [duration (interval start-time (now))]
-        (info (str "            Size: " (human-file-size filename)))
-        (info (str "        Duration: " (human-duration duration)))
-        (info (str "   Transfer Rate: " (human-transfer-rate (file-size filename) duration)))
-        filename))))
+      (info (str "     NetCDF File: " filename))
+      (if-not (> (file-size filename) 0)
+        (let [dataset (copy-dataset (:dods dataset) filename [(:name variable)])
+              duration (interval start-time (now))]
+          (info (str "            Size: " (human-file-size filename)))
+          (info (str "   Transfer Rate: " (human-transfer-rate (file-size filename) duration)))
+          (info (str "        Duration: " (human-duration duration))))
+        (info (str "            Size: " (human-file-size filename))))
+      {:model model
+       :reference-time reference-time
+       :variable variable
+       :filename filename
+       :size (file-size filename)
+       :duration (interval start-time (now))})))
 
-(defn copy-model [model & {:keys [reference-time root-dir]}]
-  (let [reference-time (or reference-time (latest-reference-time model))]
-    (doseq [variable (:variables model)
-            :let [filename (local-path model (:name variable) reference-time root-dir)]]
-      (copy-variable model variable filename reference-time))))
+(defn download-model [model & {:keys [reference-time root-dir]}]
+  (doall (map #(download-variable model % :reference-time reference-time :root-dir root-dir)
+              (:variables model))))
 
 (defn download-models [models & [reference-time]]
-  (doall (map #(copy-model % :reference-time reference-time) models)))
+  (doall (map #(download-model % :reference-time reference-time) models)))
 
-(defn download-global-forecast-system [& [reference-time]]
-  (download-models global-forecast-system-models reference-time))
+(defn download-gfs [& [reference-time]]
+  (download-models gfs-models reference-time))
 
 (defn download-wave-watch [& [reference-time]]
   (download-models wave-watch-models reference-time))
@@ -126,6 +128,6 @@
 
 ;; (latest-reference-time nww3)
 ;; (download-wave-watch)
-;; (download-global-forecast-system)
+;; (download-gfs)
 
 ;; (show-formatters)

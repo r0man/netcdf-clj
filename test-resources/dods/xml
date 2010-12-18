@@ -61,5 +61,13 @@
     <das>http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z.das</das>
   </dataset>
 
+  <dataset protocol="dods" rank="1924">
+    <name>/gfs_hd/gfs_hd20101030/gfs_hd_00z</name>
+    <description>GFS half degree (0.5x0.5) fcst starting from 06Z30oct2010, downloaded Oct 30 10:41 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/gfs_hd/gfs_hd20101030/gfs_hd_00z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/gfs_hd/gfs_hd20101030/gfs_hd_00z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/gfs_hd/gfs_hd20101030/gfs_hd_00z.das</das>
+  </dataset>
+
 </serverdirectory>
 

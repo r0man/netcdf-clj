@@ -7,11 +7,11 @@
         clojure.test
         clojure.contrib.mock))
 
-(deftest test-find-datasets-by-url  
+(deftest test-find-datasets-by-url
   (with-test-inventory
     (is (= 2 (count (find-datasets-by-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"))))))
 
-(deftest test-find-datasets-by-url-and-reference-time  
+(deftest test-find-datasets-by-url-and-reference-time
   (with-test-inventory
     (let [datasets (find-datasets-by-url-and-reference-time "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3" (date-time 2010 10 30 0))]
       (is (= 1 (count datasets)))
@@ -23,7 +23,7 @@
   (is (= (find-inventory-by-url "test-resources/dods/wave/akw")
          (find-inventory-by-url "test-resources/dods/wave/nww3")))
   (let [datasets (find-inventory-by-url "test-resources/dods/wave/akw")]
-    (is (= 8 (count datasets)))
+    (is (= 9 (count datasets)))
     (let [dataset (first datasets)]
       (is (= "/wave/akw/akw20101030/akw20101030_00z" (:name dataset)))
       (is (= "WAVE_AKW Regional Alaska Waters wave model fcst from 00Z30oct2010, downloaded Oct 30 04:28 UTC" (:description dataset)))
@@ -40,7 +40,7 @@
 
 (deftest test-parse-inventory
   (let [datasets (parse-inventory "test-resources/dods/xml")]
-    (is (= 8 (count datasets)))
+    (is (= 9 (count datasets)))
     (let [dataset (first datasets)]
       (is (= "/wave/akw/akw20101030/akw20101030_00z" (:name dataset)))
       (is (= "WAVE_AKW Regional Alaska Waters wave model fcst from 00Z30oct2010, downloaded Oct 30 04:28 UTC" (:description dataset)))

@@ -9,48 +9,57 @@
         netcdf.variable
         netcdf.test.helper))
 
-(deftest test-find-model-by-name
-  (is (= (find-model-by-name "akw")
-         {:name "akw"
-          :url "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
-          :description "Regional Alaska Waters Wave Model"
-          :variables wave-watch-variables}))
-  (is (nil? (find-model-by-name "unknown"))))
-
 (deftest test-reference-times
   (with-test-inventory
-    (let [reference-times (reference-times (find-model-by-name "nww3"))]
+    (let [reference-times (reference-times nww3)]
       (is (= 2 (count reference-times))))))
 
 (deftest test-latest-reference-time
   (with-test-inventory
-    (is (= (latest-reference-time (find-model-by-name "nww3"))
+    (is (= (latest-reference-time nww3)
            (date-time 2010 10 30 6)))))
 
 (deftest test-local-path
-  (is (= (local-path (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6))
+  (is (= (local-path akw "htsgwsfc" (date-time 2010 11 5 6))
          (str (System/getenv "HOME") File/separator ".netcdf" "/akw/htsgwsfc/2010/11/5/060000Z.nc")))
-  (is (= (local-path (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6) "/tmp")
+  (is (= (local-path akw "htsgwsfc" (date-time 2010 11 5 6) "/tmp")
          "/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc")))
 
 (deftest test-local-uri
-  (is (= (local-uri (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6))
+  (is (= (local-uri akw "htsgwsfc" (date-time 2010 11 5 6))
          (URI. (str "file:" (System/getenv "HOME") File/separator ".netcdf/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
-  (is (= (local-uri (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6) "/tmp")
+  (is (= (local-uri akw "htsgwsfc" (date-time 2010 11 5 6) "/tmp")
          (URI. "file:/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
 
 (deftest test-find-dataset
   (with-test-inventory
-    (let [dataset (find-dataset (find-model-by-name "nww3"))]
+    (let [dataset (find-dataset nww3)]
       (is (= (:dods dataset) "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z")))
-    (let [dataset (find-dataset (find-model-by-name "nww3") (date-time 2010 10 30 0))]
+    (let [dataset (find-dataset nww3 (date-time 2010 10 30 0))]
       (is (= (:dods dataset) "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z")))))
 
-(deftest test-copy-variable
+(deftest test-download-variable
   (with-test-inventory
-    (let [filename "/tmp/test-copy-variable"
+    (let [filename (local-path nww3 "htsgwsfc" (date-time 2010 10 30 6))
           dataset-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z"]
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))]
-        (is (= (copy-variable (find-model-by-name "nww3") htsgwsfc filename) filename)))
+        (is (download-variable nww3 htsgwsfc)))
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))]
-        (is (= (copy-variable (find-model-by-name "nww3") htsgwsfc filename (date-time 2010 10 30 6)) filename))))))
+        (is (download-variable nww3 htsgwsfc :reference-time (date-time 2010 10 30 6)))))))
+
+;; (download-variable nww3 htsgwsfc :reference-time (date-time 2010 10 30 6))
+
+;; (deftest test-download-wave-watch
+;;   (with-test-inventory
+;;     (expect [copy-dataset (has-args [] (returns ""))]
+;;       (is (= "" (download-wave-watch))))))
+
+;; (deftest test-download-gfs
+;;   (with-test-inventory
+;;     (expect [copy-dataset (has-args [] (returns ""))]
+;;       (download-gfs))))
+
+;; (expect [copy-dataset (has-args [] (returns ""))]
+;;   (download-gfs))
+
+;; (download-gfs)
