@@ -32,7 +32,7 @@
   :unit "s")
 
 (defvariable tmpsfc
-  "Surface temperature."
+  "Surface temperature"
   :unit "k")
 
 (defvariable ugrdsfc
@@ -67,3 +67,4 @@
   [dirpwsfc dirswsfc htsgwsfc perpwsfc perswsfc ugrdsfc
    vgrdsfc wdirsfc windsfc wvdirsfc wvpersfc]
   "The variables of the NOAA Wave Watch III model.")
+

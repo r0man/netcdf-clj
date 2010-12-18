@@ -51,6 +51,6 @@
     (let [filename "/tmp/test-copy-variable"
           dataset-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z"]
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))]
-        (is (= (copy-variable (find-model-by-name "nww3") "htsgwsfc" filename) filename)))
+        (is (= (copy-variable (find-model-by-name "nww3") htsgwsfc filename) filename)))
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))]
-        (is (= (copy-variable (find-model-by-name "nww3") "htsgwsfc" filename (date-time 2010 10 30 6)) filename))))))
+        (is (= (copy-variable (find-model-by-name "nww3") htsgwsfc filename (date-time 2010 10 30 6)) filename))))))
