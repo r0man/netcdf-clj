@@ -3,7 +3,7 @@
         netcdf.variable))
 
 (deftest test-defvariable
-  (defvariable dirpwsfc-example "Primary wave direction" "deg")
+  (defvariable dirpwsfc-example "Primary wave direction" :unit "°")
   (is (= "dirpwsfc-example" (:name dirpwsfc-example)))
   (is (= "Primary wave direction" (:description dirpwsfc-example)))
-  (is (= "deg" (:unit dirpwsfc-example))))
+  (is (= "°" (:unit dirpwsfc-example))))
