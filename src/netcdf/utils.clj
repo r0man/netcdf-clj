@@ -11,11 +11,11 @@
 (defn file-size [filename]
   (.length (java.io.File. filename)))
 
-(defn human-file-size [filename]
-  (str (file-size filename) " bytes"))
-
 (defn human-duration [interval]
   (str (in-secs interval) " s"))
+
+(defn human-file-size [filename]
+  (str (file-size filename) " bytes"))
 
 (defn human-transfer-rate [size interval]
   (str (float (/ (/ size 1000)

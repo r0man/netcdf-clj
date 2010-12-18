@@ -1,0 +1,4 @@
+NETCDF-CLJ
+
+A Clojure wrapper around the NetCDF Java library.
+

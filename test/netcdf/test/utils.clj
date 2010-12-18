@@ -1,6 +1,8 @@
 (ns netcdf.test.utils
   (:import java.io.File)
-  (:use clojure.test netcdf.utils))
+  (:use [clj-time.core :only (now in-secs interval date-time year month day hour)]
+        clojure.test
+        netcdf.utils))
 
 (deftest test-file-exists?
   (is (file-exists? (System/getProperty "user.home")))
@@ -10,6 +12,20 @@
   (is (nil? (file-extension "filename")))
   (is (= (file-extension "test.png") "png"))
   (is (= (file-extension (File. "test.png")) "png")))
+
+(deftest test-file-size
+  (is (= 63 (file-size "README"))))
+
+(deftest test-human-duration
+  (is (= "0 s" (human-duration (interval (now) (now)))))
+  (is (= "1 s" (human-duration (interval (date-time 2010 12 18 0 0 0) (date-time 2010 12 18 0 0 1))))))
+
+(deftest test-human-file-size
+  (is (= "63 bytes" (human-file-size "README"))))
+
+(deftest test-human-transfer-rate
+  (is (= "0.0 KB/s" (human-transfer-rate  0 (interval (now) (now)))))
+  (is (= "1.0 KB/s" (human-transfer-rate 1000 (interval (date-time 2010 12 18 0 0 0) (date-time 2010 12 18 0 0 1))))))
 
 (deftest test-with-meta+
   (let [obj [1 2] m {:key "val"}]
