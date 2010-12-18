@@ -67,4 +67,3 @@
   [dirpwsfc dirswsfc htsgwsfc perpwsfc perswsfc ugrdsfc
    vgrdsfc wdirsfc windsfc wvdirsfc wvpersfc]
   "The variables of the NOAA Wave Watch III model.")
-

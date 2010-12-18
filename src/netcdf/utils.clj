@@ -1,5 +1,17 @@
 (ns netcdf.utils
-  (:use [clj-time.core :only (now in-secs interval date-time year month day hour)]))
+  (:import java.io.File)
+  (:use [clojure.string :only (join)]
+        [clj-time.core :only (now in-secs interval date-time year month day hour)]
+        [clj-time.format :only (formatters unparse)]))
+
+(defn date-path-fragment [time]
+  (join File/separator [(year time) (month time) (day time)]))
+
+(defn time-path-fragment [time]
+  (unparse (formatters :basic-time-no-ms) time))
+
+(defn date-time-path-fragment [time]
+  (str (date-path-fragment time) File/separator (time-path-fragment time)))
 
 (defn file-exists? [filename]
   (.exists (java.io.File. filename)))
@@ -26,10 +38,10 @@
 (defn parse-integer [string & options]
   (let [{:keys [radix junk-allowed] :or {radix 10, junk-allowed false}} (apply hash-map options)]
     (try
-     (Integer/parseInt string radix)
-     (catch NumberFormatException e
-       (when-not junk-allowed
-         (throw NumberFormatException e))))))
+      (Integer/parseInt string radix)
+      (catch NumberFormatException e
+        (when-not junk-allowed
+          (throw NumberFormatException e))))))
 
 (defn with-meta+
   "Returns an object of the same type and value as obj, with map m

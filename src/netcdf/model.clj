@@ -2,12 +2,17 @@
   (:import java.io.File)
   (:require [netcdf.dods :as dods])
   (:use [clojure.contrib.def :only (defvar)]
+        [clojure.string :only (join)]
         [clj-time.core :only (now in-secs interval date-time year month day hour)]
         [netcdf.dataset :only (copy-dataset open-grid-dataset)]
         netcdf.utils
         netcdf.variable
         clojure.contrib.logging
         clj-time.format))
+
+(defvar *root-dir*
+  (str (System/getenv "HOME") File/separator ".netcdf")
+  "The local NetCDF directory.")
 
 (defmacro defmodel
   "Define and register the model."
@@ -67,13 +72,9 @@
 
 (defn local-path [model variable & [reference-time root-dir]]
   (let [reference-time (or reference-time (latest-reference-time model))]
-    (str (or root-dir (str (System/getenv "HOME") File/separator ".netcdf")) File/separator
-         (:name model) File/separator
-         variable File/separator
-         (year reference-time) File/separator
-         (month reference-time) File/separator
-         (day reference-time) File/separator
-         (unparse (formatters :basic-time-no-ms) reference-time) ".nc")))
+    (join File/separator
+          [(or root-dir *root-dir*) (:name model) (:name variable)
+           (str (date-time-path-fragment reference-time) ".nc")])))
 
 (defn local-uri [model variable & [reference-time root-dir]]
   (java.net.URI. (str "file:" (local-path model variable reference-time root-dir))))
@@ -86,7 +87,7 @@
   (if-let [reference-time (or reference-time (latest-reference-time model))]
     (let [start-time (now)
           dataset (first (dods/find-datasets-by-url-and-reference-time (:url model) reference-time))
-          filename (local-path model (:name variable) reference-time root-dir)]
+          filename (local-path model variable reference-time root-dir)]
       (info (str "           Model: " (:description model) " (" (:name model) ")"))
       (info (str "  Reference Time: " (unparse (formatters :rfc822) reference-time)))
       (info (str "        Variable: " (:description variable) " (" (:name variable) ")"))
@@ -125,9 +126,3 @@
         :name (:name model)
         :bounds (.getBoundingBox netcdf)
         :description (:description model)))))
-
-;; (latest-reference-time nww3)
-;; (download-wave-watch)
-;; (download-gfs)
-
-;; (show-formatters)

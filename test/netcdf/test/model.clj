@@ -20,15 +20,15 @@
            (date-time 2010 10 30 6)))))
 
 (deftest test-local-path
-  (is (= (local-path akw "htsgwsfc" (date-time 2010 11 5 6))
+  (is (= (local-path akw htsgwsfc (date-time 2010 11 5 6))
          (str (System/getenv "HOME") File/separator ".netcdf" "/akw/htsgwsfc/2010/11/5/060000Z.nc")))
-  (is (= (local-path akw "htsgwsfc" (date-time 2010 11 5 6) "/tmp")
+  (is (= (local-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")
          "/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc")))
 
 (deftest test-local-uri
-  (is (= (local-uri akw "htsgwsfc" (date-time 2010 11 5 6))
+  (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6))
          (URI. (str "file:" (System/getenv "HOME") File/separator ".netcdf/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
-  (is (= (local-uri akw "htsgwsfc" (date-time 2010 11 5 6) "/tmp")
+  (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6) "/tmp")
          (URI. "file:/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
 
 (deftest test-find-dataset
@@ -40,26 +40,19 @@
 
 (deftest test-download-variable
   (with-test-inventory
-    (let [filename (local-path nww3 "htsgwsfc" (date-time 2010 10 30 6))
+    (let [filename (local-path nww3 htsgwsfc (date-time 2010 10 30 6))
           dataset-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z"]
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))]
         (is (download-variable nww3 htsgwsfc)))
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))]
         (is (download-variable nww3 htsgwsfc :reference-time (date-time 2010 10 30 6)))))))
 
-;; (download-variable nww3 htsgwsfc :reference-time (date-time 2010 10 30 6))
+(deftest test-download-gfs
+  (with-test-inventory
+    (expect [copy-dataset (has-args [] (returns ""))]
+      (is (download-gfs)))))
 
-;; (deftest test-download-wave-watch
-;;   (with-test-inventory
-;;     (expect [copy-dataset (has-args [] (returns ""))]
-;;       (is (= "" (download-wave-watch))))))
-
-;; (deftest test-download-gfs
-;;   (with-test-inventory
-;;     (expect [copy-dataset (has-args [] (returns ""))]
-;;       (download-gfs))))
-
-;; (expect [copy-dataset (has-args [] (returns ""))]
-;;   (download-gfs))
-
-;; (download-gfs)
+(deftest test-download-wave-watch
+  (with-test-inventory
+    (expect [copy-dataset (has-args [] (returns ""))]
+      (is (download-wave-watch)))))
