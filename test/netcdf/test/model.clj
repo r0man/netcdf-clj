@@ -21,13 +21,13 @@
 
 (deftest test-local-path
   (is (= (local-path akw htsgwsfc (date-time 2010 11 5 6))
-         (str (System/getenv "HOME") File/separator ".netcdf" "/akw/htsgwsfc/2010/11/5/060000Z.nc")))
+         (str *root-dir* "/akw/htsgwsfc/2010/11/5/060000Z.nc")))
   (is (= (local-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")
          "/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc")))
 
 (deftest test-local-uri
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6))
-         (URI. (str "file:" (System/getenv "HOME") File/separator ".netcdf/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
+         (URI. (str "file:" *root-dir* "/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6) "/tmp")
          (URI. "file:/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
 
