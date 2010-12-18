@@ -17,8 +17,10 @@
 (defmacro defmodel
   "Define and register the model."
   [name description & attributes]
-  (let [name# name]
-    `(def ~name# ~(assoc (apply hash-map attributes) :name (str name#) :description description))))
+  (let [name# name description# description]
+    `(defvar ~name#
+       ~(assoc (apply hash-map attributes) :name (str name#) :description description#)
+       ~description#)))
 
 (defmodel akw
   "Regional Alaska Waters Wave Model"

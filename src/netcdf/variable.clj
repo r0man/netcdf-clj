@@ -4,8 +4,10 @@
 (defmacro defvariable
   "Define and register a variable."
   [name description & attributes]
-  (let [name# name]
-    `(def ~name# ~(assoc (apply hash-map attributes) :name (str name#) :description description))))
+  (let [name# name description# description]
+    `(defvar ~name#
+       ~(assoc (apply hash-map attributes) :name (str name#) :description description#)
+       ~description#)))
 
 (defvariable dirpwsfc
   "Primary wave direction"
