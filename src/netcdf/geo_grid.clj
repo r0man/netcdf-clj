@@ -157,7 +157,7 @@
     (write-lines filename (map format-record (if remove (clojure.core/remove remove records) records)))))
 
 ;; (write-csv
-;;  (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/2010/12/18/060000Z.nc" "htsgwsfc")
+;;  (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/2010/12/18/120000Z.nc" "htsgwsfc")
 ;;  "/tmp/nww3.csv"
 ;;  :remove #(Double/isNaN (:value %)))
 

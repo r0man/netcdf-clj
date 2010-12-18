@@ -27,6 +27,14 @@
   "Secondary wave mean period"
   :unit "s")
 
+(defvariable tcdcclm
+  "Total cloud cover"
+  :unit "s")
+
+(defvariable tmpsfc
+  "Surface temperature."
+  :unit "k")
+
 (defvariable ugrdsfc
   "U-component of wind"
   :unit "m/s")
@@ -50,6 +58,10 @@
 (defvariable wvpersfc
   "Mean period of wind waves"
   :unit "s")
+
+(defvar gfs-variables
+  [tmpsfc tcdcclm]
+  "The variables of the Global Forecast System.")
 
 (defvar wave-watch-variables
   [dirpwsfc dirswsfc htsgwsfc perpwsfc perswsfc ugrdsfc

@@ -5,6 +5,7 @@
         [clj-time.core :only (now in-secs interval date-time year month day hour)]
         [netcdf.dataset :only (copy-dataset open-grid-dataset)]
         netcdf.utils
+        netcdf.variable
         clojure.contrib.logging
         clj-time.format))
 
@@ -86,38 +87,45 @@
 
 (defmacro defmodel
   "Define and register the model."
-  [name url & [description]]
+  [name description & attributes]
   (let [name# name]
-    `(def ~name# ~{:name (str name#) :url url :description description})))
+    `(def ~name# ~(assoc (apply hash-map attributes) :name (str name#) :description description))))
 
 ;; (latest-reference-time nww3)
 ;; (download-wave-watch)
 ;; (download-global-forecast-system)
 
 (defmodel akw
-  "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
-  "Regional Alaska Waters Wave Model")
+  "Regional Alaska Waters Wave Model"
+  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
+  :variables wave-watch-variables)
 
 (defmodel enp
-  "http://nomads.ncep.noaa.gov:9090/dods/wave/enp"
-  "Regional Eastern North Pacific Wave Model")
+  "Regional Eastern North Pacific Wave Model"
+  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/enp"
+  :variables wave-watch-variables)
 
 (defmodel nah
-  "http://nomads.ncep.noaa.gov:9090/dods/wave/nah"
-  "Regional Atlantic Hurricane Wave Model")
+  "Regional Atlantic Hurricane Wave Model"
+  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/nah"
+  :variables wave-watch-variables)
 
 (defmodel nph
-  "http://nomads.ncep.noaa.gov:9090/dods/wave/nph"
-  "Regional North Pacific Hurricane Wave Model")
+  "Regional North Pacific Hurricane Wave Model"
+  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/nph"
+  :variables wave-watch-variables)
 
 (defmodel nww3
-  "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
-  "Global NOAA Wave Watch III Model")
+  "Global NOAA Wave Watch III Model"
+  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
+  :variables wave-watch-variables)
 
 (defmodel wna
-  "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
-  "Regional Western North Atlantic Wave Model")
+  "Regional Western North Atlantic Wave Model"
+  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
+  :variables wave-watch-variables)
 
 (defmodel gfs-hd
-  "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
-  "Global Forecast Model")
+  "Global Forecast Model"
+  :url "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
+  :variables gfs-variables)

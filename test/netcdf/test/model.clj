@@ -6,13 +6,15 @@
         clojure.test
         clojure.contrib.mock
         netcdf.model
+        netcdf.variable
         netcdf.test.helper))
 
 (deftest test-find-model-by-name
   (is (= (find-model-by-name "akw")
          {:name "akw"
           :url "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
-          :description "Regional Alaska Waters Wave Model"}))
+          :description "Regional Alaska Waters Wave Model"
+          :variables wave-watch-variables}))
   (is (nil? (find-model-by-name "unknown"))))
 
 (deftest test-reference-times
