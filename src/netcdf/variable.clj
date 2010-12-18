@@ -1,14 +1,11 @@
-(ns netcdf.variable)
+(ns netcdf.variable
+  (:use [clojure.contrib.def :only (defvar)]))
 
 (defmacro defvariable
   "Define and register a variable."
   [name description & attributes]
   (let [name# name]
     `(def ~name# ~(assoc (apply hash-map attributes) :name (str name#) :description description))))
-
-(defvariable dirpwsfc
-  "Primary wave direction"
-  :unit "°")
 
 (defvariable dirpwsfc
   "Primary wave direction"
@@ -53,3 +50,8 @@
 (defvariable wvpersfc
   "Mean period of wind waves"
   :unit "s")
+
+(defvar wave-watch-variables
+  [dirpwsfc dirswsfc htsgwsfc perpwsfc perswsfc ugrdsfc
+   vgrdsfc wdirsfc windsfc wvdirsfc wvpersfc]
+  "The variables of the NOAA Wave Watch III model.")
