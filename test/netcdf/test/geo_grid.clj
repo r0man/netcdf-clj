@@ -41,12 +41,12 @@
      :variable "htsgwsfc"
      :valid-time (date-time 2010 12 18)
      :value 1}
-    "20101218T000000Z,htsgwsfc,1.0,2.0,1"
+    "2010-12-18 00:00:00,htsgwsfc,1.0,2.0,1"
     {:location (make-location 1 2)
      :variable "htsgwsfc"
      :valid-time (date-time 2010 12 18)
      :value Double/NaN}
-    "20101218T000000Z,htsgwsfc,1.0,2.0,NaN"))
+    "2010-12-18 00:00:00,htsgwsfc,1.0,2.0,NaN"))
 
 (deftest test-filter-records
   (is (= [{:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value 1}]

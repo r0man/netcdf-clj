@@ -29,7 +29,8 @@
 
 (defn format-record [record & {:keys [separator]}]
   (join (or separator ",")
-        [(unparse (formatters :basic-date-time-no-ms) (:valid-time record))
+        [(str (unparse (formatters :year-month-day) (:valid-time record)) " "
+              (unparse (formatters :hour-minute-second) (:valid-time record)))
          (:variable record)
          (.getLatitude (:location record))
          (.getLongitude (:location record))
@@ -154,6 +155,15 @@
   (let [format-fn #(format-record % :separator separator)
         records (read-seq grid :valid-time valid-time :z-coord z-coord)]
     (write-lines filename (map format-record (if remove (clojure.core/remove remove records) records)))))
+
+;; (write-csv
+;;  (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/2010/12/18/060000Z.nc" "htsgwsfc")
+;;  "/tmp/nww3.csv"
+;;  :remove #(Double/isNaN (:value %)))
+
+;; (write-csv
+;;  (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/2010/12/18/060000Z.nc" "htsgwsfc")
+;;  "/tmp/nww3.csv")
 
 ;; (defn write-csv-seq [records filename]
 ;;   (let [separator (or separator ",")]
