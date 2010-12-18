@@ -23,9 +23,13 @@
 
 (defn local-path [model variable & [reference-time root-dir]]
   (let [reference-time (or reference-time (latest-reference-time model))]
-    (str (or root-dir ".") File/separator
-         (:name model) File/separator variable File/separator
-         (unparse (formatters :basic-date-time-no-ms) reference-time) ".nc")))
+    (str (or root-dir (str (System/getenv "HOME") File/separator ".netcdf")) File/separator
+         (:name model) File/separator
+         variable File/separator
+         (year reference-time) File/separator
+         (month reference-time) File/separator
+         (day reference-time) File/separator
+         (unparse (formatters :basic-time-no-ms) reference-time) ".nc")))
 
 (defn local-uri [model variable & [reference-time root-dir]]
   (java.net.URI. (str "file:" (local-path model variable reference-time root-dir))))
@@ -46,7 +50,8 @@
       (let [duration (interval start-time (now))]
         (info (str "            Size: " (human-file-size filename)))
         (info (str "        Duration: " (human-duration duration)))
-        (info (str "   Transfer Rate: " (human-transfer-rate (file-size filename) duration)))))))
+        (info (str "   Transfer Rate: " (human-transfer-rate (file-size filename) duration)))
+        filename))))
 
 (defn copy-model [model variables & {:keys [reference-time root-dir]}]
   (doseq [variable variables
@@ -54,7 +59,7 @@
     (copy-variable model variable filename reference-time)))
 
 ;; (download-wave-watch)
-;; (download-global-forecast-system)x
+;; (download-global-forecast-system)
 
 (defn global-forecast-system-models
   "Returns the Wave Watch III models."

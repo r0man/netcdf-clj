@@ -1,4 +1,5 @@
 (ns netcdf.test.model
+  (:import java.io.File java.net.URI)
   (:require [netcdf.dods :as dods])
   (:use [clj-time.core :only (date-time)]
         [netcdf.dataset :only (copy-dataset)]
@@ -14,7 +15,7 @@
           :description "Regional Alaska Waters Wave Model"}))
   (is (nil? (find-model-by-name "unknown"))))
 
-(deftest test-reference-times  
+(deftest test-reference-times
   (with-test-inventory
     (let [reference-times (reference-times (find-model-by-name "nww3"))]
       (is (= 2 (count reference-times))))))
@@ -26,15 +27,15 @@
 
 (deftest test-local-path
   (is (= (local-path (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6))
-         "./akw/htsgwsfc/20101105T060000Z.nc"))
+         (str (System/getenv "HOME") File/separator ".netcdf" "/akw/htsgwsfc/2010/11/5/060000Z.nc")))
   (is (= (local-path (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6) "/tmp")
-         "/tmp/akw/htsgwsfc/20101105T060000Z.nc")))
+         "/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc")))
 
 (deftest test-local-uri
   (is (= (local-uri (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6))
-         (java.net.URI. "file:./akw/htsgwsfc/20101105T060000Z.nc")))
+         (URI. (str "file:" (System/getenv "HOME") File/separator ".netcdf/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
   (is (= (local-uri (find-model-by-name "akw") "htsgwsfc" (date-time 2010 11 5 6) "/tmp")
-         (java.net.URI. "file:/tmp/akw/htsgwsfc/20101105T060000Z.nc"))))
+         (URI. "file:/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
 
 (deftest test-find-dataset
   (with-test-inventory

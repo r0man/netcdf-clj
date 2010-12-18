@@ -54,7 +54,7 @@
      (with-open [dataset (open-grid-dataset source)]
        (copy-dataset source target (datatype-names dataset))))
   ([source target variables]
-     (with-open [dataset (open-dataset source)]       
+     (with-open [dataset (open-dataset source)]
        (with-file-writer writer target
          (write-global-attributes dataset writer)
          (write-dimensions dataset writer)
