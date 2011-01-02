@@ -8,7 +8,7 @@ Requires:
 
   wget http://download.java.net/media/jai/builds/release/1_1_3/jai-1_1_3-lib.zip
   unzip jai-1_1_3-lib.zip
-  mvn install:install-file -DgroupId=javax.media -DartifactId=jai_core -Dversion=1.1.3 -Dpackaging=jar -Dfile=lib/jai_core-1.1.3.jar
+  mvn install:install-file -DgroupId=javax.media -DartifactId=jai_core -Dversion=1.1.3 -Dpackaging=jar -Dfile=jai-1_1_3/lib/jai_core-1.1.3.jar
   rm -rf jai-1_1_3*
 
 * OpenDAP
