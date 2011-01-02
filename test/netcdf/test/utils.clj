@@ -14,14 +14,14 @@
   (is (= (file-extension (File. "test.png")) "png")))
 
 (deftest test-file-size
-  (is (= 63 (file-size "README"))))
+  (is (= 410 (file-size "test-resources/log4j.properties"))))
 
 (deftest test-human-duration
   (is (= "0 s" (human-duration (interval (now) (now)))))
   (is (= "1 s" (human-duration (interval (date-time 2010 12 18 0 0 0) (date-time 2010 12 18 0 0 1))))))
 
 (deftest test-human-file-size
-  (is (= "63 bytes" (human-file-size "README"))))
+  (is (= "410 bytes" (human-file-size "test-resources/log4j.properties"))))
 
 (deftest test-human-transfer-rate
   (is (= "0.0 KB/s" (human-transfer-rate  0 (interval (now) (now)))))

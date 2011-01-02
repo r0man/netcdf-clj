@@ -149,4 +149,4 @@
       (is (= 45216 (count (read-lines filename)))))
     (testing "filtered records"
       (write-csv grid filename :remove #(Double/isNaN (:value %)))
-      (is (= 27699 (count (read-lines filename)))))))
+      (is (= 28150 (count (read-lines filename)))))))
