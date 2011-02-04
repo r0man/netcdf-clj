@@ -21,15 +21,15 @@
 
 (deftest test-local-path
   (is (= (local-path akw htsgwsfc (date-time 2010 11 5 6))
-         (str *root-dir* "/akw/htsgwsfc/2010/11/5/060000Z.nc")))
+         (str *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc")))
   (is (= (local-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")
-         "/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc")))
+         "/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc")))
 
 (deftest test-local-uri
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6))
-         (URI. (str "file:" *root-dir* "/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
+         (URI. (str "file:" *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc"))))
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6) "/tmp")
-         (URI. "file:/tmp/akw/htsgwsfc/2010/11/5/060000Z.nc"))))
+         (URI. "file:/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc"))))
 
 (deftest test-find-dataset
   (with-test-inventory

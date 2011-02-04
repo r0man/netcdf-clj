@@ -35,4 +35,8 @@
     (is (= (meta (with-meta+ (with-meta obj {:key "x"}) m)) m))
     (is (= (meta (with-meta+ (with-meta obj m) {:key2 "val2"})) (merge m {:key2 "val2"})))))
 
+(deftest test-date-path-fragment
+  (is (= "2011/02/04" (date-path-fragment (date-time 2011 2 4)))))
 
+(deftest test-time-path-fragment
+  (is (= "143905Z" (time-path-fragment (date-time 2011 2 4 14 39 5)))))

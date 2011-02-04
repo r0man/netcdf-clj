@@ -7,6 +7,9 @@
 (defn date-path-fragment [time]
   (join File/separator [(year time) (month time) (day time)]))
 
+(defn date-path-fragment [time]
+  (format (join File/separator ["%4d" "%02d" "%02d"]) (year time) (month time) (day time)))
+
 (defn time-path-fragment [time]
   (unparse (formatters :basic-time-no-ms) time))
 
