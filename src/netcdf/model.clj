@@ -15,7 +15,7 @@
         clojure.contrib.logging
         clj-time.format))
 
-(defrecord Model [name description url variables])
+(defrecord Model [name description dods variables])
 
 (defvar *cache* (ref {})
   "The model cache.")
@@ -24,21 +24,21 @@
   (str (System/getenv "HOME") File/separator ".netcdf")
   "The local NetCDF directory.")
 
-(defn make-model [& {:keys [name description url variables]}]
-  (Model. name description url variables))
+(defn make-model [& {:keys [name description dods variables]}]
+  (Model. name description dods variables))
 
 (defn register-model [model]
   (dosync (ref-set *cache* (assoc @*cache* (keyword (:name model)) model))))
 
 (defmacro defmodel
   "Define and register the model."
-  [name description & {:keys [url variables]}]
-  (let [name# name description# description url# url variables# variables]
+  [name description & {:keys [dods variables]}]
+  (let [name# name description# description dods# dods variables# variables]
     `(do (defvar ~name#
            (make-model
             :description ~description#
             :name ~(str name#)
-            :url ~url#
+            :dods ~dods#
             :variables ~variables#))
          (register-model ~name#))))
 
@@ -47,7 +47,7 @@
 
 (defn reference-times
   "Returns all reference times for model."
-  [model] (map :reference-time (dods/find-datasets-by-url (:url model))))
+  [model] (map :reference-time (dods/find-datasets-by-url (:dods model))))
 
 (defn latest-reference-time
   "Returns the latest reference times for model."
@@ -64,12 +64,12 @@
 
 (defn find-dataset [model & [reference-time]]
   (first (dods/find-datasets-by-url-and-reference-time
-          (:url model) (or reference-time (latest-reference-time model)))))
+          (:dods model) (or reference-time (latest-reference-time model)))))
 
 (defn download-variable [model variable & {:keys [reference-time root-dir]}]
   (if-let [reference-time (or reference-time (latest-reference-time model))]
     (let [start-time (now)
-          dataset (first (dods/find-datasets-by-url-and-reference-time (:url model) reference-time))
+          dataset (first (dods/find-datasets-by-url-and-reference-time (:dods model) reference-time))
           filename (local-path model variable reference-time root-dir)]
       (info (str "           Model: " (:description model) " (" (:name model) ")"))
       (info (str "  Reference Time: " (unparse (formatters :rfc822) reference-time)))
@@ -97,7 +97,7 @@
   (doall (map #(download-model % :reference-time reference-time) models)))
 
 (defn meta-data [model reference-time]
-  (if-let [dataset (first (dods/find-datasets-by-url-and-reference-time (:url model) reference-time))]
+  (if-let [dataset (first (dods/find-datasets-by-url-and-reference-time (:dods model) reference-time))]
     (with-open [netcdf (open-grid-dataset (:dods dataset))]
       (assoc dataset
         :name (:name model)
@@ -165,37 +165,37 @@
 
 (defmodel akw
   "Regional Alaska Waters Wave Model"
-  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
+  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
   :variables wave-watch-variables)
 
 (defmodel enp
   "Regional Eastern North Pacific Wave Model"
-  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/enp"
+  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/enp"
   :variables wave-watch-variables)
 
 (defmodel gfs-hd
   "Global Forecast Model"
-  :url "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
+  :dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
   :variables gfs-variables)
 
 (defmodel nah
   "Regional Atlantic Hurricane Wave Model"
-  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/nah"
+  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nah"
   :variables wave-watch-variables)
 
 (defmodel nph
   "Regional North Pacific Hurricane Wave Model"
-  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/nph"
+  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nph"
   :variables wave-watch-variables)
 
 (defmodel nww3
   "Global NOAA Wave Watch III Model"
-  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
+  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
   :variables wave-watch-variables)
 
 (defmodel wna
   "Regional Western North Atlantic Wave Model"
-  :url "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
+  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
   :variables wave-watch-variables)
 
 (defvar gfs-models
