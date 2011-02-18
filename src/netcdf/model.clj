@@ -137,31 +137,21 @@
   (let [reference-time (or reference-time (latest-reference-time model))]
     (flatten (map #(read-variable model % location reference-time) (:variables model)))))
 
-(defn dump-model [model filename pois & [reference-time]]
-  (with-out-writer filename
-    (doseq [meassure (read-model model pois reference-time)]
-      (println
-       (json-str
-        (assoc meassure
-          :reference-time (format-time (:reference-time meassure))
-          :valid-time (format-time (:valid-time meassure))))))))
-
 (defn dump-model [model filename pois & [reference-time separator]]
   (with-out-writer filename
     (doseq [meassure (read-model model pois reference-time)]
       (println
        (join
         (or separator "\t")
-        [(:id meassure)
+        [(:id model)
+         (:id (:variable meassure))
+         (:id meassure)
          (:latitude (:location meassure))
          (:longitude (:location meassure))
-         (:name (:variable meassure))
-         (:value meassure)
-         (:unit (:variable meassure))
          (format-time (:reference-time meassure))
          (format-time (:valid-time meassure))
-         1 ; model id
-         ])))))
+         (:value meassure)
+         (:unit (:variable meassure))])))))
 
 (defmodel akw
   "Regional Alaska Waters Wave Model"
@@ -211,7 +201,6 @@
 (defn download-wave-watch [& [reference-time]]
   (download-models wave-watch-models reference-time))
 
-
 ;; (defn read-spots [filename]
 ;;   (read-json (slurp filename)))
 
@@ -221,7 +210,9 @@
 
 ;; (take 2 *locations*)
 
+;; (def *pois* [{:location {:latitude 0 :longitude 0}}])
+
 ;; (time
-;;  (dump-model nww3 "/tmp/nww3.csv" *spots*))
+;;  (dump-model nww3 "/tmp/nww3.csv" *pois*))
 
 ;; (take 2 (read-model nww3 [{:latitude 0 :longitude 0} {:latitude 1 :longitude 1}]))
