@@ -9,6 +9,20 @@
         netcdf.variable
         netcdf.test.helper))
 
+(def *akw*
+  (make-model
+   :description "Regional Alaska Waters Wave Model"
+   :name "akw"
+   :url "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
+   :variables wave-watch-variables))
+
+(deftest test-make-model
+  (let [model *akw*]
+    (is (= "akw" (:name model)))
+    (is (= "Regional Alaska Waters Wave Model" (:description model)))
+    (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw" (:url model)))
+    (is (= wave-watch-variables (:variables model)))))
+
 (deftest test-reference-times
   (with-test-inventory
     (let [reference-times (reference-times nww3)]
