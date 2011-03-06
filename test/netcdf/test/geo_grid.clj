@@ -110,6 +110,12 @@
       (is (= (make-location -78 0) (:location record)))
       (is (= valid-time (:valid-time record)))
       (is (isa? (class (:value record)) java.lang.Double)))
+    (let [record (second sequence)]
+      (is (= (.getName geo-grid) (:variable record)))
+      (is (location? (:location record)))
+      (is (= (make-location -78 1.25) (:location record)))
+      (is (= valid-time (:valid-time record)))
+      (is (isa? (class (:value record)) java.lang.Double)))
     (is (= (count sequence) 45216))))
 
 (deftest test-read-matrix

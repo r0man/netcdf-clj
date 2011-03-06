@@ -4,7 +4,7 @@
            ucar.nc2.dt.grid.GeoGrid
            ucar.nc2.dt.grid.GridDataset
            ucar.nc2.dt.GridCoordSystem)
-  (:use [incanter.core :only (matrix ncol nrow sel)]
+  (:use [incanter.core :only (matrix ncol nrow sel view)]
         [clj-time.coerce :only (from-date to-date)]
         [clj-time.format :only (unparse parse formatters)]
         [netcdf.coord-system :only (x-y-index)]
@@ -123,8 +123,8 @@
         ^int t-index (time-index grid valid-time)
         ^int z-index (z-index grid z-coord)]
     (with-meta
-      (for [^int x-index (range 0 (.getLength (.getXDimension grid)))
-            ^int y-index (range 0 (.getLength (.getYDimension grid)))]
+      (for [^int y-index (range 0 (.getLength (.getYDimension grid)))
+            ^int x-index (range 0 (.getLength (.getXDimension grid)))]
         {:location (.getLatLon coord-system x-index y-index)
          :variable (.getName grid)
          :valid-time valid-time
@@ -156,6 +156,19 @@
         records (read-seq grid :valid-time valid-time :z-coord z-coord)]
     (write-lines filename (map format-record (if remove (clojure.core/remove remove records) records)))))
 
+;; (def *nww3* (open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc"))
+;; (def *matrix* (.viewColumnFlip (read-matrix *nww3*)))
+
+;; (class *matrix*)
+;; (view
+;;  (sel *matrix*
+;;       :rows (range 10)
+;;       :cols (range 10)))
+
+;; (view *matrix*)
+
+;; (range 10)
+
 ;; (write-csv
 ;;  (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/2010/12/18/120000Z.nc" "htsgwsfc")
 ;;  "/tmp/nww3.csv"
@@ -173,7 +186,19 @@
 ;;          (join
 ;;           ))))))
 
-;; (def *nww3* (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc"))
+;; (time
+;;  (doall
+;;   (map #(read-location *nww3* {:latitude 0 :longitude 0} :valid-time %)
+;;        (valid-times *nww3*))))
+
+;; (count (valid-times *nww3*))
+
+;; (def *dataset*
+;;   (ucar.nc2.dataset.NetcdfDataset/acquireDataset
+;;    "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320110306/nww320110306_06z"
+;;    nil))
+
+;; (println *dataset*)
 
 ;; (meta (read-seq *nww3*))
 
