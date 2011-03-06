@@ -1,7 +1,13 @@
 (ns netcdf.test.interpolation
   (:import (javax.media.jai InterpolationBicubic InterpolationBilinear))
   (:use [incanter.core :only (matrix)]
-        clojure.test netcdf.interpolation))
+        clojure.test
+        netcdf.geo-grid
+        netcdf.interpolation
+        netcdf.location
+        netcdf.test.helper))
+
+(def *coord-system* (coord-system *geo-grid*))
 
 (def matrix-2x2 (matrix [[6 7] [10 11]]))
 (def matrix-4x4 (matrix [[1 2 3 4] [5 6 7 8] [9 10 11 12] [13 14 15 16]]))
@@ -33,6 +39,23 @@
       0 0 11 ; central sample ???
       1 1 2.90625
       )))
+
+(deftest test-sample-offsets
+  (is (= (sample-offsets)
+         (sample-offsets 2)
+         (sample-offsets 2 2)))
+  (are [width height expected]
+    (is (= expected (sample-offsets width height)))
+    2 2 [[0 0] [0 1] [1 0] [1 1]]
+    4 4 [[0 0] [0 1] [0 2] [0 3] [1 0] [1 1] [1 2] [1 3] [2 0] [2 1] [2 2] [2 3] [3 0] [3 1] [3 2] [3 3]]
+    4 2 [[0 0] [0 1] [1 0] [1 1] [2 0] [2 1] [3 0] [3 1]]))
+
+(deftest test-sample-locations
+  (is (= [(make-location 78 0)
+          (make-location 78 1.25)
+          (make-location 77 0)
+          (make-location 77 1.25)]
+           (sample-locations *coord-system* (make-location 78 0)))))
 
 ;; (deftest test-interpolate-bilinear-4x4
 ;;   (println (interpolate matrix-4x4 0 0))

@@ -1,6 +1,8 @@
 (ns netcdf.interpolation
   (:import (javax.media.jai InterpolationBicubic InterpolationBilinear))
-  (:use [incanter.core :only (matrix ncol nrow sel)]))
+  (:use [incanter.core :only (matrix ncol nrow sel)]
+        netcdf.location
+        netcdf.coord-system))
 
 (def *interpolation* (InterpolationBilinear.))
 
@@ -27,7 +29,7 @@
      (sel matrix 0 1) ; the sample above the central sample
      (sel matrix 0 2) ; the sample above and one to the right of the central sample
      (sel matrix 0 3) ; the sample above and two to the right of the central sample
-     (sel matrix 1 0) ; the sample to the left of the central sample 
+     (sel matrix 1 0) ; the sample to the left of the central sample
      (sel matrix 1 1) ; the central sample
      (sel matrix 1 2) ; the sample to the right of the central sample
      (sel matrix 1 3) ; the sample two to the right of the central sample
@@ -41,6 +43,24 @@
      (sel matrix 3 3) ; the sample two below and two to the right of the central sample
      (float x-fract)
      (float y-fract)))
+
+(defn sample-offsets
+  "Returns the sample offsets."
+  [& [width height]]
+  (for [x (range 0 (or width 2))
+        y (range 0 (or height width 2))]
+    [x y]))
+
+(defn sample-locations
+  "Returns the sample locations for the given location"
+  [^GridCoordSystem coord-system location & {:keys [width height]}]
+  (let [location (location-on-grid coord-system location)
+        lat-step (:step (latitude-axis coord-system))
+        lon-step (:step (longitude-axis coord-system))]
+    (for [[x y] (sample-offsets width height)]
+      (make-location
+       (- (latitude location) (* x lat-step))
+       (+ (longitude location) (* y lon-step))))))
 
 ;; (defn central-sample-location [location lat-step lon-step]
 ;;   (make-location
@@ -58,7 +78,7 @@
 ;; (defn read-sample-2x2 [datatype valid-time location & options]
 ;;   (let [anchor (central-sample-location location (:lat-step datatype) (:lon-step datatype))
 ;;         sample (apply read-matrix datatype valid-time anchor (flatten (seq (merge (apply hash-map options) {:width 2 :height 2}))))]
-;;     (with-meta+ sample      
+;;     (with-meta+ sample
 ;;       {:x-fract (x-fract sample location)
 ;;        :y-fract (y-fract sample location)})))
 
@@ -66,7 +86,7 @@
 ;;   (let [anchor (central-sample-location location (:lat-step datatype) (:lon-step datatype))
 ;;         anchor (make-location (+ (:latitude location) (:lat-step datatype)) (- (:longitude location) (:lon-step datatype)))
 ;;         sample (apply read-matrix datatype valid-time anchor (flatten (seq (merge (apply hash-map options) {:width 4 :height 4}))))]
-;;     (with-meta+ sample      
+;;     (with-meta+ sample
 ;;       {:x-fract (x-fract sample location)
 ;;        :y-fract (y-fract sample location)})))
 
