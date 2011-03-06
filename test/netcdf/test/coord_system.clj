@@ -12,9 +12,14 @@
   (is (isa? (class (projection *coord-system*)) Projection)))
 
 (deftest test-x-y-index
-  (is (= (x-y-index *coord-system* {:latitude 0 :longitude 0}) [0 78])))
+  (is (= (x-y-index *coord-system* (make-location 0 0)) [0 78])))
 
-;; (deftest test-nearest-location
-;;   (are [location expected]
-;;     (is (= expected (nearest-location *coord-system* location)))
-;;     (make-location 0 0) (make-location 0 0)))
+(deftest test-location-on-grid
+  (are [location expected]
+    (is (= expected (location-on-grid *coord-system* location)))
+    (make-location 0 0) (make-location 0 0)
+    (make-location 78 0) (make-location 78 0)
+    (make-location 77.5 0) (make-location 78 0)
+    (make-location 77.4 0) (make-location 77 0)
+    (make-location 78 0.624) (make-location 78 0)
+    (make-location 78 0.625) (make-location 78 1.25)))
