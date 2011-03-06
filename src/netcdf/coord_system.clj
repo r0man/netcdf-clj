@@ -1,7 +1,6 @@
 (ns netcdf.coord-system
   (:import ucar.nc2.dt.GridCoordSystem)
-  (:use netcdf.location
-        netcdf.test.helper))
+  (:use netcdf.location))
 
 (defn latitude-axis
   "Returns the latitude axis of the coordinate system."
