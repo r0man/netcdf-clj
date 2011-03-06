@@ -75,38 +75,6 @@
   (let [grid (open-example-geo-grid)]
     (is (= (z-index grid 0) 0))))
 
-(deftest test-read-seq
-  (let [geo-grid (open-example-geo-grid)
-        valid-time (first (valid-times geo-grid))
-        sequence (read-seq geo-grid)]
-    (is (seq? sequence))
-    (let [meta (meta sequence)]
-      (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
-      (is (= (:valid-time meta) valid-time)))
-    (let [record (first sequence)]
-      (is (= (.getName geo-grid) (:variable record)))
-      (is (location? (:location record)))
-      (is (= (make-location -78 0) (:location record)))
-      (is (= valid-time (:valid-time record)))
-      (is (isa? (class (:value record)) java.lang.Double)))
-    (let [record (second sequence)]
-      (is (= (.getName geo-grid) (:variable record)))
-      (is (location? (:location record)))
-      (is (= (make-location -78 1.25) (:location record)))
-      (is (= valid-time (:valid-time record)))
-      (is (isa? (class (:value record)) java.lang.Double)))
-    (is (= (count sequence) 45216))))
-
-(deftest test-read-matrix
-  (let [geo-grid (open-example-geo-grid)
-        matrix (read-matrix geo-grid)]
-    (is (matrix? matrix))
-    (is (= (count matrix) 157))
-    (is (every? #(= % 288) (map count matrix)))
-    (let [meta (meta matrix)]
-      (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
-      (is (= (:valid-time meta) (first (valid-times geo-grid)))))))
-
 (deftest test-time-index-with-geo-grid
   (let [geo-grid (open-example-geo-grid)]
     (is (= (time-index geo-grid (first (valid-times geo-grid))) 0))
@@ -123,15 +91,62 @@
         value (read-location grid {:latitude 76 :longitude 0})]
     (is (isa? (class value) Double))))
 
+(deftest test-read-locations
+  (= [(read-location *geo-grid* (make-location 77 0))]
+       (read-locations *geo-grid* [(make-location 77 0)])))
+
 (deftest test-read-x-y
   (let [grid (open-example-geo-grid) value (read-x-y grid 0 0)]
     (is (isa? (class value) Double))))
 
-(deftest test-write-csv
-  (let [grid (open-example-geo-grid) filename "/tmp/netcdf.csv"]
-    (testing "all records"
-      (write-csv grid filename)
-      (is (= 45216 (count (read-lines filename)))))
-    (testing "filtered records"
-      (write-csv grid filename :remove #(Double/isNaN (:value %)))
-      (is (> (count (read-lines filename)) 2000)))))
+
+(deftest test-interpolate-location
+  (= (read-location *geo-grid* (make-location 77 0))
+     (interpolate-location *geo-grid* (make-location 77 0))))
+
+(deftest test-interpolate-locations
+  (= [(interpolate-location *geo-grid* (make-location 77 0))]
+       (interpolate-locations *geo-grid* [(make-location 77 0)])))
+
+;; TODO: fix slow tests
+
+;; (deftest test-read-seq
+;;   (let [geo-grid (open-example-geo-grid)
+;;         valid-time (first (valid-times geo-grid))
+;;         sequence (read-seq geo-grid)]
+;;     (is (seq? sequence))
+;;     (let [meta (meta sequence)]
+;;       (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
+;;       (is (= (:valid-time meta) valid-time)))
+;;     (let [record (first sequence)]
+;;       (is (= (.getName geo-grid) (:variable record)))
+;;       (is (location? (:location record)))
+;;       (is (= (make-location -78 0) (:location record)))
+;;       (is (= valid-time (:valid-time record)))
+;;       (is (isa? (class (:value record)) java.lang.Double)))
+;;     (let [record (second sequence)]
+;;       (is (= (.getName geo-grid) (:variable record)))
+;;       (is (location? (:location record)))
+;;       (is (= (make-location -78 1.25) (:location record)))
+;;       (is (= valid-time (:valid-time record)))
+;;       (is (isa? (class (:value record)) java.lang.Double)))
+;;     (is (= (count sequence) 45216))))
+
+;; (deftest test-read-matrix
+;;   (let [geo-grid (open-example-geo-grid)
+;;         matrix (read-matrix geo-grid)]
+;;     (is (matrix? matrix))
+;;     (is (= (count matrix) 157))
+;;     (is (every? #(= % 288) (map count matrix)))
+;;     (let [meta (meta matrix)]
+;;       (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
+;;       (is (= (:valid-time meta) (first (valid-times geo-grid)))))))
+
+;; (deftest test-write-csv
+;;   (let [grid (open-example-geo-grid) filename "/tmp/netcdf.csv"]
+;;     (testing "all records"
+;;       (write-csv grid filename)
+;;       (is (= 45216 (count (read-lines filename)))))
+;;     (testing "filtered records"
+;;       (write-csv grid filename :remove #(Double/isNaN (:value %)))
+;;       (is (> (count (read-lines filename)) 2000)))))

@@ -9,7 +9,9 @@
         [clj-time.format :only (unparse parse formatters)]
         [clojure.contrib.duck-streams :only (write-lines)]
         [clojure.string :only (join)]
-        netcdf.coord-system))
+        netcdf.coord-system
+        netcdf.location
+        netcdf.interpolation))
 
 (defn coord-system
   "Returns the coordinate system of the GeoGrid."
@@ -119,11 +121,25 @@
           [x-index y-index] (x-y-index (coord-system grid) location)]
       (.getDouble (. grid readDataSlice t-index z-index y-index x-index) 0))))
 
+(defn read-locations [^GeoGrid grid locations & options]
+  (map #(apply read-location grid % options) locations))
+
+(defn interpolate-location [^GeoGrid grid location & {:keys [valid-time z-coord width height]}]
+  (if location
+    (let [locations (sample-locations (coord-system grid) location :width width :height height)
+          values (read-locations grid locations :valid-time valid-time :z-coord z-coord)]
+      (interpolate
+       (matrix (map #(if (Double/isNaN %) 0 %) values) 2)
+       (fraction-of-longitudes (coord-system grid) (first locations) location)
+       (fraction-of-latitudes (coord-system grid) (first locations) location)))))
+
+(defn interpolate-locations [^GeoGrid grid locations & options]
+  (map #(apply interpolate-location grid % options) locations))
+
 (defn write-csv [^GeoGrid grid filename & {:keys [remove valid-time z-coord separator]}]
   (let [format-fn #(format-record % :separator separator)
         records (read-seq grid :valid-time valid-time :z-coord z-coord)]
     (write-lines filename (map format-record (if remove (clojure.core/remove remove records) records)))))
-
 
 ;; (def *nww3* (open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc"))
 ;; (def *matrix* (.viewColumnFlip (read-matrix *nww3*)))

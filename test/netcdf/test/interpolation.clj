@@ -50,12 +50,35 @@
     4 4 [[0 0] [0 1] [0 2] [0 3] [1 0] [1 1] [1 2] [1 3] [2 0] [2 1] [2 2] [2 3] [3 0] [3 1] [3 2] [3 3]]
     4 2 [[0 0] [0 1] [1 0] [1 1] [2 0] [2 1] [3 0] [3 1]]))
 
+(deftest test-sample-location
+  (are [lat lon lat-step lon-step expect-lat expect-lon]
+    (is (= (sample-location (make-location lat lon) lat-step lon-step)
+           (make-location expect-lat expect-lon)))
+    0 0 1 1 0 0
+    0 0 1 1 0 0
+    77.0 0 1 1.25 77 0
+    77.1 0 1 1.25 78 0
+    77.9 0 1 1.25 78 0
+    77 0.0 1 1.25 77 0
+    77 0.1 1 1.25 77 0
+    77 0.9 1 1.25 77 0))
+
 (deftest test-sample-locations
-  (is (= [(make-location 78 0)
-          (make-location 78 1.25)
-          (make-location 77 0)
-          (make-location 77 1.25)]
-           (sample-locations *coord-system* (make-location 78 0)))))
+  (let [sample (sample-locations *coord-system* (make-location 78 0))]
+    (is (= (make-location 78 0) (nth sample 0)))
+    (is (= (make-location 78 1.25) (nth sample 1)))
+    (is (= (make-location 77 0) (nth sample 2)))
+    (is (= (make-location 77 1.25) (nth sample 3))))
+  (let [sample (sample-locations *coord-system* (make-location 77 1.25))]
+    (is (= (make-location 77 1.25) (nth sample 0)))
+    (is (= (make-location 77 2.5) (nth sample 1)))
+    (is (= (make-location 76 1.25) (nth sample 2)))
+    (is (= (make-location 76 2.5) (nth sample 3))))
+  (let [sample (sample-locations *coord-system* (make-location 77.5 0.625))]
+    (is (= (make-location 78 0) (nth sample 0)))
+    (is (= (make-location 78 1.25) (nth sample 1)))
+    (is (= (make-location 77 0) (nth sample 2)))
+    (is (= (make-location 77 1.25) (nth sample 3)))))
 
 ;; (deftest test-interpolate-bilinear-4x4
 ;;   (println (interpolate matrix-4x4 0 0))
@@ -73,19 +96,6 @@
 
 ;; (defn open-example-datatype []
 ;;   (open-datatype (make-example-datatype)))
-
-;; (deftest test-central-sample-location
-;;   (are [lat lon lat-step lon-step expect-lat expect-lon]
-;;     (is (= (central-sample-location (make-location lat lon) lat-step lon-step)
-;;            (make-location expect-lat expect-lon)))
-;;     0 0 1 1 0 0
-;;     0 0 1 1 0 0
-;;     77.0 0 1 1.25 77 0
-;;     77.1 0 1 1.25 78 0
-;;     77.9 0 1 1.25 78 0
-;;     77 0.0 1 1.25 77 0
-;;     77 0.1 1 1.25 77 0
-;;     77 0.9 1 1.25 77 0))
 
 ;; (deftest test-read-sample-2x2
 ;;   (let [datatype (open-example-datatype) valid-time (first (valid-times datatype))]

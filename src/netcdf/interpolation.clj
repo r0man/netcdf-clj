@@ -1,6 +1,7 @@
 (ns netcdf.interpolation
   (:import (javax.media.jai InterpolationBicubic InterpolationBilinear))
   (:use [incanter.core :only (matrix ncol nrow sel)]
+        clojure.contrib.math
         netcdf.location
         netcdf.coord-system))
 
@@ -44,6 +45,11 @@
      (float x-fract)
      (float y-fract)))
 
+(defn sample-location [location lat-step lon-step]
+  (make-location
+   (* (ceil (/ (latitude location) lat-step)) lat-step)
+   (* (floor (/ (longitude location) lon-step)) lon-step)))
+
 (defn sample-offsets
   "Returns the sample offsets."
   [& [width height]]
@@ -54,18 +60,23 @@
 (defn sample-locations
   "Returns the sample locations for the given location"
   [^GridCoordSystem coord-system location & {:keys [width height]}]
-  (let [location (location-on-grid coord-system location)
+  (let [start (location-on-grid coord-system location)
         lat-step (:step (latitude-axis coord-system))
-        lon-step (:step (longitude-axis coord-system))]
+        lon-step (:step (longitude-axis coord-system))
+        sample-location (sample-location location lat-step lon-step)]
+
     (for [[x y] (sample-offsets width height)]
       (make-location
-       (- (latitude location) (* x lat-step))
-       (+ (longitude location) (* y lon-step))))))
+       (- (latitude sample-location) (* x lat-step))
+       (+ (longitude sample-location) (* y lon-step))))))
 
-;; (defn central-sample-location [location lat-step lon-step]
-;;   (make-location
-;;    (* (ceil (/ (:latitude location) lat-step)) lat-step)
-;;    (* (floor (/ (:longitude location) lon-step)) lon-step)))
+;; (defn x-fract [sample location]
+;;   (/ (- (:longitude location) (:lon-min (meta sample)))
+;;      (- (:lon-max (meta sample)) (:lon-min (meta sample)))))
+
+;; (defn y-fract [sample location]
+;;   (/ (- (:lat-max (meta sample)) (:latitude location))
+;;      (- (:lat-max (meta sample)) (:lat-min (meta sample)))))
 
 ;; (defn x-fract [sample location]
 ;;   (/ (- (:longitude location) (:lon-min (meta sample)))
