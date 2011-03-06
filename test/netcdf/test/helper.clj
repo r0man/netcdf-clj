@@ -3,7 +3,6 @@
   (:use [clj-time.core :only (date-time year month day days hours minus now)]
         clj-time.format)
   (:require [netcdf.dods :as dods]
-            [netcdf.datatype :as datatype]
             [netcdf.dataset :as dataset]))
 
 (defn refer-private [ns]

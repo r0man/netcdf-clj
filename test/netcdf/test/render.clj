@@ -1,6 +1,6 @@
 (ns netcdf.test.render
   (:import java.awt.Color java.io.File)
-  (:use clojure.test netcdf.datatype netcdf.render netcdf.location netcdf.test.helper))
+  (:use clojure.test netcdf.render netcdf.location netcdf.test.helper))
 
 ;; (deftest test-water-color?
 ;;   (are [color]

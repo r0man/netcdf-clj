@@ -4,7 +4,7 @@
            java.awt.RenderingHints
            java.awt.geom.AffineTransform
            java.io.File
-           javax.imageio.ImageIO           
+           javax.imageio.ImageIO
            incanter.Matrix
            (java.awt Color Dimension)
            (java.awt.event KeyListener)
@@ -12,7 +12,6 @@
   (:use [clojure.contrib.seq :only (includes?)]
         [clj-time.format :only (formatters show-formatters unparse)]
         [incanter.core :only (ncol nrow sel)]
-        netcdf.datatype
         netcdf.interpolation
         netcdf.location
         netcdf.utils
@@ -38,10 +37,10 @@
 ;;       (Color. 215 227 235)])
 
 ;; (defn create-panel [width height]
-;;   (proxy [JPanel KeyListener] [] 
+;;   (proxy [JPanel KeyListener] []
 ;;     (getPreferredSize [] (Dimension. width height))
 ;;     (keyPressed [e])
-;;     (keyReleased [e]) 
+;;     (keyReleased [e])
 ;;     (keyTyped [e])))
 
 ;; (defn configure-display [frame panel]
@@ -59,7 +58,7 @@
 ;;   ([] (create-display 360 180))
 ;;   ([width height] (configure-display (JFrame.) (create-panel width height))))
 
-;; (defn make-buffered-image [width height & [type]]  
+;; (defn make-buffered-image [width height & [type]]
 ;;   (BufferedImage. width height (or type BufferedImage/TYPE_INT_ARGB)))
 
 ;; (defn matrix->image [matrix color-fn]
@@ -125,16 +124,16 @@
 ;;   (let [{:keys [center width height valid-time zoom]} (merge *render-options* (apply hash-map options))
 ;;         map (static-map-image (location->map center) :width width :height height :zoom zoom)]
 ;;     (doseq [y (range 0 (int height)) x (range 0 (int width))]
-;;       (if (water-color? (Color. (. map getRGB x y))) 
+;;       (if (water-color? (Color. (. map getRGB x y)))
 ;;         (let [value (read-datapoint datatype (image-coords->location center x y width height zoom) :valid-time valid-time)]
-;;           (. graphics setColor (value->color value))         
+;;           (. graphics setColor (value->color value))
 ;;           (. graphics fillRect x y 1 1)
 ;;           )))))
 
 ;; (defn resize-image [source width height interpolation]
 ;;   (let [x-scale (/ width (.getWidth source))
 ;;         y-scale (/ height (.getHeight source))
-;;         target (create-compatible-image source width height)]  
+;;         target (create-compatible-image source width height)]
 ;;     (doto (.createGraphics target)
 ;;       (.setRenderingHint RenderingHints/KEY_INTERPOLATION interpolation)
 ;;       (.drawRenderedImage source (. AffineTransform getScaleInstance x-scale y-scale)))
