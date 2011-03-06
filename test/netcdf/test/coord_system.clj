@@ -23,3 +23,18 @@
     (make-location 77.4 0) (make-location 77 0)
     (make-location 78 0.624) (make-location 78 0)
     (make-location 78 0.625) (make-location 78 1.25)))
+
+(deftest test-latitude-axis
+  (let [axis (latitude-axis *coord-system*)]
+    (is (= (:min axis) -78))
+    (is (= (:max axis) 78))
+    (is (= (:size axis) 157))
+    (is (= (:step axis) 1))))
+
+(deftest test-longitude-axis
+  (let [axis (longitude-axis *coord-system*)]
+    (is (= (:min axis) 0))
+    (is (= (:max axis) 358.75))
+    (is (= (:size axis) 288))
+    (is (= (:step axis) 1.25))))
+
