@@ -9,3 +9,7 @@
   "Find the x and y indexes of the location."
   [^GridCoordSystem coord-system location]
   (vec (. coord-system findXYindexFromLatLon (:latitude location) (:longitude location) nil)))
+
+(defn nearest-location [^GridCoordSystem coord-system location]
+  (let [[x y] (x-y-index coord-system location)]
+    ))

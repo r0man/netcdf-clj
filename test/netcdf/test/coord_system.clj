@@ -1,7 +1,10 @@
 (ns netcdf.test.coord-system
   (:import ucar.unidata.geoloc.Projection)
   (:require [netcdf.geo-grid :as grid])
-  (:use clojure.test netcdf.coord-system netcdf.test.helper))
+  (:use clojure.test
+        netcdf.location
+        netcdf.coord-system
+        netcdf.test.helper))
 
 (def *coord-system* (grid/coord-system (grid/open-geo-grid *dataset-uri* *variable*)))
 
@@ -10,3 +13,8 @@
 
 (deftest test-x-y-index
   (is (= (x-y-index *coord-system* {:latitude 0 :longitude 0}) [0 78])))
+
+;; (deftest test-nearest-location
+;;   (are [location expected]
+;;     (is (= expected (nearest-location *coord-system* location)))
+;;     (make-location 0 0) (make-location 0 0)))
