@@ -44,3 +44,12 @@
   (let [[x y] (x-y-index coord-system location)]
     (.getLatLon coord-system x y)))
 
+(defn fraction-of-latitudes [^GridCoordSystem coord-system location-1 location-2]
+  (let [step (:step (latitude-axis coord-system))]
+    (/ (- (latitude location-1) (latitude location-2))
+       step)))
+
+(defn fraction-of-longitudes [^GridCoordSystem coord-system location-1 location-2]
+  (let [step (:step (longitude-axis coord-system))]
+    (/ (- (longitude location-2) (longitude location-1))
+       step)))

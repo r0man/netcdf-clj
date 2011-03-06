@@ -41,3 +41,17 @@
 
 (deftest test-x-y-index
   (is (= (x-y-index *coord-system* (make-location 0 0)) [0 78])))
+
+(deftest test-fraction-of-latitudes
+  (are [location-1 location-2 fraction]
+    (is (= fraction (fraction-of-latitudes *coord-system* location-1 location-2)))
+    (make-location 78 0) (make-location 78 0) 0
+    (make-location 78 0) (make-location 77.5 0) 0.5
+    (make-location 78 0) (make-location 77 0) 1))
+
+(deftest test-fraction-of-longitudes
+  (are [location-1 location-2 fraction]
+    (is (= fraction (fraction-of-longitudes *coord-system* location-1 location-2)))
+    (make-location 78 0) (make-location 78 0) 0
+    (make-location 78 0) (make-location 78 0.625) 0.5
+    (make-location 78 0) (make-location 78 1.25) 1))
