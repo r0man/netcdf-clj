@@ -1,5 +1,5 @@
 (ns netcdf.location
-  (:import (ucar.unidata.geoloc Bearing LatLonPointImpl))
+  (:import (ucar.unidata.geoloc Bearing LatLonPointImpl LatLonPoint))
   (:use [clojure.contrib.string :only (split replace-re trim)]))
 
 (defn parse-double [string]
@@ -35,7 +35,7 @@
    :else (:longitude location)))
 
 (defmulti make-location
-  "Make a location with the given latitude and longitude."  
+  "Make a location with the given latitude and longitude."
   (fn [& args]
     (map class args)))
 
@@ -63,7 +63,7 @@
 
 (defn in-bounding-box?
   "Returns true if the location is in the bounding box, else false."
-  [bounding-box location]  
+  [bounding-box location]
   (. bounding-box contains (latitude location) (longitude location)))
 
 ;; Missing in NETCDF 4.2?
@@ -133,4 +133,8 @@
 (defn north-west? [source target]
   (and (north? source target) (west? source target)))
 
-
+(defmethod print-method LatLonPoint
+  [location writer]
+  (print-method
+   {:latitude (latitude location)
+    :longitude (longitude location)} writer))

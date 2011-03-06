@@ -11,7 +11,7 @@
     (is (= (longitude location) 13.411)))
   (let [location (make-location {:latitude 52.523 :longitude 13.411})]
     (is (= (latitude location) 52.523))
-    (is (= (longitude location) 13.411)))  
+    (is (= (longitude location) 13.411)))
   (let [location (make-location "52.523" "13.411")]
     (is (= (latitude location) 52.523))
     (is (= (longitude location) 13.411))))
@@ -160,3 +160,9 @@
     "000° 00' 0.531\" W" -0.0014750000000000002
     "8° 44.707' S" -8.745116666666666
     "115° 9.019' E" 115.15031666666667))
+
+(deftest test-print-method
+  (is (= (prn-str {:latitude 1.0 :longitude 2.0})
+         (prn-str (make-location 1 2))))
+  (is (= (prn-str {:latitude 1.1 :longitude 2.2})
+         (prn-str (make-location 1.1 2.2)))))
