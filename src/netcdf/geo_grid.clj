@@ -135,7 +135,7 @@
   "Read the whole GeoGrid as a matrix."
   [^GeoGrid grid & {:keys [valid-time z-coord]}]
   (let [sequence (read-seq grid :valid-time valid-time :z-coord z-coord)]
-    (with-meta (matrix (map :value sequence) (:size (:lon-axis (meta sequence))))
+    (with-meta (.viewRowFlip (matrix (map :value sequence) (:size (:lon-axis (meta sequence)))))
       (meta sequence))))
 
 (defn read-x-y [^GeoGrid grid x y & {:keys [valid-time z-coord]}]
@@ -155,6 +155,7 @@
   (let [format-fn #(format-record % :separator separator)
         records (read-seq grid :valid-time valid-time :z-coord z-coord)]
     (write-lines filename (map format-record (if remove (clojure.core/remove remove records) records)))))
+
 
 ;; (def *nww3* (open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc"))
 ;; (def *matrix* (.viewColumnFlip (read-matrix *nww3*)))
