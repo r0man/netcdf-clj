@@ -7,9 +7,9 @@
   (:use [incanter.core :only (matrix ncol nrow sel view)]
         [clj-time.coerce :only (from-date to-date)]
         [clj-time.format :only (unparse parse formatters)]
-        [netcdf.coord-system :only (x-y-index)]
         [clojure.contrib.duck-streams :only (write-lines)]
-        [clojure.string :only (join)]))
+        [clojure.string :only (join)]
+        netcdf.coord-system))
 
 (defn coord-system
   "Returns the coordinate system of the GeoGrid."
@@ -39,48 +39,16 @@
 (defn filter-records [records]
   (remove #(Double/isNaN (:value %)) records))
 
-(defn lat-axis
-  "Returns the latitude axis of the GeoGrid."
-  [^GeoGrid grid]
-  (let [axis (. (coord-system grid) getYHorizAxis)
-        bounds (bounding-box grid)]
-    {:min (.getLatMin bounds)
-     :max (.getLatMax bounds)
-     :size (int (.getSize axis))
-     :step (/ (.getHeight bounds) (- (.getSize axis) 1))}))
-
-(defn lon-axis
-  "Returns the longitude axis of the GeoGrid."
-  [^GeoGrid grid]
-  (let [axis (. (coord-system grid) getXHorizAxis)
-        bounds (bounding-box grid)
-        projection (.getProjection (coord-system grid))]
-    {:min (.getLonMin bounds)
-     :max (.getLonMax bounds)
-     :size (int (.getSize axis))
-     :step (/ (.getWidth bounds) (- (.getSize axis) 1))}))
-
-(defn lat-lon-axis
-  "Returns the latitude and longitude axis of the GeoGrid."
-  [^GeoGrid grid]
-  {:lat-axis (lat-axis grid)
-   :lon-axis (lon-axis grid)})
-
 (defn meta-data
   "Returns the meta data of the GeoGrid."
   [^GeoGrid grid]
-  {:name (.getName grid)
-   :description (.getDescription grid)
-   :lat-axis (lat-axis grid)
-   :lon-axis (lon-axis grid)})
+  (assoc (location-axis (coord-system grid))
+    :name (.getName grid)
+    :description (.getDescription grid)))
 
 (defn open-geo-grid
   "Open a NetCDF GeoGrid."
   [dataset-uri variable] (. (. GridDataset open (str dataset-uri)) findGridDatatype variable))
-
-(defn projection
-  "Returns the projection of the GeoGrid."
-  [^GeoGrid grid] (.getProjection (coord-system grid)))
 
 (defn time-axis
   "Returns the time axis of the GeoGrid."
@@ -135,7 +103,7 @@
   "Read the whole GeoGrid as a matrix."
   [^GeoGrid grid & {:keys [valid-time z-coord]}]
   (let [sequence (read-seq grid :valid-time valid-time :z-coord z-coord)]
-    (with-meta (.viewRowFlip (matrix (map :value sequence) (:size (:lon-axis (meta sequence)))))
+    (with-meta (.viewRowFlip (matrix (map :value sequence) (:size (:longitude-axis (meta sequence)))))
       (meta sequence))))
 
 (defn read-x-y [^GeoGrid grid x y & {:keys [valid-time z-coord]}]
@@ -219,8 +187,8 @@
 
 ;; (defn location->row-column [^Matrix matrix location]
 ;;   (let [meta (meta matrix) [row column] (projection/location->row-column (:projection meta) location )]
-;;     [(int (/ (+ (* row -1) (int (/ (nrow matrix) 2))) (:step (:lat-axis meta))))
-;;      (int (/ column (:step (:lon-axis meta))))]))
+;;     [(int (/ (+ (* row -1) (int (/ (nrow matrix) 2))) (:step (:latitude-axis meta))))
+;;      (int (/ column (:step (:longitude-axis meta))))]))
 
 ;; (defn sel-location
 ;;   "Select the data point in the matrix for the location."
@@ -243,8 +211,8 @@
 
 ;; (defn save-matrix-meta [^GeoGrid grid filename & {:keys [valid-time z-coord]}]
 ;;   (spit filename
-;;         {:lat-axis (lat-axis grid)
-;;          :lon-axis (lon-axis grid)
+;;         {:latitude-axis (latitude-axis grid)
+;;          :longitude-axis (longitude-axis grid)
 ;;          :name (.getName grid)
 ;;          :valid-time valid-time}))
 

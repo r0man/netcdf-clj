@@ -1,9 +1,10 @@
 (ns netcdf.test.geo-grid
   (:import ucar.unidata.geoloc.Projection)
-  (:use [incanter.core :only (matrix?)]
-        [clj-time.core :only (date-time)]
+  (:use [clj-time.core :only (date-time)]
         [clojure.contrib.duck-streams :only (read-lines)]
+        [incanter.core :only (matrix?)]
         clojure.test
+        netcdf.coord-system
         netcdf.geo-grid
         netcdf.location
         netcdf.test.helper)
@@ -54,31 +55,13 @@
             [{:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value 1}
              {:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value Double/NaN}]))))
 
-(deftest test-lat-axis
-  (let [axis (lat-axis (open-example-geo-grid))]
-    (is (= (:min axis) -78))
-    (is (= (:max axis) 78))
-    (is (= (:size axis) 157))
-    (is (= (:step axis) 1))))
-
-(deftest test-lon-axis
-  (let [axis (lon-axis (open-example-geo-grid))]
-    (is (= (:min axis) 0))
-    (is (= (:max axis) 358.75))
-    (is (= (:size axis) 288))
-    (is (= (:step axis) 1.25))))
-
 (deftest test-meta-data
   (let [grid (open-example-geo-grid)
         meta (meta-data grid)]
     (is (= (:name meta) (.getName grid)))
     (is (= (:description meta) (.getDescription grid)))
-    (is (= (:lat-axis meta) (lat-axis grid)))
-    (is (= (:lon-axis meta) (lon-axis grid)))))
-
-(deftest test-lat-lon-axis
-  (let [geo-grid (open-example-geo-grid)]
-    (is (= (lat-lon-axis geo-grid) {:lat-axis (lat-axis geo-grid) :lon-axis (lon-axis geo-grid)}))))
+    (is (= (:latitude-axis meta) (latitude-axis (coord-system grid))))
+    (is (= (:longitude-axis meta) (longitude-axis (coord-system grid))))))
 
 (deftest test-time-axis
   (let [geo-grid (open-example-geo-grid)]
@@ -91,10 +74,6 @@
 (deftest test-z-index
   (let [grid (open-example-geo-grid)]
     (is (= (z-index grid 0) 0))))
-
-(deftest test-projection
-  (let [projection (projection (open-example-geo-grid))]
-    (is (isa? (class projection) ucar.unidata.geoloc.Projection))))
 
 (deftest test-read-seq
   (let [geo-grid (open-example-geo-grid)
