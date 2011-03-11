@@ -82,12 +82,11 @@
           (info (str "   Transfer Rate: " (human-transfer-rate (file-size filename) duration)))
           (info (str "        Duration: " (human-duration duration))))
         (info (str "            Size: " (human-file-size filename))))
-      {:model model
-       :reference-time reference-time
-       :variable variable
-       :filename filename
-       :size (file-size filename)
-       :duration (interval start-time (now))})))
+      (assoc variable
+        :duration (interval start-time (now))
+        :filename filename
+        :reference-time reference-time
+        :size (file-size filename)))))
 
 (defn download-model [model & {:keys [reference-time root-dir]}]
   (doall (map #(download-variable model % :reference-time reference-time :root-dir root-dir)

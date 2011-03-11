@@ -1,5 +1,5 @@
 (ns netcdf.test.model
-  (:import java.io.File java.net.URI)
+  (:import java.io.File java.net.URI org.joda.time.Interval)
   (:require [netcdf.dods :as dods])
   (:use [clj-time.core :only (date-time)]
         [netcdf.dataset :only (copy-dataset)]
@@ -54,12 +54,22 @@
 
 (deftest test-download-variable
   (with-test-inventory
-    (let [filename (local-path nww3 htsgwsfc (date-time 2010 10 30 6))
+    (let [reference-time (date-time 2010 10 30 6)
+          filename (local-path nww3 htsgwsfc reference-time)
           dataset-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z"]
+      (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))
+               latest-reference-time (has-args [nww3] (returns reference-time))]
+        (let [variable (download-variable nww3 htsgwsfc)]
+          (is (isa? (class (:duration variable)) Interval))
+          (is (= filename (:filename variable)))
+          (is (= 0 (:size variable)))
+          (is (= reference-time (:reference-time variable)))))
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))]
-        (is (download-variable nww3 htsgwsfc)))
-      (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))]
-        (is (download-variable nww3 htsgwsfc :reference-time (date-time 2010 10 30 6)))))))
+        (let [variable (download-variable nww3 htsgwsfc :reference-time reference-time)]
+          (is (isa? (class (:duration variable)) Interval))
+          (is (= filename (:filename variable)))
+          (is (= 0 (:size variable)))
+          (is (= reference-time (:reference-time variable))))))))
 
 (deftest test-download-gfs
   (with-test-inventory
