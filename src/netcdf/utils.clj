@@ -24,7 +24,7 @@
   [filename] (last (re-find #"\.(.[^.]+)$" (str filename))))
 
 (defn file-size [filename]
-  (.length (java.io.File. filename)))
+  (if filename (.length (java.io.File. filename))))
 
 (defn human-duration [interval]
   (str (in-secs interval) " s"))

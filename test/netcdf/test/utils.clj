@@ -14,6 +14,7 @@
   (is (= (file-extension (File. "test.png")) "png")))
 
 (deftest test-file-size
+  (is (nil? (file-size nil)))
   (is (= 4757 (file-size "test-resources/dods/xml"))))
 
 (deftest test-human-duration
