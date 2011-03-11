@@ -53,14 +53,14 @@
   "Returns the latest reference times for model."
   [model] (last (sort (reference-times model))))
 
-(defn local-path [model variable & [reference-time root-dir]]
+(defn variable-path [model variable & [reference-time root-dir]]
   (let [reference-time (or reference-time (latest-reference-time model))]
     (join File/separator
           [(or root-dir *root-dir*) (:name model) (:name variable)
            (str (date-time-path-fragment reference-time) ".nc")])))
 
 (defn local-uri [model variable & [reference-time root-dir]]
-  (java.net.URI. (str "file:" (local-path model variable reference-time root-dir))))
+  (java.net.URI. (str "file:" (variable-path model variable reference-time root-dir))))
 
 (defn find-dataset [model & [reference-time]]
   (first (dods/find-datasets-by-url-and-reference-time
@@ -70,7 +70,7 @@
   (if-let [reference-time (or reference-time (latest-reference-time model))]
     (let [start-time (now)
           dataset (first (dods/find-datasets-by-url-and-reference-time (:dods model) reference-time))
-          filename (local-path model variable reference-time root-dir)]
+          filename (variable-path model variable reference-time root-dir)]
       (info (str "           Model: " (:description model) " (" (:name model) ")"))
       (info (str "  Reference Time: " (unparse (formatters :rfc822) reference-time)))
       (info (str "        Variable: " (:description variable) " (" (:name variable) ")"))
@@ -121,7 +121,7 @@
 
 (defn read-variable [model variable pois & [reference-time]]
   (let [reference-time (or reference-time (latest-reference-time model))
-        filename (local-path model variable reference-time)]
+        filename (variable-path model variable reference-time)]
     (if-not (file-exists? filename)
       (download-variable model variable :reference-time reference-time))
     (with-open [dataset (open-grid-dataset filename)]

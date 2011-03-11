@@ -33,11 +33,15 @@
     (is (= (latest-reference-time nww3)
            (date-time 2010 10 30 6)))))
 
-(deftest test-local-path
-  (is (= (local-path akw htsgwsfc (date-time 2010 11 5 6))
-         (str *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc")))
-  (is (= (local-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")
-         "/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc")))
+(deftest test-variable-path
+  (is (= (str *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc")
+         (variable-path akw htsgwsfc (date-time 2010 11 5 6))))
+  (is (= "/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc"
+         (variable-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")))
+  (is (= "/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc"
+         (variable-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")))
+  (is (= "s3n://burningswell/netcdf/akw/htsgwsfc/2010/11/05/060000Z.nc"
+         (variable-path akw htsgwsfc (date-time 2010 11 5 6) "s3n://burningswell/netcdf"))))
 
 (deftest test-local-uri
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6))
@@ -55,7 +59,7 @@
 (deftest test-download-variable
   (with-test-inventory
     (let [reference-time (date-time 2010 10 30 6)
-          filename (local-path nww3 htsgwsfc reference-time)
+          filename (variable-path nww3 htsgwsfc reference-time)
           dataset-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z"]
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))
                latest-reference-time (has-args [nww3] (returns reference-time))]
@@ -74,7 +78,7 @@
 (deftest test-download-model
   (with-test-inventory
     (let [reference-time (date-time 2010 10 30 6)
-          filename (local-path nww3 htsgwsfc reference-time)]
+          filename (variable-path nww3 htsgwsfc reference-time)]
       (expect [copy-dataset (returns filename)
                latest-reference-time (has-args [nww3] (returns reference-time))]
         (let [model (download-model nww3)]
