@@ -1,9 +1,10 @@
 (ns netcdf.test.helper
   (:import java.io.File)
-  (:use [clj-time.core :only (date-time year month day days hours minus now)]
-        clj-time.format)
-  (:require [netcdf.dods :as dods]
-            [netcdf.dataset :as dataset]))
+  (:use [clj-time.core :only (date-time day days hours minus month now year)]
+        clj-time.format
+        clojure.contrib.logging)
+  (:require [netcdf.dataset :as dataset]
+            [netcdf.dods :as dods]))
 
 (defn refer-private [ns]
   (doseq [[symbol var] (ns-interns ns)]
@@ -30,7 +31,7 @@
 
 (if-not (.exists (File. *dataset-uri*))
   (do
-    (println "Downloading test data:" *remote-uri*)
+    (info "Downloading test data:" *remote-uri*)
     (time (dataset/copy-dataset *remote-uri* *dataset-uri* [*variable*]))))
 
 (def *dataset* (dataset/open-grid-dataset *dataset-uri*))
