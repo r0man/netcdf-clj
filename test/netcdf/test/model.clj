@@ -60,23 +60,42 @@
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))
                latest-reference-time (has-args [nww3] (returns reference-time))]
         (let [variable (download-variable nww3 htsgwsfc)]
-          (is (isa? (class (:duration variable)) Interval))
+          (is (isa? (class (:interval variable)) Interval))
           (is (= filename (:filename variable)))
           (is (= 0 (:size variable)))
           (is (= reference-time (:reference-time variable)))))
       (expect [copy-dataset (has-args [dataset-url filename ["htsgwsfc"]] (returns filename))]
         (let [variable (download-variable nww3 htsgwsfc :reference-time reference-time)]
-          (is (isa? (class (:duration variable)) Interval))
+          (is (isa? (class (:interval variable)) Interval))
           (is (= filename (:filename variable)))
           (is (= 0 (:size variable)))
           (is (= reference-time (:reference-time variable))))))))
 
-(deftest test-download-gfs
+(deftest test-download-model
   (with-test-inventory
-    (expect [copy-dataset (has-args [] (returns ""))]
-      (is (download-gfs)))))
+    (let [reference-time (date-time 2010 10 30 6)
+          filename (local-path nww3 htsgwsfc reference-time)]
+      (expect [copy-dataset (returns filename)
+               latest-reference-time (has-args [nww3] (returns reference-time))]
+        (let [model (download-model nww3)]
+          (is (= (:name nww3) (:name model)))
+          (is (= (:description nww3) (:description model)))
+          (is (= (:dods nww3) (:dods model)))
+          (is (not (empty? (:variables model))))
+          (is (isa? (class (:interval model)) Interval))
+          (is (= reference-time (:reference-time model)))
+          (is (= 0 (:size model))))))))
+
+(deftest test-download-gfs
+  (let [reference-time (date-time 2010 10 30 6)]
+    (with-test-inventory
+      (expect [latest-reference-time (returns reference-time)
+               copy-dataset (has-args [] (returns ""))]
+        (is (download-gfs))))))
 
 (deftest test-download-wave-watch
-  (with-test-inventory
-    (expect [copy-dataset (has-args [] (returns ""))]
-      (is (download-wave-watch)))))
+  (let [reference-time (date-time 2010 10 30 6)]
+    (with-test-inventory
+      (expect [latest-reference-time (returns reference-time)
+               copy-dataset (has-args [] (returns ""))]
+        (is (download-wave-watch))))))

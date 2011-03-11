@@ -1,5 +1,5 @@
 (ns netcdf.model
-  (:import java.io.File)
+  (:import java.io.File org.joda.time.Interval)
   (:require [netcdf.dods :as dods]
             [netcdf.geo-grid :as grid])
   (:use [clojure.contrib.def :only (defvar)]
@@ -77,20 +77,26 @@
       (info (str "     NetCDF File: " filename))
       (if-not (> (file-size filename) 0)
         (let [dataset (copy-dataset (:dods dataset) filename [(:name variable)])
-              duration (interval start-time (now))]
+              interval (interval start-time (now))]
           (info (str "            Size: " (human-file-size filename)))
-          (info (str "   Transfer Rate: " (human-transfer-rate (file-size filename) duration)))
-          (info (str "        Duration: " (human-duration duration))))
+          (info (str "   Transfer Rate: " (human-transfer-rate (file-size filename) interval)))
+          (info (str "        Duration: " (human-duration interval))))
         (info (str "            Size: " (human-file-size filename))))
       (assoc variable
-        :duration (interval start-time (now))
+        :interval (interval start-time (now))
         :filename filename
         :reference-time reference-time
         :size (file-size filename)))))
 
-(defn download-model [model & {:keys [reference-time root-dir]}]
-  (doall (map #(download-variable model % :reference-time reference-time :root-dir root-dir)
-              (:variables model))))
+(defn download-model [model & options]
+  (let [variables (remove nil? (map #(apply download-variable model % options) (:variables model)))]
+    (assoc model
+      :interval (Interval.
+                 (.getStartMillis (:interval (first variables)))
+                 (.getEndMillis (:interval (last variables))))
+      :reference-time (:reference-time (first variables))
+      :size (reduce + (remove nil? (map :size variables)))
+      :variables variables)))
 
 (defn download-models [models & [reference-time]]
   (doall (map #(download-model % :reference-time reference-time) models)))
