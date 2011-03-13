@@ -31,7 +31,7 @@
 
 (if-not (.exists (File. *dataset-uri*))
   (do
-    (info "Downloading test data:" *remote-uri*)
+    (info (str "Downloading test data:" *remote-uri*))
     (time (dataset/copy-dataset *remote-uri* *dataset-uri* [*variable*]))))
 
 (def *dataset* (dataset/open-grid-dataset *dataset-uri*))
