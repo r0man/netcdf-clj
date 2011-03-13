@@ -64,6 +64,7 @@
     77 0.9 1 1.25 77 0))
 
 (deftest test-sample-locations
+  (is (nil? (sample-locations *coord-system* (make-location 900 900))))
   (let [sample (sample-locations *coord-system* (make-location 78 0))]
     (is (= (make-location 78 0) (nth sample 0)))
     (is (= (make-location 78 1.25) (nth sample 1)))
