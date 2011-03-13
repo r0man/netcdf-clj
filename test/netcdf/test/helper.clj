@@ -35,4 +35,4 @@
     (time (dataset/copy-dataset *remote-uri* *dataset-uri* [*variable*]))))
 
 (def *dataset* (dataset/open-grid-dataset *dataset-uri*))
-(def *geo-grid* (dataset/find-geo-grid *dataset* *variable*))
+(def *nww3-htsgwsfc* (dataset/find-geo-grid *dataset* *variable*))

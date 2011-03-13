@@ -92,8 +92,8 @@
     (is (isa? (class value) Double))))
 
 (deftest test-read-locations
-  (= [(read-location *geo-grid* (make-location 77 0))]
-       (read-locations *geo-grid* [(make-location 77 0)])))
+  (= [(read-location *nww3-htsgwsfc* (make-location 77 0))]
+       (read-locations *nww3-htsgwsfc* [(make-location 77 0)])))
 
 (deftest test-read-x-y
   (let [grid (open-example-geo-grid) value (read-x-y grid 0 0)]
@@ -101,13 +101,13 @@
 
 
 (deftest test-interpolate-location
-  (= (read-location *geo-grid* (make-location 77 0))
-     (interpolate-location *geo-grid* (make-location 77 0)))
-  (nil? (interpolate-location *geo-grid* (make-location 900 900))))
+  (= (read-location *nww3-htsgwsfc* (make-location 77 0))
+     (interpolate-location *nww3-htsgwsfc* (make-location 77 0)))
+  (nil? (interpolate-location *nww3-htsgwsfc* (make-location 900 900))))
 
 (deftest test-interpolate-locations
-  (= [(interpolate-location *geo-grid* (make-location 77 0))]
-       (interpolate-locations *geo-grid* [(make-location 77 0)])))
+  (= [(interpolate-location *nww3-htsgwsfc* (make-location 77 0))]
+       (interpolate-locations *nww3-htsgwsfc* [(make-location 77 0)])))
 
 ;; TODO: fix slow tests
 
