@@ -102,7 +102,8 @@
 
 (deftest test-interpolate-location
   (= (read-location *geo-grid* (make-location 77 0))
-     (interpolate-location *geo-grid* (make-location 77 0))))
+     (interpolate-location *geo-grid* (make-location 77 0)))
+  (nil? (interpolate-location *geo-grid* (make-location 900 900))))
 
 (deftest test-interpolate-locations
   (= [(interpolate-location *geo-grid* (make-location 77 0))]
