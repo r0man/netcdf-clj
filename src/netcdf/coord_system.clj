@@ -41,7 +41,8 @@
   "Returns the nearset location on the grid."
   [^GridCoordSystem coord-system location]
   (let [[x y] (x-y-index coord-system location)]
-    (.getLatLon coord-system x y)))
+    (try (.getLatLon coord-system x y)
+         (catch ArrayIndexOutOfBoundsException _ nil))))
 
 (defn fraction-of-latitudes [^GridCoordSystem coord-system location-1 location-2]
   (let [step (:step (latitude-axis coord-system))]

@@ -40,7 +40,13 @@
   (is (isa? (class (projection *coord-system*)) Projection)))
 
 (deftest test-x-y-index
-  (is (= (x-y-index *coord-system* (make-location 0 0)) [0 78])))
+  (is (= (x-y-index *coord-system* (make-location 0 0)) [0 78]))
+  (is (= (x-y-index *coord-system* (make-location 900 900)) [144 -1])))
+
+(deftest test-location-on-grid
+  (is (nil? (location-on-grid *coord-system* (make-location 900 900))))
+  (is (= (make-location 0 0)
+         (location-on-grid *coord-system* (make-location 0 0)))))
 
 (deftest test-fraction-of-latitudes
   (are [location-1 location-2 fraction]
