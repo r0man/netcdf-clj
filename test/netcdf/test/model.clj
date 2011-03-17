@@ -1,13 +1,14 @@
 (ns netcdf.test.model
   (:import java.io.File java.net.URI org.joda.time.Interval)
   (:require [netcdf.dods :as dods])
-  (:use [clj-time.core :only (date-time)]
+  (:use [clj-time.coerce :only (to-long)]
+        [clj-time.core :only (date-time interval plus minutes minus)]
         [netcdf.dataset :only (copy-dataset)]
-        clojure.test
         clojure.contrib.mock
+        clojure.test
         netcdf.model
-        netcdf.variable
-        netcdf.test.helper))
+        netcdf.test.helper
+        netcdf.variable))
 
 (def *akw*
   (make-model
@@ -26,7 +27,44 @@
 (deftest test-reference-times
   (with-test-inventory
     (let [reference-times (reference-times nww3)]
+      (is (< (to-long (first reference-times))
+             (to-long (second reference-times))))
       (is (= 2 (count reference-times))))))
+
+(deftest test-find-reference-time
+  (with-test-inventory
+    (let [reference-times (reference-times nww3)]
+      (testing "first in inventory"
+        (is (= (find-reference-time nww3 (first reference-times))
+               (first reference-times))))
+      (testing "second in inventory"
+        (is (= (find-reference-time nww3 (second reference-times))
+               (second reference-times))))
+      (testing "last in inventory"
+        (is (= (find-reference-time nww3 (last reference-times))
+               (last reference-times))))
+      (testing "one minute after first inventory"
+        (is (= (find-reference-time nww3 (plus (first reference-times) (minutes 1)))
+               (first reference-times))))
+      (testing "one minute after second inventory"
+        (is (= (find-reference-time nww3 (plus (second reference-times) (minutes 1)))
+               (second reference-times))))
+      (testing "one minute after last inventory"
+        (is (= (find-reference-time nww3 (plus (last reference-times) (minutes 1)))
+               (last reference-times))))
+      (testing "one minute before first inventory"
+        (is (nil? (find-reference-time nww3 (minus (first reference-times) (minutes 1))))))
+      (testing "one minute before second inventory"
+        (is (= (find-reference-time nww3 (minus (second reference-times) (minutes 1)))
+               (first reference-times))))
+      (testing "one minute before last inventory"
+        (is (= (find-reference-time nww3 (minus (last reference-times) (minutes 1)))
+               (nth reference-times (- (count reference-times) 2))))))))
+
+(deftest test-current-reference-time
+  (is (current-reference-time nww3)))
+
+(current-reference-time nww3)
 
 (deftest test-latest-reference-time
   (with-test-inventory

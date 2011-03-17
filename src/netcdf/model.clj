@@ -6,7 +6,7 @@
         [clojure.string :only (join)]
         [clojure.contrib.duck-streams :only (with-out-writer)]
         [clojure.contrib.json :only (read-json json-str)]
-        [clj-time.core :only (now in-secs interval date-time year month day hour)]
+        [clj-time.core :only (before? after? now in-secs interval date-time year month day hour within? minus plus minutes days)]
         [netcdf.dataset :only (copy-dataset find-geo-grid open-grid-dataset)]
         netcdf.bounding-box
         netcdf.utils
@@ -46,12 +46,20 @@
   (get @*cache* name))
 
 (defn reference-times
-  "Returns all reference times for model."
-  [model] (map :reference-time (dods/find-datasets-by-url (:dods model))))
+  "Returns the sorted reference times in the inventory for the model."
+  [model] (sort (map :reference-time (dods/find-datasets-by-url (:dods model)))))
+
+(defn find-reference-time
+  "Returns the closest reference time of the model to time."
+  [model time] (last (remove #(after? % time) (reference-times model))))
+
+(defn current-reference-time
+  "Returns the latest reference time of model."
+  [model] (find-reference-time model (now)))
 
 (defn latest-reference-time
-  "Returns the latest reference times for model."
-  [model] (last (sort (reference-times model))))
+  "Returns the latest reference time of model."
+  [model] (last (reference-times model)))
 
 (defn variable-path [model variable & [reference-time root-dir]]
   (let [reference-time (or reference-time (latest-reference-time model))]
