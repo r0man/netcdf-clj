@@ -8,6 +8,13 @@
 
 (def *coord-system* (grid/coord-system (grid/open-geo-grid *dataset-uri* *variable*)))
 
+(deftest test-make-axis
+  (let [axis (make-axis -78 78 1)]
+    (is (= (:min axis) -78))
+    (is (= (:max axis) 78))
+    (is (= (:size axis) 157))
+    (is (= (:step axis) 1))))
+
 (deftest test-latitude-axis
   (let [axis (latitude-axis *coord-system*)]
     (is (= (:min axis) -78))
@@ -61,3 +68,41 @@
     (make-location 78 0) (make-location 78 0) 0
     (make-location 78 0) (make-location 78 0.625) 0.5
     (make-location 78 0) (make-location 78 1.25) 1))
+
+(deftest test-max-axis
+  (let [smaller {:min -76.0, :max 77.0, :size 154, :step 1.0}
+        larger {:min -78.0, :max 78.0, :size 157, :step 1.0}]
+    (testing "with one argument"
+      (is (= larger (max-axis larger))))
+    (testing "with two arguments"
+      (let [axis (max-axis larger larger)]
+        (is (= (:min larger) (:min axis)))
+        (is (= (:max larger) (:max axis)))
+        (is (= (:size larger) (:size axis)))
+        (is (= (:step larger) (:step axis))))
+      (let [axis (max-axis smaller larger)]
+        (is (= -78.0 (:min axis)))
+        (is (= 78.0 (:max axis)))
+        (is (= 157 (:size axis)))
+        (is (= 1.0 (:step axis)))))
+    (testing "with more arguments"
+      (is (= larger (max-axis larger smaller larger))))))
+
+(deftest test-min-axis
+  (let [smaller {:min -76.0, :max 77.0, :size 154, :step 1.0}
+        larger {:min -78.0, :max 78.0, :size 157, :step 1.0}]
+    (testing "with one argument"
+      (is (= larger (min-axis larger))))
+    (testing "with two arguments"
+      (let [axis (min-axis larger larger)]
+        (is (= (:min larger) (:min axis)))
+        (is (= (:max larger) (:max axis)))
+        (is (= (:size larger) (:size axis)))
+        (is (= (:step larger) (:step axis))))
+      (let [axis (min-axis smaller larger)]
+        (is (= -76.0 (:min axis)))
+        (is (= 77.0 (:max axis)))
+        (is (= 154 (:size axis)))
+        (is (= 1.0 (:step axis)))))
+    (testing "with more arguments"
+      (is (= smaller (min-axis larger smaller larger))))))

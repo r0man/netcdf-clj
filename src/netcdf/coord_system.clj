@@ -2,6 +2,14 @@
   (:import ucar.nc2.dt.GridCoordSystem)
   (:use netcdf.location))
 
+(defn make-axis
+  "Returns an axis."
+  [min max step]
+  {:min min
+   :max max
+   :size (int (+ (* (- max min) step) step))
+   :step step})
+
 (defn latitude-axis
   "Returns the latitude axis of the coordinate system."
   [^GridCoordSystem coord-system]
@@ -53,3 +61,25 @@
   (let [step (:step (longitude-axis coord-system))]
     (/ (- (longitude location-2) (longitude location-1))
        step)))
+
+(defn max-axis
+  "Returns the greatest of the axis."
+  ([x] x)
+  ([x y]
+     (make-axis
+      (min (:min x) (:min y))
+      (max (:max x) (:max y))
+      (min (:step x) (:step y))))
+  ([x y & more]
+     (reduce max-axis (max-axis x y) more)))
+
+(defn min-axis
+  "Returns the least of the axis."
+  ([x] x)
+  ([x y]
+     (make-axis
+      (max (:min x) (:min y))
+      (min (:max x) (:max y))
+      (max (:step x) (:step y))))
+  ([x y & more]
+     (reduce min-axis (min-axis x y) more)))
