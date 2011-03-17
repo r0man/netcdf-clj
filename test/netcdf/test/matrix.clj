@@ -1,12 +1,14 @@
 (ns netcdf.test.matrix
-  (:import java.io.File incanter.Matrix
-           java.awt.image.BufferedImage)
+  (:import java.awt.image.BufferedImage
+           java.io.File incanter.Matrix)
   (:require [netcdf.geo-grid :as grid])
   (:use clojure.test
         incanter.core
-        netcdf.matrix
         netcdf.image
-        netcdf.test.helper))
+        netcdf.matrix
+        netcdf.model
+        netcdf.test.helper
+        netcdf.variable))
 
 (refer-private 'netcdf.matrix)
 
