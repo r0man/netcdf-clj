@@ -1,17 +1,16 @@
 (ns netcdf.geo-grid
-  (:import incanter.Matrix
+  (:import (ucar.nc2.dt.grid GeoGrid GridDataset)
+           incanter.Matrix
            org.joda.time.DateTime
-           ucar.nc2.dt.grid.GeoGrid
-           ucar.nc2.dt.grid.GridDataset
            ucar.nc2.dt.GridCoordSystem)
-  (:use [incanter.core :only (matrix ncol nrow sel view)]
-        [clj-time.coerce :only (from-date to-date)]
-        [clj-time.format :only (unparse parse formatters)]
+  (:use [clj-time.format :only (formatters parse unparse)]
         [clojure.contrib.duck-streams :only (write-lines)]
         [clojure.string :only (join)]
+        [incanter.core :only (matrix ncol nrow sel view)]
         netcdf.coord-system
+        netcdf.interpolation
         netcdf.location
-        netcdf.interpolation))
+        netcdf.time))
 
 (defn coord-system
   "Returns the coordinate system of the GeoGrid."
@@ -62,7 +61,7 @@
 
 (defn valid-times
   "Returns the valid times of the NetCDF GeoGrid."
-  [^GeoGrid grid] (map from-date (.getTimeDates (time-axis grid))))
+  [^GeoGrid grid] (map to-date-time (.getTimeDates (time-axis grid))))
 
 (defn time-index
   "Returns the GeoGrid time index for valid-time."

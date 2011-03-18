@@ -7,7 +7,8 @@
         netcdf.coord-system
         netcdf.geo-grid
         netcdf.location
-        netcdf.test.helper)
+        netcdf.test.helper
+        netcdf.time)
   (:require [netcdf.dataset :as dataset]))
 
 (refer-private 'netcdf.geo-grid)
@@ -84,7 +85,7 @@
 (deftest test-valid-times
   (let [valid-times (valid-times (open-example-geo-grid))]
     (is (> (count valid-times) 0))
-    (is (every? #(isa? (class %) org.joda.time.DateTime) valid-times))))
+    (is (every? date-time? valid-times))))
 
 (deftest test-read-location
   (let [grid (open-example-geo-grid)
