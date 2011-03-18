@@ -47,6 +47,10 @@
   TimeProtocol
   (to-ms [_] nil))
 
+(defn date-time?
+  "Returns true if arg is a DateTime object, otherwise false."
+  [arg] (isa? (class arg) DateTime))
+
 (defn to-calendar
   "Convert the object to a java.util.Calendar."
   [object]

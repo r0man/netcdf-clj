@@ -43,6 +43,11 @@
     (is (= 0 (to-ms (DateTime. (long 0)))))
     (is (= 1298408514294 (to-ms (DateTime. (long 1298408514294)))))))
 
+(deftest test-date-time?
+  (is (not (date-time? nil)))
+  (is (not (date-time? "")))
+  (is (date-time? (date-time 2011 1 1))))
+
 (deftest test-format-date
   (testing "nil"
     (is (nil? (format-date nil))))
