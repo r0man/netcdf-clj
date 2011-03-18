@@ -35,22 +35,30 @@
     (is (= (.exists (java.io.File. target)) true))))
 
 (deftest test-datatype-names
-  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+  (with-open-grid-dataset [dataset *dataset-uri*]
     (is (= (datatype-names dataset) ["htsgwsfc"]))))
 
 (deftest test-find-geo-grid
-  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+  (with-open-grid-dataset [dataset *dataset-uri*]
     (let [geo-grid (last (geo-grids dataset)) name (.getName geo-grid)]
       (is (= geo-grid (find-geo-grid dataset name))))))
 
 (deftest test-geo-grids
-  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+  (with-open-grid-dataset [dataset *dataset-uri*]
     (let [grids (geo-grids dataset)]
       (is (not (empty? grids)))
       (is (every? #(isa? (class %) GeoGrid) grids)))))
 
 (deftest test-valid-times
-  (with-open [dataset (open-grid-dataset *dataset-uri*)]
+  (with-open-grid-dataset [dataset *dataset-uri*]
     (let [valid-times (valid-times dataset)]
       (is (not (empty? valid-times)))
       (is (every? date-time? valid-times)))))
+
+(deftest test-with-open-dataset
+  (with-open-dataset [dataset *dataset-uri*]
+    (is (isa? (class dataset) ucar.nc2.dataset.NetcdfDataset))))
+
+(deftest test-with-open-grid-dataset
+  (with-open-grid-dataset [dataset *dataset-uri*]
+    (is (isa? (class dataset) ucar.nc2.dt.grid.GridDataset))))

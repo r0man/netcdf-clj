@@ -62,3 +62,11 @@
          (write-dimensions dataset writer)
          (write-variables dataset writer variables))
        target)))
+
+(defmacro with-open-dataset [[name uri] & body]
+  `(with-open [~name (open-dataset ~uri)]
+     ~@body))
+
+(defmacro with-open-grid-dataset [[name uri] & body]
+  `(with-open [~name (open-grid-dataset ~uri)]
+     ~@body))
