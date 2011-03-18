@@ -102,9 +102,9 @@
     (= [(read-location grid (make-location 77 0))]
          (read-locations grid [(make-location 77 0)]))))
 
-(deftest test-read-x-y
+(deftest test-read-index
   (with-open-geo-grid [grid *dataset-uri* *variable*]
-    (is (isa? (class (read-x-y grid 0 0)) Double))))
+    (is (isa? (class (read-index grid 0 0)) Double))))
 
 (deftest test-interpolate-location
   (with-open-geo-grid [grid *dataset-uri* *variable*]

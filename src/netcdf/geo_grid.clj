@@ -107,7 +107,7 @@
     (with-meta (.viewRowFlip (matrix (map :value sequence) (:size (:longitude-axis (meta sequence)))))
       (meta sequence))))
 
-(defn read-x-y [^GeoGrid grid x y & {:keys [valid-time z-coord]}]
+(defn read-index [^GeoGrid grid x y & {:keys [valid-time z-coord]}]
   (if (and x y)
     (let [t-index (time-index grid (or valid-time (first (valid-times grid))))
           z-index (z-index grid z-coord)]
