@@ -2,19 +2,20 @@
   (:import java.io.File)
   (:use [clojure.string :only (join)]
         [clj-time.core :only (now in-secs interval date-time year month day hour)]
-        [clj-time.format :only (formatters unparse)]))
+        [clj-time.format :only (formatters unparse)]
+        netcdf.time))
 
 (defn date-path-fragment [time]
-  (join File/separator [(year time) (month time) (day time)]))
-
-(defn date-path-fragment [time]
-  (format (join File/separator ["%4d" "%02d" "%02d"]) (year time) (month time) (day time)))
+  (if-let [time (to-date-time time)]
+    (format (join File/separator ["%4d" "%02d" "%02d"]) (year time) (month time) (day time))))
 
 (defn time-path-fragment [time]
-  (unparse (formatters :basic-time-no-ms) time))
+  (if-let [time (to-date-time time)]
+    (unparse (formatters :basic-time-no-ms) time)))
 
 (defn date-time-path-fragment [time]
-  (str (date-path-fragment time) File/separator (time-path-fragment time)))
+  (if time
+    (str (date-path-fragment time) File/separator (time-path-fragment time))))
 
 (defn file-exists? [filename]
   (.exists (java.io.File. filename)))
