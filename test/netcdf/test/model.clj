@@ -8,6 +8,7 @@
         clojure.test
         netcdf.model
         netcdf.test.helper
+        netcdf.time
         netcdf.variable))
 
 (def *akw*
@@ -59,15 +60,17 @@
                (first reference-times))))
       (testing "one minute before last inventory"
         (is (= (find-reference-time nww3 (minus (last reference-times) (minutes 1)))
-               (nth reference-times (- (count reference-times) 2))))))))
+               (nth reference-times (- (count reference-times) 2)))))
+      (testing "with time string"
+        (is (= (find-reference-time nww3 (format-time (first reference-times)))
+               (first reference-times)))))))
 
 (deftest test-current-reference-time
   (is (current-reference-time nww3)))
 
 (deftest test-latest-reference-time
   (with-test-inventory
-    (is (= (latest-reference-time nww3)
-           (date-time 2010 10 30 6)))))
+    (is (= (latest-reference-time nww3) (date-time 2010 10 30 6)))))
 
 (deftest test-variable-path
   (is (= (str *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc")

@@ -51,7 +51,9 @@
 
 (defn find-reference-time
   "Returns the closest reference time of the model to time."
-  [model time] (last (remove #(after? % time) (reference-times model))))
+  [model time]
+  (let [time (to-date-time time)]
+    (last (remove #(after? % time) (reference-times model)))))
 
 (defn current-reference-time
   "Returns the latest reference time of model."
