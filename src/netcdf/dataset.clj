@@ -32,6 +32,10 @@
   "Returns all grids in the NetCDF dataset."
   [^NetcdfDataset dataset] (map #(.getName %) (geo-grids dataset)))
 
+(defn find-grid-datatype
+  "Find the GridDatatype by name"
+  [^GridDataset dataset name] (.findGridDatatype dataset name))
+
 (defn find-geo-grid
   "Find the GeoGrid by name"
   [^GridDataset dataset name]

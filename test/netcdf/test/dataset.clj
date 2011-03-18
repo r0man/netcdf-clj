@@ -43,6 +43,12 @@
     (let [geo-grid (last (geo-grids dataset)) name (.getName geo-grid)]
       (is (= geo-grid (find-geo-grid dataset name))))))
 
+(deftest test-find-grid-datatype
+  (with-open-grid-dataset [dataset *dataset-uri*]
+    (let [datatype (find-grid-datatype dataset "htsgwsfc")]
+      (is (isa? (class datatype) ucar.nc2.dt.GridDatatype))
+      (is (= "htsgwsfc" (.getName datatype))))))
+
 (deftest test-geo-grids
   (with-open-grid-dataset [dataset *dataset-uri*]
     (let [grids (geo-grids dataset)]
