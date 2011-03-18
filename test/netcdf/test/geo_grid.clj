@@ -21,20 +21,24 @@
     (is (= (class geo-grid) ucar.nc2.dt.grid.GeoGrid))))
 
 (deftest test-bounding-box
-  (let [bounds (bounding-box (open-example-geo-grid))]
-    (is (= (class bounds) ucar.unidata.geoloc.LatLonRect))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (let [bounds (bounding-box grid)]
+      (is (= (class bounds) ucar.unidata.geoloc.LatLonRect)))))
 
 (deftest test-coord-system
-  (let [coord-system (coord-system (open-example-geo-grid))]
-    (is (isa? (class coord-system) ucar.nc2.dt.grid.GridCoordSys))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (let [coord-system (coord-system grid)]
+      (is (isa? (class coord-system) ucar.nc2.dt.grid.GridCoordSys)))))
 
 (deftest test-description
-  (is (= (description (open-example-geo-grid)) "** surface none significant height of combined wind waves and swell [m]")))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (is (= (description grid) "** surface none significant height of combined wind waves and swell [m]"))))
 
 (deftest test-dimensions
-  (let [dimensions (dimensions (open-example-geo-grid))]
-    (is (seq? dimensions))
-    (is (every? #(isa? (class %) ucar.nc2.Dimension) dimensions))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (let [dimensions (dimensions grid)]
+      (is (seq? dimensions))
+      (is (every? #(isa? (class %) ucar.nc2.Dimension) dimensions)))))
 
 (deftest test-format-record
   (are [record line]
@@ -57,58 +61,65 @@
              {:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value Double/NaN}]))))
 
 (deftest test-meta-data
-  (let [grid (open-example-geo-grid)
-        meta (meta-data grid)]
-    (is (= (:name meta) (.getName grid)))
-    (is (= (:description meta) (.getDescription grid)))
-    (is (= (:latitude-axis meta) (latitude-axis (coord-system grid))))
-    (is (= (:longitude-axis meta) (longitude-axis (coord-system grid))))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (let [meta (meta-data grid)]
+      (is (= (:name meta) (.getName grid)))
+      (is (= (:description meta) (.getDescription grid)))
+      (is (= (:latitude-axis meta) (latitude-axis (coord-system grid))))
+      (is (= (:longitude-axis meta) (longitude-axis (coord-system grid)))))))
 
 (deftest test-time-axis
-  (let [geo-grid (open-example-geo-grid)]
-    (is (isa? (class (time-axis geo-grid)) ucar.nc2.dataset.CoordinateAxis1DTime))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (is (isa? (class (time-axis grid)) ucar.nc2.dataset.CoordinateAxis1DTime))))
 
 (deftest test-vertical-axis
-  (let [geo-grid (open-example-geo-grid)]
-    (is (nil? (class (vertical-axis geo-grid))))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (is (nil? (class (vertical-axis grid))))))
 
 (deftest test-z-index
-  (let [grid (open-example-geo-grid)]
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
     (is (= (z-index grid 0) 0))))
 
 (deftest test-time-index-with-geo-grid
-  (let [geo-grid (open-example-geo-grid)]
-    (is (= (time-index geo-grid (first (valid-times geo-grid))) 0))
-    (is (= (time-index geo-grid (last (valid-times geo-grid)))
-           (- (count (valid-times geo-grid)) 1)))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (is (= (time-index grid (first (valid-times grid))) 0))
+    (is (= (time-index grid (last (valid-times grid)))
+           (- (count (valid-times grid)) 1)))))
 
 (deftest test-valid-times
-  (let [valid-times (valid-times (open-example-geo-grid))]
-    (is (> (count valid-times) 0))
-    (is (every? date-time? valid-times))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (let [valid-times (valid-times grid)]
+      (is (> (count valid-times) 0))
+      (is (every? date-time? valid-times)))))
 
 (deftest test-read-location
-  (let [grid (open-example-geo-grid)
-        value (read-location grid {:latitude 76 :longitude 0})]
-    (is (isa? (class value) Double))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (let [value (read-location grid {:latitude 76 :longitude 0})]
+      (is (isa? (class value) Double)))))
 
 (deftest test-read-locations
-  (= [(read-location *geo-grid* (make-location 77 0))]
-       (read-locations *geo-grid* [(make-location 77 0)])))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (= [(read-location grid (make-location 77 0))]
+         (read-locations grid [(make-location 77 0)]))))
 
 (deftest test-read-x-y
-  (let [grid (open-example-geo-grid) value (read-x-y grid 0 0)]
-    (is (isa? (class value) Double))))
-
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (is (isa? (class (read-x-y grid 0 0)) Double))))
 
 (deftest test-interpolate-location
-  (= (read-location *geo-grid* (make-location 77 0))
-     (interpolate-location *geo-grid* (make-location 77 0)))
-  (nil? (interpolate-location *geo-grid* (make-location 900 900))))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (= (read-location grid (make-location 77 0))
+       (interpolate-location grid (make-location 77 0)))
+    (nil? (interpolate-location grid (make-location 900 900)))))
 
 (deftest test-interpolate-locations
-  (= [(interpolate-location *geo-grid* (make-location 77 0))]
-       (interpolate-locations *geo-grid* [(make-location 77 0)])))
+  (with-open-geo-grid [grid *dataset-uri* *variable*]
+    (= [(interpolate-location grid (make-location 77 0))]
+         (interpolate-locations grid [(make-location 77 0)]))))
+
+(deftest test-with-open-geo-grid
+  (with-open-geo-grid [geo-grid *dataset-uri* *variable*]
+    (is (isa? (class geo-grid) ucar.nc2.dt.grid.GeoGrid))))
 
 ;; TODO: fix slow tests
 
