@@ -64,14 +64,14 @@
 (deftest test-current-reference-time
   (is (current-reference-time nww3)))
 
-(current-reference-time nww3)
-
 (deftest test-latest-reference-time
   (with-test-inventory
     (is (= (latest-reference-time nww3)
            (date-time 2010 10 30 6)))))
 
 (deftest test-variable-path
+  (is (= (str *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc")
+         (variable-path akw htsgwsfc "2010-11-05T06:00:00Z")))
   (is (= (str *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc")
          (variable-path akw htsgwsfc (date-time 2010 11 5 6))))
   (is (= "/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc"

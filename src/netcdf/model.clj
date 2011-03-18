@@ -62,7 +62,7 @@
   [model] (last (reference-times model)))
 
 (defn variable-path [model variable & [reference-time root-dir]]
-  (let [reference-time (or reference-time (latest-reference-time model))]
+  (let [reference-time (to-date-time (or reference-time (latest-reference-time model)))]
     (join File/separator
           [(or root-dir *root-dir*) (:name model) (:name variable)
            (str (date-time-path-fragment reference-time) ".nc")])))
