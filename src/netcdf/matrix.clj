@@ -4,7 +4,7 @@
            (java.awt Color Dimension))
   (:use incanter.core
         [clojure.contrib.string :only (replace-re)]
-        [netcdf.time :only (format-time parse-time)]
+        [netcdf.time :only (format-time to-date-time)]
         netcdf.image))
 
 (defn- meta-data-filename
@@ -20,7 +20,7 @@
 
 (defn- deserialize-meta
   "Deserialize the matrix meta data."
-  [meta] (assoc meta :valid-time (parse-time (:valid-time meta))))
+  [meta] (assoc meta :valid-time (to-date-time (:valid-time meta))))
 
 (defn- deserialize-seq
   "Deserialize the matrix seq by replacing all NaN symbols with
