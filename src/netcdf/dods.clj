@@ -1,14 +1,15 @@
 (ns netcdf.dods
   (:import java.util.Calendar java.io.File java.io.File java.net.URI)
-  (:require [clojure.zip :as zip]
-            [clojure.xml :as xml]
-            clojure.contrib.zip-filter
-            [netcdf.dataset :as dataset])
-  (:use [clojure.contrib.string :only (join replace-re)]
+  (:require [clojure.xml :as xml]
+            [clojure.zip :as zip]
+            [netcdf.dataset :as dataset]
+            clojure.contrib.zip-filter)
+  (:use [clj-time.core :only (date-time year month day hour)]
         [clojure.contrib.def :only (defvar)]
-        [clj-time.core :only (date-time year month day hour)]
-        clojure.contrib.zip-filter.xml
+        [clojure.contrib.string :only (join replace-re)]
         clj-time.format
+        clojure.contrib.zip-filter.xml
+        netcdf.time
         netcdf.utils))
 
 (defvar *cache* (ref {})
@@ -60,7 +61,8 @@
 (defn find-datasets-by-url-and-reference-time
   "Returns all datasets matching the url and reference time."
   [url reference-time]
-  (sort-by :reference-time
-           (filter #(and (:dods %) (.startsWith (:dods %) url)
-                         (= (:reference-time %) reference-time))
-                   (find-inventory-by-url url))))
+  (let [reference-time (to-date-time reference-time)]
+    (sort-by :reference-time
+            (filter #(and (:dods %) (.startsWith (:dods %) url)
+                          (= (:reference-time %) reference-time))
+                    (find-inventory-by-url url)))))

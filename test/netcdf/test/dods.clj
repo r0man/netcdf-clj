@@ -17,7 +17,9 @@
       (is (= 1 (count datasets)))
       (let [dataset (first datasets)]
         (is (= (:dods dataset) "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z"))
-        (is (= (date-time 2010 10 30) (:reference-time dataset)))))))
+        (is (= (date-time 2010 10 30) (:reference-time dataset)))))
+    (is (= (find-datasets-by-url-and-reference-time "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3" (date-time 2010 10 30 0))
+           (find-datasets-by-url-and-reference-time "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3" "2010-10-30T00:00:00Z")))))
 
 (deftest test-find-inventory-by-url
   (is (= (find-inventory-by-url "test-resources/dods/wave/akw")
