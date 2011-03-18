@@ -1,6 +1,9 @@
 (ns netcdf.test.dataset
   (:import ucar.nc2.dt.grid.GeoGrid)
-  (:use clojure.test netcdf.dataset netcdf.test.helper))
+  (:use clojure.test
+        netcdf.dataset
+        netcdf.test.helper
+        netcdf.time))
 
 (deftest test-open-dataset
   (with-open [dataset (open-dataset *dataset-uri*)]
@@ -50,4 +53,4 @@
   (with-open [dataset (open-grid-dataset *dataset-uri*)]
     (let [valid-times (valid-times dataset)]
       (is (not (empty? valid-times)))
-      (is (every? #(isa? (class %) java.util.Date) valid-times)))))
+      (is (every? date-time? valid-times)))))

@@ -1,7 +1,8 @@
 (ns netcdf.dataset
-  (:import ucar.nc2.dataset.NetcdfDataset
-           (ucar.nc2 FileWriter NetcdfFile)
-           (ucar.nc2.dt.grid GridDataset GridAsPointDataset)))
+  (:import (ucar.nc2 FileWriter NetcdfFile)
+           (ucar.nc2.dt.grid GridAsPointDataset GridDataset)
+           ucar.nc2.dataset.NetcdfDataset)
+  (:use netcdf.time))
 
 (defn- write-dimensions [^NetcdfDataset dataset ^FileWriter writer]
   (doseq [dimension (.getDimensions dataset)]
@@ -46,7 +47,8 @@
 
 (defn valid-times
   "Returns the valid times in the NetCDF dataset."
-  [^GridDataset dataset] (sort (.getDates (GridAsPointDataset. (.getGrids dataset)))))
+  [^GridDataset dataset]
+  (map to-date-time (sort (.getDates (GridAsPointDataset. (.getGrids dataset))))))
 
 (defn copy-dataset
   "Copy the NetCDF dataset from source to target."
