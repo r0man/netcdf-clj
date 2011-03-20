@@ -77,7 +77,7 @@
           (:dods model) (or reference-time (latest-reference-time model)))))
 
 (defn download-variable [model variable & {:keys [reference-time root-dir]}]
-  (if-let [reference-time (or reference-time (latest-reference-time model))]
+  (if-let [reference-time (to-date-time (or reference-time (latest-reference-time model)))]
     (let [start-time (now)
           dataset (first (dods/find-datasets-by-url-and-reference-time (:dods model) reference-time))
           filename (variable-path model variable reference-time root-dir)]
