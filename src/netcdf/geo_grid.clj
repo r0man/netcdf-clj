@@ -45,7 +45,8 @@
   [^GeoGrid grid]
   (assoc (location-axis (coord-system grid))
     :name (.getName grid)
-    :description (.getDescription grid)))
+    :description (.getDescription grid)
+    :resolution (resolution (coord-system grid))))
 
 (defn open-geo-grid
   "Open a NetCDF GeoGrid."
