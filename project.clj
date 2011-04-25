@@ -8,7 +8,7 @@
                  [incanter/incanter-core "1.2.3"]
                  [javax.media/jai_core "1.1.3"]
                  [opendap/opendap "2.2"]
-                 [org.clojure/clojure "1.2.0"]
+                 [org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [org.slf4j/slf4j-log4j12 "1.5.6"]]
   :dev-dependencies [[swank-clojure "1.2.1"]]
