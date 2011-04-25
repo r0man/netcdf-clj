@@ -25,6 +25,11 @@
     (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw" (:dods model)))
     (is (= wave-watch-variables (:variables model)))))
 
+(deftest test-model
+  (is (nil? (model "unknown")))
+  (is (= akw (model (:name akw))))
+  (is (= akw (model (keyword (:name akw))))))
+
 (deftest test-reference-times
   (with-test-inventory
     (let [reference-times (reference-times nww3)]

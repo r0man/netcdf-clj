@@ -43,7 +43,7 @@
          (register-model ~name#))))
 
 (defn model [name]
-  (get @*cache* name))
+  (get @*cache* (keyword name)))
 
 (defn reference-times
   "Returns the sorted reference times in the inventory for the model."
@@ -215,19 +215,3 @@
 
 (defn download-wave-watch [& [reference-time]]
   (download-models wave-watch-models reference-time))
-
-;; (defn read-spots [filename]
-;;   (read-json (slurp filename)))
-
-;; (def *spots* (read-spots "/home/roman/spots.json"))
-
-;; (read-variable nww3 (first (:variables nww3)) (take 10 *spots*))
-
-;; (take 2 *locations*)
-
-;; (def *pois* [{:location {:latitude 0 :longitude 0}}])
-
-;; (time
-;;  (dump-model nww3 "/tmp/nww3.csv" *pois*))
-
-;; (take 2 (read-model nww3 [{:latitude 0 :longitude 0} {:latitude 1 :longitude 1}]))
