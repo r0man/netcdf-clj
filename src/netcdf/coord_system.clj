@@ -1,6 +1,7 @@
 (ns netcdf.coord-system
   (:import ucar.nc2.dt.GridCoordSystem)
-  (:use netcdf.location))
+  (:use netcdf.location
+        netcdf.resolution))
 
 (defn make-axis
   "Returns an axis."
@@ -83,3 +84,12 @@
       (max (:step x) (:step y))))
   ([x y & more]
      (reduce min-axis (min-axis x y) more)))
+
+(defn resolution
+  "Returns the resolution of the coordinate system."
+  [^GridCoordSystem coord-system]
+  (make-resolution
+   (/ (.getWidth (.getLatLonBoundingBox coord-system))
+      (- (.getSize (.getXHorizAxis coord-system)) 1))
+   (/ (.getHeight (.getLatLonBoundingBox coord-system))
+      (- (.getSize (.getYHorizAxis coord-system)) 1))))

@@ -106,3 +106,8 @@
         (is (= 1.0 (:step axis)))))
     (testing "with more arguments"
       (is (= smaller (min-axis larger smaller larger))))))
+
+(deftest test-resolution
+  (let [resolution (resolution *coord-system*)]
+    (is (= 1.25 (:width resolution)))
+    (is (= 1.0 (:height resolution)))))
