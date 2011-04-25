@@ -5,7 +5,7 @@
                  [commons-httpclient "3.1"]
                  [essi-unidata/netcdf-java "4.0.41"]
                  [google-maps "0.4.1-SNAPSHOT"]
-                 [incanter/incanter-core "1.2.3-SNAPSHOT"]
+                 [incanter/incanter-core "1.2.3"]
                  [javax.media/jai_core "1.1.3"]
                  [opendap/opendap "2.2"]
                  [org.clojure/clojure "1.2.0"]
