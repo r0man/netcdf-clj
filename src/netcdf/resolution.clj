@@ -1,10 +1,8 @@
 (ns netcdf.resolution)
 
-(defrecord Resolution [width height])
-
 (defn make-resolution
   "Make new a resolution map."
-  [width height] (Resolution. width height))
+  [width height] {:width width :height height})
 
 (defn sort-resolutions
   "Returns a sorted sequence of the resolutions."
