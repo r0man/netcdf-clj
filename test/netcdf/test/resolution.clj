@@ -19,3 +19,9 @@
 
 (deftest test-max-resolution
   (is (= akw (max-resolution [akw nww3]))))
+
+(deftest test-merge-resolutions
+  (let [resolution (merge-resolutions [akw nww3])]
+    (is (= 0.5 (:width resolution)))
+    (is (= 0.25 (:height resolution))))
+  (is (= (merge-resolutions [akw nww3]) (merge-resolutions [nww3 akw]))))

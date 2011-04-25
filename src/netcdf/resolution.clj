@@ -18,3 +18,9 @@
   "Returns the min/lowest resolution of the given resolutions."
   [resolutions] (last (sort-resolutions resolutions)))
 
+(defn merge-resolutions
+  "Merge the resolutions."
+  [resolutions]
+  (make-resolution
+   (apply min (map :width resolutions))
+   (apply min (map :height resolutions))))
