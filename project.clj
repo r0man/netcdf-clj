@@ -1,7 +1,7 @@
 (defproject netcdf-clj "0.0.2-SNAPSHOT"
   :description "Clojure NetCDF Library."
   :url "http://github.com/r0man/netcdf-clj"
-  :dependencies [[clj-time "0.2.0-SNAPSHOT"]
+  :dependencies [[clj-time "0.3.0"]
                  [commons-httpclient "3.1"]
                  [essi-unidata/netcdf-java "4.0.41"]
                  [google-maps "0.4.1-SNAPSHOT"]
