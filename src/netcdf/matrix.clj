@@ -78,9 +78,7 @@
 (defn render-image [matrix image]
   (doseq [row (range 0 (nrow matrix)) col (range 0 (ncol matrix))
           :let [value (sel matrix :rows row :cols col)
-                ;; color (if (.isNaN value) Color/BLACK Color/WHITE)
-                color (value->color value)
-                ]]
+                color (value->color value)]]
     (.setRGB image col row (.getRGB color)))
   image)
 
@@ -90,43 +88,3 @@
 
 (defn save-as-image [matrix filename]
   (write-buffered-image (make-image matrix) filename))
-
-;; (def *akw* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/akw/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
-;; (def *nww3* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
-;; (def *wna* (grid/read-matrix (grid/open-geo-grid "/home/roman/.netcdf/wna/htsgwsfc/20100828/t12z.nc" "htsgwsfc")))
-;; (def *example* (grid/read-matrix (grid/open-geo-grid "/tmp/netcdf-test.nc" "htsgwsfc")))
-
-;; (defn find-bounds [& matrixes]
-;;   )
-
-;; (defn location->position [^Matrix matrix location]
-;;   (let [{:keys [latitude-axis lon-ax
-;;                 is]} (meta matrix)
-;;         lat-diff (- (:max latitude-axis) (:min latitude-axis))
-;;         lon-diff (- (:max longitude-axis) (:min longitude-axis))
-;;         ]
-;;     [lat-diff lon-diff]))
-
-;; (location->position *nww3* {:latitude 0 :longitude 0})
-
-;; (meta *akw*)
-;; (meta *wna*)
-;; (meta *nww3*)
-
-
-;; (time
-;;  (let [model "nww3"
-;;        matrix *nww3*
-;;        meta (meta matrix)]
-;;    (println meta)
-;;    (write-buffered-image (render-matrix matrix) (str "/tmp/" model ".png"))))
-
-;; (nrow *matrix*)
-;; (ncol *matrix*)
-
-;; (def *label* (javax.swing.JLabel. (javax.swing.ImageIcon. *image*)))
-
-;; (.add *panel* *label*)
-;; (.pack *frame*)
-;; (.removeAll *frame*)
-;; (.removeAll *panel*)
