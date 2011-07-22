@@ -42,7 +42,7 @@
 (defn parse-integer [string & options]
   (let [{:keys [radix junk-allowed] :or {radix 10, junk-allowed false}} (apply hash-map options)]
     (try
-      (Integer/parseInt string radix)
+      (Integer/parseInt (str string) radix)
       (catch NumberFormatException e
         (when-not junk-allowed
           (throw NumberFormatException e))))))
