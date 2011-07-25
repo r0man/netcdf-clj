@@ -90,7 +90,7 @@
 ;; (def *variable* "htsgwsfc")
 
 ;; (def *datatype* (make-datatype example-path *variable*))
-;; (def *valid-time* (first (valid-times *datatype*)))
+;; (def example-valid-time (first (valid-times *datatype*)))
 
 ;; (defn make-example-datatype []
 ;;   (make-datatype example-path *variable*))

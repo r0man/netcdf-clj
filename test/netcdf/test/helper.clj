@@ -19,15 +19,15 @@
 (def *product* "nww3")
 (def *variable* "htsgwsfc")
 
-(def *valid-time* (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
+(def example-valid-time (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
 
 (def example-path (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
 
 (def *remote-uri*
   (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" *product* "/"
-       *product* (unparse (formatters :basic-date) *valid-time*) "/"
-       *product* (unparse (formatters :basic-date) *valid-time*) "_"
-       (unparse (formatters :hour) *valid-time*) "z"))
+       *product* (unparse (formatters :basic-date) example-valid-time) "/"
+       *product* (unparse (formatters :basic-date) example-valid-time) "_"
+       (unparse (formatters :hour) example-valid-time) "z"))
 
 (if-not (.exists (File. example-path))
   (do
