@@ -78,22 +78,22 @@
     (is (= (latest-reference-time nww3) (date-time 2010 10 30 6)))))
 
 (deftest test-variable-path
-  (is (= (str *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc")
+  (is (= (str *root-dir* "/htsgwsfc/akw/2010/11/05/060000Z.nc")
          (variable-path akw htsgwsfc "2010-11-05T06:00:00Z")))
-  (is (= (str *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc")
+  (is (= (str *root-dir* "/htsgwsfc/akw/2010/11/05/060000Z.nc")
          (variable-path akw htsgwsfc (date-time 2010 11 5 6))))
-  (is (= "/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc"
+  (is (= "/tmp/htsgwsfc/akw/2010/11/05/060000Z.nc"
          (variable-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")))
-  (is (= "/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc"
+  (is (= "/tmp/htsgwsfc/akw/2010/11/05/060000Z.nc"
          (variable-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")))
-  (is (= "s3n://burningswell/netcdf/akw/htsgwsfc/2010/11/05/060000Z.nc"
+  (is (= "s3n://burningswell/netcdf/htsgwsfc/akw/2010/11/05/060000Z.nc"
          (variable-path akw htsgwsfc (date-time 2010 11 5 6) "s3n://burningswell/netcdf"))))
 
 (deftest test-local-uri
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6))
-         (URI. (str "file:" *root-dir* "/akw/htsgwsfc/2010/11/05/060000Z.nc"))))
+         (URI. (str "file:" *root-dir* "/htsgwsfc/akw/2010/11/05/060000Z.nc"))))
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6) "/tmp")
-         (URI. "file:/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc"))))
+         (URI. "file:/tmp/htsgwsfc/akw/2010/11/05/060000Z.nc"))))
 
 (deftest test-find-dataset
   (with-test-inventory

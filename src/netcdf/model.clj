@@ -70,7 +70,7 @@
 (defn variable-path [model variable & [reference-time root-dir]]
   (let [reference-time (to-date-time (or reference-time (latest-reference-time model)))]
     (join File/separator
-          [(or root-dir *root-dir*) (:name model) (:name variable)
+          [(or root-dir *root-dir*) (:name variable) (:name model)
            (str (date-time-path-fragment reference-time) ".nc")])))
 
 (defn local-uri [model variable & [reference-time root-dir]]
