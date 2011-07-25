@@ -24,15 +24,18 @@
 (def example-path (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
 
 (def *remote-uri*
-     (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" *product* "/"
-          *product* (unparse (formatters :basic-date) *valid-time*) "/"
-          *product* (unparse (formatters :basic-date) *valid-time*) "_"
-          (unparse (formatters :hour) *valid-time*) "z"))
+  (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" *product* "/"
+       *product* (unparse (formatters :basic-date) *valid-time*) "/"
+       *product* (unparse (formatters :basic-date) *valid-time*) "_"
+       (unparse (formatters :hour) *valid-time*) "z"))
 
 (if-not (.exists (File. example-path))
   (do
     (info (str "Downloading test data:" *remote-uri*))
     (time (dataset/copy-dataset *remote-uri* example-path [*variable*]))))
 
-(def example-dataset (dataset/open-grid-dataset example-path))
-(def example-geo-grid (dataset/find-geo-grid example-dataset *variable*))
+(def example-dataset
+  (dataset/open-grid-dataset example-path))
+
+(def example-geo-grid
+  (dataset/find-geo-grid example-dataset *variable*))
