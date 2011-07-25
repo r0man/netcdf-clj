@@ -34,5 +34,5 @@
     (info (str "Downloading test data:" *remote-uri*))
     (time (dataset/copy-dataset *remote-uri* example-path [*variable*]))))
 
-(def *dataset* (dataset/open-grid-dataset example-path))
-(def *geo-grid* (dataset/find-geo-grid *dataset* *variable*))
+(def example-dataset (dataset/open-grid-dataset example-path))
+(def *geo-grid* (dataset/find-geo-grid example-dataset *variable*))
