@@ -87,13 +87,13 @@
 
 ;; (def example-path "/home/roman/.weather/20100215/akw.06.nc")
 ;; (def example-path "/home/roman/.weather/20100215/nww3.06.nc")
-;; (def *variable* "htsgwsfc")
+;; (def example-variable "htsgwsfc")
 
-;; (def *datatype* (make-datatype example-path *variable*))
+;; (def *datatype* (make-datatype example-path example-variable))
 ;; (def example-valid-time (first (valid-times *datatype*)))
 
 ;; (defn make-example-datatype []
-;;   (make-datatype example-path *variable*))
+;;   (make-datatype example-path example-variable))
 
 ;; (defn open-example-datatype []
 ;;   (open-datatype (make-example-datatype)))

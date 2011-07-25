@@ -17,7 +17,7 @@
        ~@body)))
 
 (def *product* "nww3")
-(def *variable* "htsgwsfc")
+(def example-variable "htsgwsfc")
 
 (def example-valid-time (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
 
@@ -32,10 +32,10 @@
 (if-not (.exists (File. example-path))
   (do
     (info (str "Downloading test data:" *remote-uri*))
-    (time (dataset/copy-dataset *remote-uri* example-path [*variable*]))))
+    (time (dataset/copy-dataset *remote-uri* example-path [example-variable]))))
 
 (def example-dataset
   (dataset/open-grid-dataset example-path))
 
 (def example-geo-grid
-  (dataset/find-geo-grid example-dataset *variable*))
+  (dataset/find-geo-grid example-dataset example-variable))
