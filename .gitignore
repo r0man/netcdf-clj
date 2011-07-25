@@ -15,3 +15,4 @@ netcdf.jar
 /nww3
 /wna
 /.lein-failures
+/logs/test.log
