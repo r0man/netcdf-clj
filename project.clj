@@ -11,6 +11,5 @@
                  [org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [org.slf4j/slf4j-log4j12 "1.5.6"]]
-  :dev-dependencies [[swank-clojure "1.2.1"]]
   :tasks [netcdf.tasks]
   :repositories {"unifi.it" "http://ulisse.pin.unifi.it:8081/nexus/content/groups/open.repos/"})
