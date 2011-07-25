@@ -35,4 +35,4 @@
     (time (dataset/copy-dataset *remote-uri* example-path [*variable*]))))
 
 (def example-dataset (dataset/open-grid-dataset example-path))
-(def *geo-grid* (dataset/find-geo-grid example-dataset *variable*))
+(def example-geo-grid (dataset/find-geo-grid example-dataset *variable*))
