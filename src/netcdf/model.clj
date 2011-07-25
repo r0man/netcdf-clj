@@ -17,8 +17,11 @@
 
 (defrecord Model [name description dods variables])
 
-(defvar *cache* (ref {})
+(defvar *models* (ref {})
   "The model cache.")
+
+(defvar *variables* (ref {})
+  "The variable cache.")
 
 (defvar *root-dir*
   (str (System/getenv "HOME") File/separator ".netcdf")
@@ -28,7 +31,7 @@
   (Model. name description dods variables))
 
 (defn register-model [model]
-  (dosync (ref-set *cache* (assoc @*cache* (keyword (:name model)) model))))
+  (dosync (ref-set *models* (assoc @*models* (keyword (:name model)) model))))
 
 (defmacro defmodel
   "Define and register the model."
@@ -43,7 +46,7 @@
          (register-model ~name#))))
 
 (defn model [name]
-  (get @*cache* (keyword name)))
+  (get @*models* (keyword name)))
 
 (defn reference-times
   "Returns the sorted reference times in the inventory for the model."
