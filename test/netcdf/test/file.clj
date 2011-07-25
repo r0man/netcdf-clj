@@ -6,8 +6,8 @@
         netcdf.test.helper))
 
 (deftest test-netcdf-file?
-  (is (netcdf-file? *dataset-uri*))
-  (is (netcdf-file? (File. *dataset-uri*)))
+  (is (netcdf-file? example-path))
+  (is (netcdf-file? (File. example-path)))
   (is (not (netcdf-file? "test")))
   (is (not (netcdf-file? (File. "test")))))
 

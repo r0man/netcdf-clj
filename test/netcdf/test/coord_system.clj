@@ -6,7 +6,7 @@
         netcdf.coord-system
         netcdf.test.helper))
 
-(def *coord-system* (grid/coord-system (grid/open-geo-grid *dataset-uri* *variable*)))
+(def *coord-system* (grid/coord-system (grid/open-geo-grid example-path *variable*)))
 
 (deftest test-make-axis
   (let [axis (make-axis -78 78 1)]

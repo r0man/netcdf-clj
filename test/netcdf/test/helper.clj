@@ -21,7 +21,7 @@
 
 (def *valid-time* (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
 
-(def *dataset-uri* (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
+(def example-path (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
 
 (def *remote-uri*
      (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" *product* "/"
@@ -29,10 +29,10 @@
           *product* (unparse (formatters :basic-date) *valid-time*) "_"
           (unparse (formatters :hour) *valid-time*) "z"))
 
-(if-not (.exists (File. *dataset-uri*))
+(if-not (.exists (File. example-path))
   (do
     (info (str "Downloading test data:" *remote-uri*))
-    (time (dataset/copy-dataset *remote-uri* *dataset-uri* [*variable*]))))
+    (time (dataset/copy-dataset *remote-uri* example-path [*variable*]))))
 
-(def *dataset* (dataset/open-grid-dataset *dataset-uri*))
+(def *dataset* (dataset/open-grid-dataset example-path))
 (def *geo-grid* (dataset/find-geo-grid *dataset* *variable*))

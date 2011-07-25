@@ -7,7 +7,7 @@
         netcdf.projection-point
         netcdf.test.helper))
 
-(def *grid* (grid/open-geo-grid *dataset-uri* *variable*))
+(def *grid* (grid/open-geo-grid example-path *variable*))
 
 (def *projection* (.. *grid* getCoordinateSystem getProjection))
 

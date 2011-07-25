@@ -12,7 +12,7 @@
 
 (refer-private 'netcdf.matrix)
 
-(def *matrix* (grid/read-matrix (grid/open-geo-grid *dataset-uri* *variable*)))
+(def *matrix* (grid/read-matrix (grid/open-geo-grid example-path *variable*)))
 
 (deftest test-meta-data-filename
   (are [filename expected]

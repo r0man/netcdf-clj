@@ -85,15 +85,15 @@
 ;;   (println (interpolate matrix-4x4 0 0))
 ;;   )
 
-;; (def *dataset-uri* "/home/roman/.weather/20100215/akw.06.nc")
-;; (def *dataset-uri* "/home/roman/.weather/20100215/nww3.06.nc")
+;; (def example-path "/home/roman/.weather/20100215/akw.06.nc")
+;; (def example-path "/home/roman/.weather/20100215/nww3.06.nc")
 ;; (def *variable* "htsgwsfc")
 
-;; (def *datatype* (make-datatype *dataset-uri* *variable*))
+;; (def *datatype* (make-datatype example-path *variable*))
 ;; (def *valid-time* (first (valid-times *datatype*)))
 
 ;; (defn make-example-datatype []
-;;   (make-datatype *dataset-uri* *variable*))
+;;   (make-datatype example-path *variable*))
 
 ;; (defn open-example-datatype []
 ;;   (open-datatype (make-example-datatype)))
