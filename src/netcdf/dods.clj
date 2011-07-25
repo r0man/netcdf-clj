@@ -5,15 +5,12 @@
             [netcdf.dataset :as dataset]
             clojure.contrib.zip-filter)
   (:use [clj-time.core :only (date-time year month day hour)]
-        [clojure.contrib.def :only (defvar)]
+        [clojure.contrib.def :only (defvar defn-memo)]
         [clojure.contrib.string :only (join replace-re)]
         clj-time.format
         clojure.contrib.zip-filter.xml
         netcdf.time
         netcdf.utils))
-
-(defvar *cache* (ref {})
-  "The inventory cache.")
 
 (defn- feed-to-zip [uri]
   (zip/xml-zip (xml/parse uri)))
@@ -42,14 +39,9 @@
        :dods (extract dataset :dods)
        :reference-time (parse-reference-time (extract dataset :dods))})))
 
-(defn find-inventory-by-url
+(defn-memo find-inventory-by-url
   "Returns the inventory at the url."
-  [url]
-  (let [inventory-url (inventory-url url)]
-    (or (get @*cache* inventory-url)
-        (dosync
-         (alter *cache* assoc inventory-url (parse-inventory inventory-url))
-         (get @*cache* inventory-url)))))
+  [url] (parse-inventory (inventory-url url)))
 
 (defn find-datasets-by-url
   "Returns all datasets matching the url."
