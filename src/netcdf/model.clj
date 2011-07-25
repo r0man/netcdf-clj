@@ -90,8 +90,8 @@
           dataset (first (dods/find-datasets-by-url-and-reference-time (:dods model) reference-time))
           filename (variable-path model variable reference-time root-dir)]
       (info (str "           Model: " (:description model) " (" (:name model) ")"))
-      (info (str "  Reference Time: " (unparse (formatters :rfc822) reference-time)))
       (info (str "        Variable: " (:description variable) " (" (:name variable) ")"))
+      (info (str "  Reference Time: " (unparse (formatters :rfc822) reference-time)))
       (info (str "     NetCDF File: " filename))
       (if-not (> (file-size filename) 0)
         (let [dataset (copy-dataset (:dods dataset) filename [(:name variable)])
