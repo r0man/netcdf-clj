@@ -42,7 +42,7 @@
             :description ~description#
             :name ~(str name#)
             :dods ~dods#
-            :variables ~variables#)
+            :variables (set ~variables#))
            ~description#)
          (register-model ~name#))))
 
