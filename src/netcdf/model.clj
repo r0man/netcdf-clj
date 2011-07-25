@@ -30,6 +30,10 @@
 (defn make-model [& {:keys [name description dods variables]}]
   (Model. name description dods variables))
 
+(defn model?
+  "Returns true if arg is a model, otherwise false."
+  [arg] (isa? (class arg) Model))
+
 (defn register-model [model]
   (dosync (ref-set *models* (assoc @*models* (keyword (:name model)) model))))
 
