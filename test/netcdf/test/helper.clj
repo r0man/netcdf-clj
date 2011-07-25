@@ -16,17 +16,22 @@
      (binding [dods/find-inventory-by-url (fn [url#] inventory#)]
        ~@body)))
 
-(def *product* "nww3")
-(def example-variable "htsgwsfc")
+(def example-product
+  "nww3")
 
-(def example-valid-time (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
+(def example-variable
+  "htsgwsfc")
 
-(def example-path (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
+(def example-valid-time
+  (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
+
+(def example-path
+  (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
 
 (def *remote-uri*
-  (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" *product* "/"
-       *product* (unparse (formatters :basic-date) example-valid-time) "/"
-       *product* (unparse (formatters :basic-date) example-valid-time) "_"
+  (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" example-product "/"
+       example-product (unparse (formatters :basic-date) example-valid-time) "/"
+       example-product (unparse (formatters :basic-date) example-valid-time) "_"
        (unparse (formatters :hour) example-valid-time) "z"))
 
 (if-not (.exists (File. example-path))
