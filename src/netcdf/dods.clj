@@ -4,13 +4,20 @@
             [clojure.zip :as zip]
             [netcdf.dataset :as dataset]
             clojure.contrib.zip-filter)
-  (:use [clj-time.core :only (date-time year month day hour)]
+  (:use [clj-time.core :only (date-time day hour month year)]
         [clojure.contrib.def :only (defvar defn-memo)]
         [clojure.contrib.string :only (join replace-re)]
         clj-time.format
         clojure.contrib.zip-filter.xml
+        netcdf.repository
         netcdf.time
         netcdf.utils))
+
+(defrecord DODSRepository [uri])
+
+(defn dods-repository
+  "Make a DODS repository."
+  [url] (DODSRepository. url))
 
 (defn- feed-to-zip [uri]
   (zip/xml-zip (xml/parse uri)))

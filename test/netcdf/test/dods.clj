@@ -7,6 +7,10 @@
         clojure.test
         clojure.contrib.mock))
 
+(deftest test-dods-repository
+  (let [repo (dods-repository "http://nomads.ncep.noaa.gov:9090/dods/xml")]
+    (is (= "http://nomads.ncep.noaa.gov:9090/dods/xml" (:uri repo)))))
+
 (deftest test-find-datasets-by-url
   (with-test-inventory
     (is (= 2 (count (find-datasets-by-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"))))))
