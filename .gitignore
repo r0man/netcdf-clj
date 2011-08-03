@@ -16,3 +16,4 @@ netcdf.jar
 /wna
 /.lein-failures
 /logs/test.log
+/logs/debug.log
