@@ -115,9 +115,9 @@
 
 (deftest test-local-uri
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6))
-         (URI. (str "file:" *root-dir* "/htsgwsfc/akw/2010/11/05/060000Z.nc"))))
+         (URI. (str "file:" *root-dir* "/htsgwsfc/2010/11/05/060000Z/akw.nc"))))
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6) "/tmp")
-         (URI. "file:/tmp/htsgwsfc/akw/2010/11/05/060000Z.nc"))))
+         (URI. "file:/tmp/htsgwsfc/2010/11/05/060000Z/akw.nc"))))
 
 (deftest test-make-model
   (let [model *akw*]
@@ -144,13 +144,13 @@
       (is (= 2 (count reference-times))))))
 
 (deftest test-variable-path
-  (is (= (str *root-dir* "/htsgwsfc/akw/2010/11/05/060000Z.nc")
+  (is (= (str *root-dir* "/htsgwsfc/2010/11/05/060000Z/akw.nc")
          (variable-path akw htsgwsfc "2010-11-05T06:00:00Z")))
-  (is (= (str *root-dir* "/htsgwsfc/akw/2010/11/05/060000Z.nc")
+  (is (= (str *root-dir* "/htsgwsfc/2010/11/05/060000Z/akw.nc")
          (variable-path akw htsgwsfc (date-time 2010 11 5 6))))
-  (is (= "/tmp/htsgwsfc/akw/2010/11/05/060000Z.nc"
+  (is (= "/tmp/htsgwsfc/2010/11/05/060000Z/akw.nc"
          (variable-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")))
-  (is (= "/tmp/htsgwsfc/akw/2010/11/05/060000Z.nc"
+  (is (= "/tmp/htsgwsfc/2010/11/05/060000Z/akw.nc"
          (variable-path akw htsgwsfc (date-time 2010 11 5 6) "/tmp")))
-  (is (= "s3n://burningswell/netcdf/htsgwsfc/akw/2010/11/05/060000Z.nc"
+  (is (= "s3n://burningswell/netcdf/htsgwsfc/2010/11/05/060000Z/akw.nc"
          (variable-path akw htsgwsfc (date-time 2010 11 5 6) "s3n://burningswell/netcdf"))))
