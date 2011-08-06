@@ -12,6 +12,6 @@
   (is (not (netcdf-file? (File. "test")))))
 
 (deftest test-netcdf-file-seq
-  (let [files (netcdf-file-seq *root-dir*)]
+  (let [files (netcdf-file-seq *repository*)]
     (is (every? #(isa? (class %) File) files))
     (is (every? netcdf-file? files))))

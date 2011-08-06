@@ -51,8 +51,8 @@
 (defn model [name]
   (get @*models* (keyword name)))
 
-(defn local-uri [model variable & [reference-time root-dir]]
-  (java.net.URI. (str "file:" (variable-path model variable reference-time root-dir))))
+(defn local-uri [model variable & [reference-time]]
+  (java.net.URI. (str "file:" (variable-path model variable reference-time))))
 
 (defn find-dataset [model & [reference-time]]
   (first (dods/find-datasets-by-url-and-reference-time
