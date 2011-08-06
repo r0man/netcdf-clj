@@ -23,6 +23,8 @@
            (date-time-path-fragment reference-time)
            (str (:name model) ".nc")])))
 
-(defmacro with-root-dir [directory & body]
+(defmacro with-root-dir
+  "Bind *root-dir* to directory and evaluate body."
+  [directory & body]
   `(binding [*root-dir* ~directory]
      ~@body))
