@@ -7,6 +7,8 @@
         clojure.contrib.mock
         clojure.test
         netcdf.model
+        netcdf.dods
+        netcdf.repository
         netcdf.test.helper
         netcdf.time
         netcdf.variable))
@@ -17,9 +19,6 @@
    :name "akw"
    :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
    :variables wave-watch-variables))
-
-(deftest test-current-reference-time
-  (is (current-reference-time nww3)))
 
 (deftest test-download-variable
   (with-test-inventory
@@ -108,10 +107,6 @@
       (testing "with time string"
         (is (= (find-reference-time nww3 (format-time (first reference-times)))
                (first reference-times)))))))
-
-(deftest test-latest-reference-time
-  (with-test-inventory
-    (is (= (latest-reference-time nww3) (date-time 2010 10 30 6)))))
 
 (deftest test-local-uri
   (is (= (local-uri akw htsgwsfc (date-time 2010 11 5 6))

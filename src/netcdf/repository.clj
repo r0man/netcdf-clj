@@ -1,9 +1,28 @@
-(ns netcdf.repository)
+(ns netcdf.repository
+  (:import java.io.File)
+  (:use [clojure.contrib.def :only (defvar)]
+        [clojure.string :only (join)]
+        netcdf.time
+        netcdf.utils
+        netcdf.dods))
 
-(defprotocol Repository)
+(defvar *root-dir*
+  (str (System/getenv "HOME") File/separator ".netcdf")
+  "The local NetCDF directory.")
 
-(defrecord LocalRepository [uri])
+(defn variable-directory [variable & [reference-time root-dir]]
+  (let [reference-time (to-date-time reference-time)]
+    (join File/separator
+          [(or root-dir *root-dir*) (:name variable)
+           (date-time-path-fragment reference-time)])))
 
-(defn local-repository
-  "Make a local repository."
-  [directory] (LocalRepository. directory))
+(defn variable-path [model variable & [reference-time root-dir]]
+  (let [reference-time (to-date-time (or reference-time (latest-reference-time model)))]
+    (join File/separator
+          [(or root-dir *root-dir*) (:name variable)
+           (date-time-path-fragment reference-time)
+           (str (:name model) ".nc")])))
+
+(defmacro with-root-dir [directory & body]
+  `(binding [*root-dir* ~directory]
+     ~@body))

@@ -11,6 +11,8 @@
         netcdf.bounding-box
         netcdf.utils
         netcdf.variable
+        netcdf.repository
+        netcdf.dods
         netcdf.time
         clojure.contrib.logging
         clj-time.format))
@@ -22,10 +24,6 @@
 
 (defvar *variables* (ref {})
   "The variable cache.")
-
-(defvar *root-dir*
-  (str (System/getenv "HOME") File/separator ".netcdf")
-  "The local NetCDF directory.")
 
 (defn make-model [& {:keys [name description dods variables]}]
   (Model. name description dods variables))
@@ -52,31 +50,6 @@
 
 (defn model [name]
   (get @*models* (keyword name)))
-
-(defn reference-times
-  "Returns the sorted reference times in the inventory for the model."
-  [model] (sort (map :reference-time (dods/find-datasets-by-url (:dods model)))))
-
-(defn find-reference-time
-  "Returns the closest reference time of the model to time."
-  [model time]
-  (let [time (to-date-time time)]
-    (last (remove #(after? % time) (reference-times model)))))
-
-(defn current-reference-time
-  "Returns the latest reference time of model."
-  [model] (find-reference-time model (now)))
-
-(defn latest-reference-time
-  "Returns the latest reference time of model."
-  [model] (last (reference-times model)))
-
-(defn variable-path [model variable & [reference-time root-dir]]
-  (let [reference-time (to-date-time (or reference-time (latest-reference-time model)))]
-    (join File/separator
-          [(or root-dir *root-dir*) (:name variable)
-           (date-time-path-fragment reference-time)
-           (str (:name model) ".nc")])))
 
 (defn local-uri [model variable & [reference-time root-dir]]
   (java.net.URI. (str "file:" (variable-path model variable reference-time root-dir))))

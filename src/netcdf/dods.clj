@@ -4,12 +4,11 @@
             [clojure.zip :as zip]
             [netcdf.dataset :as dataset]
             clojure.contrib.zip-filter)
-  (:use [clj-time.core :only (date-time day hour month year)]
+  (:use [clj-time.core :only (after? date-time day hour month year now)]
         [clojure.contrib.def :only (defvar defn-memo)]
         [clojure.contrib.string :only (join replace-re)]
         clj-time.format
         clojure.contrib.zip-filter.xml
-        netcdf.repository
         netcdf.time
         netcdf.utils))
 
@@ -65,3 +64,21 @@
             (filter #(and (:dods %) (.startsWith (:dods %) url)
                           (= (:reference-time %) reference-time))
                     (find-inventory-by-url url)))))
+
+(defn reference-times
+  "Returns the sorted reference times in the inventory for the model."
+  [model] (sort (map :reference-time (find-datasets-by-url (:dods model)))))
+
+(defn find-reference-time
+  "Returns the closest reference time of the model to time."
+  [model time]
+  (let [time (to-date-time time)]
+    (last (remove #(after? % time) (reference-times model)))))
+
+(defn current-reference-time
+  "Returns the latest reference time of model."
+  [model] (find-reference-time model (now)))
+
+(defn latest-reference-time
+  "Returns the latest reference time of model."
+  [model] (last (reference-times model)))

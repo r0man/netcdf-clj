@@ -2,7 +2,7 @@
   (:import java.io.File)
   (:use clojure.test
         netcdf.file
-        netcdf.model
+        netcdf.repository
         netcdf.test.helper))
 
 (deftest test-netcdf-file?

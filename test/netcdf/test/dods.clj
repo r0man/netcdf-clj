@@ -3,9 +3,14 @@
   (:use [clj-time.core :only (date-time year month day hour)]
         clj-time.format
         netcdf.dods
+        netcdf.model
+        netcdf.variable
         netcdf.test.helper
         clojure.test
         clojure.contrib.mock))
+
+(deftest test-current-reference-time
+  (is (current-reference-time nww3)))
 
 (deftest test-dods-repository
   (let [repo (dods-repository "http://nomads.ncep.noaa.gov:9090/dods/xml")]
@@ -43,6 +48,10 @@
     (is (= (inventory-url url) expected))
     "http://nomads.ncep.noaa.gov:9090/dods/wave/akw" "http://nomads.ncep.noaa.gov:9090/dods/xml"
     "file:/home/roman/workspace/netcdf-clj/test-resources/dods/wave/akw" "file:/home/roman/workspace/netcdf-clj/test-resources/dods/xml"))
+
+(deftest test-latest-reference-time
+  (with-test-inventory
+    (is (= (latest-reference-time nww3) (date-time 2010 10 30 6)))))
 
 (deftest test-parse-inventory
   (let [datasets (parse-inventory "test-resources/dods/xml")]
