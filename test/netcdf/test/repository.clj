@@ -1,8 +1,18 @@
 (ns netcdf.test.repository
-  (:import java.io.File)
-  (:use clojure.test
+  (:import java.io.File java.net.URI)
+  (:use [clj-time.core :only (date-time)]
+        clojure.test
         netcdf.time
+        netcdf.model
+        netcdf.variable
         netcdf.repository))
+
+(deftest test-local-variable-path
+  (is (= (local-variable-path akw htsgwsfc (date-time 2010 11 5 6))
+         (URI. (str "file:" *repository* "/htsgwsfc/2010/11/05/060000Z/akw.nc"))))
+  (with-repository "/tmp"
+    (is (= (local-variable-path akw htsgwsfc (date-time 2010 11 5 6))
+           (URI. "file:/tmp/htsgwsfc/2010/11/05/060000Z/akw.nc")))))
 
 (deftest test-variable-directory
   (is (= (str *repository* "/htsgwsfc/2011/08/06/000000Z")

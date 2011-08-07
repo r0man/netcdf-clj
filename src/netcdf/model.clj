@@ -58,34 +58,9 @@
         (:variables model)
         (remove #(not (contains? (set variables) (:name %))) (:variables model))))))
 
-(defn local-uri [model variable & [reference-time]]
-  (java.net.URI. (str "file:" (variable-path model variable reference-time))))
-
 (defn find-dataset [model & [reference-time]]
   (first (dods/find-datasets-by-url-and-reference-time
           (:dods model) (or reference-time (latest-reference-time model)))))
-
-(defn download-variable [model variable & {:keys [reference-time root-dir]}]
-  (if-let [reference-time (to-date-time (or reference-time (latest-reference-time model)))]
-    (let [start-time (now)
-          dataset (first (dods/find-datasets-by-url-and-reference-time (:dods model) reference-time))
-          filename (variable-path model variable reference-time root-dir)]
-      (info (str "           Model: " (:description model) " (" (:name model) ")"))
-      (info (str "        Variable: " (:description variable) " (" (:name variable) ")"))
-      (info (str "  Reference Time: " (unparse (formatters :rfc822) reference-time)))
-      (info (str "     NetCDF File: " filename))
-      (if-not (> (file-size filename) 0)
-        (let [dataset (copy-dataset (:dods dataset) filename [(:name variable)])
-              interval (interval start-time (now))]
-          (info (str "            Size: " (human-file-size filename)))
-          (info (str "   Transfer Rate: " (human-transfer-rate (file-size filename) interval)))
-          (info (str "        Duration: " (human-duration interval))))
-        (info (str "            Size: " (human-file-size filename))))
-      (assoc variable
-        :interval (interval start-time (now))
-        :filename filename
-        :reference-time reference-time
-        :size (file-size filename)))))
 
 (defn download-model [model & options]
   (let [variables (remove nil? (map #(apply download-variable model % options) (:variables model)))]
@@ -117,25 +92,6 @@
 
 (defn read-model-info [filename]
   (read-string (slurp filename)))
-
-(defn read-variable [model variable pois & [reference-time]]
-  (let [reference-time (or reference-time (latest-reference-time model))
-        filename (variable-path model variable reference-time)]
-    (if-not (file-exists? filename)
-      (download-variable model variable :reference-time reference-time))
-    (with-open [dataset (open-grid-dataset filename)]
-      (let [grid (find-geo-grid dataset (:name variable))]
-        (doall
-         (for [valid-time (grid/valid-times grid)
-               poi (if (sequential? pois) pois [pois])
-               :let [value (grid/read-location grid (:location poi) :valid-time valid-time)]
-               :when (not (Double/isNaN value))]
-           {:location (:location poi)
-            :id (:id poi)
-            :reference-time reference-time
-            :valid-time valid-time
-            :value value
-            :variable variable}))))))
 
 (defn read-model [model location & [reference-time]]
   (let [reference-time (or reference-time (latest-reference-time model))]
