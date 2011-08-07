@@ -68,3 +68,7 @@
 (deftest test-with-open-grid-dataset
   (with-open-grid-dataset [dataset example-path]
     (is (isa? (class dataset) ucar.nc2.dt.grid.GridDataset))))
+
+(deftest test-write-csv
+  (with-open-grid-dataset [dataset example-path]
+    (write-csv dataset "/tmp/netcdf.csv")))

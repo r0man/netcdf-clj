@@ -2,7 +2,9 @@
   (:import (ucar.nc2 FileWriter NetcdfFile)
            (ucar.nc2.dt.grid GridAsPointDataset GridDataset)
            ucar.nc2.dataset.NetcdfDataset)
-  (:use netcdf.time))
+  (:require [netcdf.geo-grid :as geogrid])
+  (:use [clojure.contrib.duck-streams :only (with-out-writer)]
+        netcdf.time))
 
 (defn- write-dimensions [^NetcdfDataset dataset ^FileWriter writer]
   (doseq [dimension (.getDimensions dataset)]
@@ -74,3 +76,15 @@
 (defmacro with-open-grid-dataset [[name uri] & body]
   `(with-open [~name (open-grid-dataset ~uri)]
      ~@body))
+
+(defn dump-csv
+  "Dump the dataset as CSV to stdout."
+  [^GridDataset dataset & {:keys [separator valid-time z-coord]}]
+  (doseq [grid (geo-grids dataset)]
+    (geogrid/dump grid :separator separator :valid-time valid-time :z-coord z-coord)))
+
+(defn write-csv
+  "Write the dataset as CSV to filename."
+  [^GridDataset dataset filename & {:keys [separator valid-time z-coord separator]}]
+  (with-out-writer filename
+    (dump-csv dataset :separator separator :valid-time valid-time :z-coord z-coord)))
