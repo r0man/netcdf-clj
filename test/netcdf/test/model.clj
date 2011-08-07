@@ -126,10 +126,10 @@
   (is (nil? (model "unknown")))
   (is (= akw (model (:name akw))))
   (is (= akw (model (keyword (:name akw)))))
-  (let [model (lookup-model "akw")]
+  (let [model (model "akw")]
     (is (= "akw" (:name model)))
     (is (= 11 (count (:variables model)))))
-  (let [model (lookup-model "akw" ["htsgwsfc" "windsfc"])]
+  (let [model (model "akw" ["htsgwsfc" "windsfc"])]
     (is (= "akw" (:name model)))
     (is (= 2 (count (:variables model))))))
 
