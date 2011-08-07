@@ -1,5 +1,6 @@
 (ns leiningen.netcdf
-  (:use netcdf.model))
+  (:use netcdf.model
+        netcdf.variable))
 
 (defn download [model & variables]
   (let [model (or (get @*models* (keyword model))
