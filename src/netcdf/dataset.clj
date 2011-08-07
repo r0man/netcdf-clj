@@ -81,7 +81,7 @@
   "Dump the dataset as CSV to stdout."
   [^GridDataset dataset & {:keys [separator valid-time z-coord]}]
   (doseq [grid (geo-grids dataset)]
-    (geogrid/dump grid :separator separator :valid-time valid-time :z-coord z-coord)))
+    (geogrid/dump-csv grid :separator separator :valid-time valid-time :z-coord z-coord)))
 
 (defn write-csv
   "Write the dataset as CSV to filename."

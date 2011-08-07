@@ -172,10 +172,10 @@
            :valid-time (date-time 2010 12 18)}
           ","))))
 
-(deftest test-dump
+(deftest test-dump-csv
   ;; "TODO: SLOW"
   (with-open-geo-grid [grid example-path example-variable]
-    (let [lines (split (with-out-str (dump grid)) #"\n")]
+    (let [lines (split (with-out-str (dump-csv grid)) #"\n")]
       (is (= 26990 (count lines))))))
 
 (deftest test-write-csv

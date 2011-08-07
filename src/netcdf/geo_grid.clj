@@ -148,7 +148,7 @@
     (longitude (:location record))
     (:value record)]))
 
-(defn dump
+(defn dump-csv
   "Dump the whole geo grid to stdout."
   [^GeoGrid grid & {:keys [separator valid-time z-coord]}]
   (let [records (read-seq grid :valid-time valid-time :z-coord z-coord)]
@@ -159,7 +159,7 @@
   "Write the whole geo grid as CSV to filename."
   [^GeoGrid grid filename & {:keys [separator valid-time z-coord separator]}]
   (with-out-writer filename
-    (dump grid :separator separator :valid-time valid-time :z-coord z-coord)))
+    (dump-csv grid :separator separator :valid-time valid-time :z-coord z-coord)))
 
 (defmacro with-open-geo-grid [[name uri variable] & body]
   `(with-open [dataset# (. GridDataset open (str ~uri))]
