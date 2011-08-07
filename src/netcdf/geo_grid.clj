@@ -82,13 +82,6 @@
 (defn read-seq
   "Read the whole GeoGrid as a sequence."
   [^GeoGrid grid & {:keys [valid-time z-coord]}]
-  (let [valid-time (or valid-time (first (valid-times grid)))]
-    (with-meta (read-yx-data grid valid-time z-coord)
-      (assoc (meta-data grid) :valid-time valid-time))))
-
-(defn read-seq
-  "Read the whole GeoGrid as a sequence."
-  [^GeoGrid grid & {:keys [valid-time z-coord]}]
   (let [valid-time (or valid-time (first (valid-times grid)))
         ^GridCoordSystem  coord-system (coord-system grid)
         ^int t-index (time-index grid valid-time)
