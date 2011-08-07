@@ -48,8 +48,15 @@
            ~description#)
          (register-model ~name#))))
 
-(defn model [name]
-  (get @*models* (keyword name)))
+(defn model
+  "Lookup model and it's variables by name."
+  [name & [variables]]
+  (if-let [model (get @*models* (keyword name))]
+    (assoc model
+      :variables
+      (if-not variables
+        (:variables model)
+        (remove #(not (contains? (set variables) (:name %))) (:variables model))))))
 
 (defn local-uri [model variable & [reference-time]]
   (java.net.URI. (str "file:" (variable-path model variable reference-time))))
