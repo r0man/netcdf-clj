@@ -28,6 +28,10 @@
   (is (= "0.0 KB/s" (human-transfer-rate  0 (interval (now) (now)))))
   (is (= "1.0 KB/s" (human-transfer-rate 1000 (interval (date-time 2010 12 18 0 0 0) (date-time 2010 12 18 0 0 1))))))
 
+(deftest test-nan?
+  (is (not (nan? 0)))
+  (is (nan? Double/NaN)))
+
 (deftest test-with-meta+
   (let [obj [1 2] m {:key "val"}]
     (is (= (with-meta+ obj {}) obj))

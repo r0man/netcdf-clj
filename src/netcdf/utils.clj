@@ -39,6 +39,10 @@
                    (in-secs interval) 1)))
        " KB/s"))
 
+(defn nan?
+  "Returns true if d is Double/NaN, otherwise false."
+  [d] (Double/isNaN d))
+
 (defn parse-integer [string & options]
   (let [{:keys [radix junk-allowed] :or {radix 10, junk-allowed false}} (apply hash-map options)]
     (try
