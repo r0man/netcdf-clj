@@ -172,15 +172,15 @@
            :valid-time (date-time 2010 12 18)}
           ","))))
 
-(deftest test-dump-csv
+(deftest test-dump-grid
   ;; "TODO: SLOW"
   (with-open-geo-grid [grid example-path example-variable]
-    (let [lines (split (with-out-str (dump-csv grid)) #"\n")]
+    (let [lines (split (with-out-str (dump-grid grid)) #"\n")]
       (is (= 26990 (count lines))))))
 
-(deftest test-write-csv
+(deftest test-write-grid
   ;; "TODO: SLOW"
   (with-open-geo-grid [grid example-path example-variable]
     (let [filename "/tmp/netcdf.csv"]
-      (write-csv grid filename)
+      (write-grid grid filename)
       (is (= 26990 (count (read-lines filename)))))))

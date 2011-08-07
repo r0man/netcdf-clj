@@ -77,14 +77,14 @@
   `(with-open [~name (open-grid-dataset ~uri)]
      ~@body))
 
-(defn dump-csv
-  "Dump the dataset as CSV to stdout."
-  [^GridDataset dataset & {:keys [separator valid-time z-coord]}]
+(defn dump-dataset
+  "Dump the dataset to stdout."
+  [^GridDataset dataset & {:keys [printer valid-time z-coord]}]
   (doseq [grid (geo-grids dataset)]
-    (geogrid/dump-csv grid :separator separator :valid-time valid-time :z-coord z-coord)))
+    (geogrid/dump-grid grid :printer printer :valid-time valid-time :z-coord z-coord)))
 
-(defn write-csv
-  "Write the dataset as CSV to filename."
-  [^GridDataset dataset filename & {:keys [separator valid-time z-coord separator]}]
+(defn write-dataset
+  "Write the dataset to filename."
+  [^GridDataset dataset filename & {:keys [printer valid-time z-coord separator]}]
   (with-out-writer filename
-    (dump-csv dataset :separator separator :valid-time valid-time :z-coord z-coord)))
+    (dump-dataset dataset :printer printer :valid-time valid-time :z-coord z-coord)))
