@@ -2,6 +2,7 @@
   (:import ucar.unidata.geoloc.Projection)
   (:use [clj-time.core :only (date-time)]
         [clojure.contrib.duck-streams :only (read-lines)]
+        [clojure.string :only (split)]
         [incanter.core :only (matrix?)]
         clojure.test
         netcdf.coord-system
@@ -56,9 +57,9 @@
 
 (deftest test-filter-records
   (is (= [{:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value 1}]
-           (filter-records
-            [{:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value 1}
-             {:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value Double/NaN}]))))
+         (filter-records
+          [{:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value 1}
+           {:location (make-location 1 2) :variable "htsgwsfc" :valid-time (date-time 2010 12 18) :value Double/NaN}]))))
 
 (deftest test-meta-data
   (with-open-geo-grid [grid example-path example-variable]
@@ -103,7 +104,7 @@
 (deftest test-read-locations
   (with-open-geo-grid [grid example-path example-variable]
     (= [(read-location grid (make-location 77 0))]
-         (read-locations grid [(make-location 77 0)]))))
+       (read-locations grid [(make-location 77 0)]))))
 
 (deftest test-read-index
   (with-open-geo-grid [grid example-path example-variable]
@@ -118,7 +119,7 @@
 (deftest test-interpolate-locations
   (with-open-geo-grid [grid example-path example-variable]
     (= [(interpolate-location grid (make-location 77 0))]
-         (interpolate-locations grid [(make-location 77 0)]))))
+       (interpolate-locations grid [(make-location 77 0)]))))
 
 (deftest test-with-open-geo-grid
   (with-open-geo-grid [geo-grid example-path example-variable]
@@ -156,11 +157,30 @@
       (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
       (is (= (:valid-time meta) (first (valid-times geo-grid)))))))
 
+(deftest test-to-csv
+  (is (= "htsgwsfc\t1292630400000\t75.0\t-124.5\t0.5399999618530273"
+         (to-csv
+          {:variable "htsgwsfc"
+           :location {:latitude 75.0 :longitude -124.5}
+           :value 0.5399999618530273
+           :valid-time (date-time 2010 12 18)})))
+  (is (= "htsgwsfc,1292630400000,75.0,-124.5,0.5399999618530273"
+         (to-csv
+          {:variable "htsgwsfc"
+           :location {:latitude 75.0 :longitude -124.5}
+           :value 0.5399999618530273
+           :valid-time (date-time 2010 12 18)}
+          ","))))
+
+(deftest test-dump
+  ;; "TODO: SLOW"
+  (with-open-geo-grid [grid example-path example-variable]
+    (let [lines (split (with-out-str (dump grid)) #"\n")]
+      (is (= 26990 (count lines))))))
+
 (deftest test-write-csv
-  (let [grid (open-example-geo-grid) filename "/tmp/netcdf.csv"]
-    (testing "all records"
+  ;; "TODO: SLOW"
+  (with-open-geo-grid [grid example-path example-variable]
+    (let [filename "/tmp/netcdf.csv"]
       (write-csv grid filename)
-      (is (= 45216 (count (read-lines filename)))))
-    (testing "filtered records"
-      (write-csv grid filename :remove #(Double/isNaN (:value %)))
-      (is (> (count (read-lines filename)) 2000)))))
+      (is (= 26990 (count (read-lines filename)))))))

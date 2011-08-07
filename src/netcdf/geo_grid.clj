@@ -4,13 +4,14 @@
            org.joda.time.DateTime
            ucar.nc2.dt.GridCoordSystem)
   (:use [clj-time.format :only (formatters parse unparse)]
-        [clojure.contrib.duck-streams :only (write-lines)]
+        [clojure.contrib.duck-streams :only (write-lines with-out-writer)]
         [clojure.string :only (join)]
         [incanter.core :only (matrix ncol nrow sel view)]
         netcdf.coord-system
         netcdf.interpolation
         netcdf.location
-        netcdf.time))
+        netcdf.time
+        netcdf.utils))
 
 (defn coord-system
   "Returns the coordinate system of the GeoGrid."
@@ -136,10 +137,29 @@
 (defn interpolate-locations [^GeoGrid grid locations & options]
   (map #(apply interpolate-location grid % options) locations))
 
-(defn write-csv [^GeoGrid grid filename & {:keys [remove valid-time z-coord separator]}]
-  (let [format-fn #(format-record % :separator separator)
-        records (read-seq grid :valid-time valid-time :z-coord z-coord)]
-    (write-lines filename (map format-record (if remove (clojure.core/remove remove records) records)))))
+(defn to-csv
+  "Returns a geo grid CSV record."
+  [record & [separator]]
+  (join
+   (or separator "\t")
+   [(:variable record)
+    (to-ms (:valid-time record))
+    (latitude (:location record))
+    (longitude (:location record))
+    (:value record)]))
+
+(defn dump
+  "Dump the whole geo grid to stdout."
+  [^GeoGrid grid & {:keys [separator valid-time z-coord]}]
+  (let [records (read-seq grid :valid-time valid-time :z-coord z-coord)]
+    (doseq [record records :when (not (nan? (:value record)))]
+      (println (to-csv record separator)))))
+
+(defn write-csv
+  "Write the whole geo grid as CSV to filename."
+  [^GeoGrid grid filename & {:keys [separator valid-time z-coord separator]}]
+  (with-out-writer filename
+    (dump grid :separator separator :valid-time valid-time :z-coord z-coord)))
 
 (defmacro with-open-geo-grid [[name uri variable] & body]
   `(with-open [dataset# (. GridDataset open (str ~uri))]
