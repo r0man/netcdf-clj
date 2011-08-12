@@ -1,4 +1,5 @@
 (ns netcdf.dods
+  (:refer-clojure :exclude (replace))
   (:import java.util.Calendar java.io.File java.io.File java.net.URI)
   (:require [clojure.xml :as xml]
             [clojure.zip :as zip]
@@ -6,7 +7,7 @@
             clojure.contrib.zip-filter)
   (:use [clj-time.core :only (after? date-time day hour month year now)]
         [clojure.contrib.def :only (defvar defn-memo)]
-        [clojure.contrib.string :only (join replace-re)]
+        [clojure.string :only (join replace)]
         clj-time.format
         clojure.contrib.zip-filter.xml
         netcdf.time
@@ -23,7 +24,7 @@
 
 (defn inventory-url
   "Returns the url of the xml inventory."
-  [url] (replace-re #"/dods.*" "/dods/xml" (str url)))
+  [url] (replace (str url) #"/dods.*" "/dods/xml"))
 
 (defn parse-reference-time [uri]
   (if-let [[_ year month day hour] (re-find #".*(\d{4})(\d{2})(\d{2})/.*(\d{2})z?.*$" (str uri))]
