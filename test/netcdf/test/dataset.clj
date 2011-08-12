@@ -55,11 +55,11 @@
       (is (not (empty? grids)))
       (is (every? #(isa? (class %) GeoGrid) grids)))))
 
-(deftest test-valid-times
-  (with-open-grid-dataset [dataset example-path]
-    (let [valid-times (valid-times dataset)]
-      (is (not (empty? valid-times)))
-      (is (every? date-time? valid-times)))))
+;; (deftest test-valid-times
+;;   (with-open-grid-dataset [dataset example-path]
+;;     (let [valid-times (valid-times dataset)]
+;;       (is (not (empty? valid-times)))
+;;       (is (every? date-time? valid-times)))))
 
 (deftest test-with-open-dataset
   (with-open-dataset [dataset example-path]

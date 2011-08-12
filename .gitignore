@@ -17,3 +17,5 @@ netcdf.jar
 /.lein-failures
 /logs/test.log
 /logs/debug.log
+/tmp/netcdfAll-4.3.jar
+/tmp/netcdf-4.3/
