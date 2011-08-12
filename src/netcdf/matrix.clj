@@ -1,9 +1,10 @@
 (ns netcdf.matrix
+  (:refer-clojure :exclude (replace))
   (:require [netcdf.geo-grid :as grid])
   (:import incanter.Matrix
            (java.awt Color Dimension))
   (:use incanter.core
-        [clojure.contrib.string :only (replace-re)]
+        [clojure.string :only (replace)]
         [netcdf.time :only (format-time to-date-time)]
         netcdf.image))
 
@@ -11,7 +12,7 @@
   "Returns the filename that contains the matrix meta data."
   [filename]
   (if (re-matches #".*(\.[^.]+)$" filename)
-    (replace-re #"(.*)(\.[^.]+)$" "$1.meta" filename)
+    (replace filename #"(.*)(\.[^.]+)$" "$1.meta")
     (str filename ".meta")))
 
 (defn- serialize-meta
