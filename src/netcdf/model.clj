@@ -52,6 +52,11 @@
              (assoc :models
                (conj (or (:models (lookup-variable (:name variable))) #{}) model)))))
 
+(defn register-variables
+  "Register the variables by name."
+  [model variables]
+  (doall (map #(register-variable model %) variables)))
+
 (defmacro defmodel
   "Define and register the model."
   [name description & {:keys [bounding-box dods resolution variables]}]
@@ -63,10 +68,10 @@
             :dods ~dods#
             :name ~(str name#)
             :resolution ~resolution#
-            :variables (set ~variables#))
+            :variables ~variables#)
            ~description#)
          (register-model ~name#)
-         (doall (map #(register-variable ~name# %) ~variables#)))))
+         (register-variables ~name# ~variables#))))
 
 (defn find-dataset [model & [reference-time]]
   (first (dods/find-datasets-by-url-and-reference-time
