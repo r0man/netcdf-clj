@@ -116,37 +116,44 @@
 (defmodel akw
   "Regional Alaska Waters Wave Model"
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
-  :variables wave-watch-variables)
+  :variables wave-watch-variables
+  :resolution {:latitude 0.25 :longitude 0.5})
 
 (defmodel enp
   "Regional Eastern North Pacific Wave Model"
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/enp"
-  :variables wave-watch-variables)
+  :variables wave-watch-variables
+  :resolution {:latitude 0.25 :longitude 0.25})
 
 (defmodel gfs-hd
   "Global Forecast Model"
   :dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
-  :variables gfs-variables)
+  :variables gfs-variables
+  :resolution {:latitude 0.5 :longitude 0.5})
 
 (defmodel nah
   "Regional Atlantic Hurricane Wave Model"
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nah"
-  :variables wave-watch-variables)
+  :variables wave-watch-variables
+  :resolution {:latitude 0.5 :longitude 0.25})
 
 (defmodel nph
   "Regional North Pacific Hurricane Wave Model"
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nph"
-  :variables wave-watch-variables)
+  :variables wave-watch-variables
+  :resolution {:latitude 0.25 :longitude 0.5})
 
 (defmodel nww3
   "Global NOAA Wave Watch III Model"
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
-  :variables wave-watch-variables)
+  :variables wave-watch-variables
+  :resolution {:latitude 1.0 :longitude 1.25})
 
 (defmodel wna
   "Regional Western North Atlantic Wave Model"
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
-  :variables wave-watch-variables)
+  :variables wave-watch-variables
+  :resolution {:latitude 0.5 :longitude 0.5})
 
 (defvar gfs-models
   [gfs-hd] "The models of the Global Forecast System.")
