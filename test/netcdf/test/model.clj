@@ -121,6 +121,9 @@
              (to-long (second reference-times))))
       (is (= 2 (count reference-times))))))
 
+(deftest test-sort-by-resolution
+  (is (= [akw wna nww3] (sort-by-resolution [wna akw nww3]))))
+
 (deftest test-variable-path
   (is (= (str *repository* "/htsgwsfc/2010/11/05/060000Z/akw.nc")
          (variable-path akw htsgwsfc "2010-11-05T06:00:00Z")))

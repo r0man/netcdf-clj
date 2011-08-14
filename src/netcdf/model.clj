@@ -37,14 +37,15 @@
 
 (defmacro defmodel
   "Define and register the model."
-  [name description & {:keys [dods variables]}]
-  (let [name# name description# description dods# dods variables# variables]
+  [name description & {:keys [dods variables resolution]}]
+  (let [name# name description# description dods# dods variables# variables resolution# resolution]
     `(do (defvar ~name#
            (make-model
             :description ~description#
             :name ~(str name#)
             :dods ~dods#
-            :variables (set ~variables#))
+            :variables (set ~variables#)
+            :resolution ~resolution#)
            ~description#)
          (register-model ~name#))))
 
@@ -112,6 +113,10 @@
          (format-time (:valid-time meassure))
          (:value meassure)
          (:unit (:variable meassure))])))))
+
+(defn sort-by-resolution
+  "Sort the models by their resolution."
+  [models] (sort-by #(* (:latitude (:resolution %)) (:longitude (:resolution %))) models))
 
 (defmodel akw
   "Regional Alaska Waters Wave Model"
