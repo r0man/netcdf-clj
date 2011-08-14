@@ -32,8 +32,25 @@
   "Returns true if arg is a model, otherwise false."
   [arg] (isa? (class arg) Model))
 
-(defn register-model [model]
-  (swap! *models* assoc (keyword (:name model)) model))
+(defn lookup-model
+  "Lookup a model by name."
+  [name] (get @*models* (keyword (clojure.core/name name))))
+
+(defn lookup-variable
+  "Lookup a variable by name."
+  [name] (get @*variables* (keyword (clojure.core/name name))))
+
+(defn register-model
+  "Register a model by name."
+  [model] (swap! *models* assoc (keyword (:name model)) model))
+
+(defn register-variable
+  "Register a variable by name."
+  [model variable]
+  (swap! *variables* assoc (keyword (:name variable))
+         (-> variable
+             (assoc :models
+               (conj (or (:models (lookup-variable (:name variable))) #{}) model)))))
 
 (defmacro defmodel
   "Define and register the model."
@@ -48,17 +65,8 @@
             :resolution ~resolution#
             :variables (set ~variables#))
            ~description#)
-         (register-model ~name#))))
-
-(defn model
-  "Lookup model and it's variables by name."
-  [name & [variables]]
-  (if-let [model (get @*models* (keyword name))]
-    (assoc model
-      :variables
-      (if-not variables
-        (:variables model)
-        (remove #(not (contains? (set variables) (:name %))) (:variables model))))))
+         (register-model ~name#)
+         (doall (map #(register-variable ~name# %) ~variables#)))))
 
 (defn find-dataset [model & [reference-time]]
   (first (dods/find-datasets-by-url-and-reference-time

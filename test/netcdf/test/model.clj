@@ -109,16 +109,23 @@
     (is (= (set wave-watch-variables) (:variables model)))
     (is (= {:latitude 0.25 :longitude 0.5} (:resolution model)))))
 
-(deftest test-model
-  (is (nil? (model "unknown")))
-  (is (= akw (model (:name akw))))
-  (is (= akw (model (keyword (:name akw)))))
-  (let [model (model "akw")]
+(deftest test-lookup-model
+  (is (nil? (lookup-model "unknown")))
+  (is (= akw (lookup-model (:name akw))))
+  (is (= akw (lookup-model (keyword (:name akw)))))
+  (let [model (lookup-model "akw")]
     (is (= "akw" (:name model)))
-    (is (= 11 (count (:variables model)))))
-  (let [model (model "akw" ["htsgwsfc" "windsfc"])]
-    (is (= "akw" (:name model)))
-    (is (= 2 (count (:variables model))))))
+    (is (= 11 (count (:variables model))))))
+
+(deftest test-lookup-variable
+  (is (nil? (lookup-variable "unknown")))
+  (let [variable (lookup-variable "tmpsfc")]
+    (is (= "tmpsfc" (:name variable)))
+    (is (= 1 (count (:models variable)))))
+  (let [variable (lookup-variable "htsgwsfc")]
+    (is (= "htsgwsfc" (:name variable)))
+    (is (= 6 (count (:models variable)))))
+  (is (= (lookup-variable "tmpsfc") (lookup-variable :tmpsfc))))
 
 (deftest test-model?
   (is (not (model? nil)))
