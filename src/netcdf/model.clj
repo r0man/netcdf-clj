@@ -119,6 +119,10 @@
   "Sort the models by their resolution."
   [models] (sort-by #(* (:latitude (:resolution %)) (:longitude (:resolution %))) models))
 
+(defn best-model-for-location [models location]
+  "Returns the model with the highest resolution that covers the location."
+  [location] (first (filter #(.contains (:bounding-box %) location) (sort-by-resolution models))))
+
 (defmodel akw
   "Regional Alaska Waters Wave Model"
   :bounding-box (make-bounding-box 44.75 159.5 75.25 -123.5)

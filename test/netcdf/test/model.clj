@@ -23,6 +23,14 @@
    :variables wave-watch-variables
    :resolution {:latitude 0.25 :longitude 0.5}))
 
+(deftest test-best-model-for-location
+  (let [models [akw nww3 wna]]
+    (are [location model]
+      (is (= model (best-model-for-location models location)))
+      (.getLowerLeftPoint (:bounding-box akw)) akw
+      (.getLowerLeftPoint (:bounding-box wna)) wna
+      (.getLowerLeftPoint (:bounding-box nww3)) nww3)))
+
 (deftest test-download-model
   (with-test-inventory
     (let [reference-time (date-time 2010 10 30 6)
