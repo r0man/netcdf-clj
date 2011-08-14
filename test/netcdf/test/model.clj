@@ -18,7 +18,8 @@
    :description "Regional Alaska Waters Wave Model"
    :name "akw"
    :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
-   :variables wave-watch-variables))
+   :variables wave-watch-variables
+   :resolution {:latitude 0.25 :longitude 0.5}))
 
 (deftest test-download-model
   (with-test-inventory
@@ -94,7 +95,8 @@
     (is (= "akw" (:name model)))
     (is (= "Regional Alaska Waters Wave Model" (:description model)))
     (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw" (:dods model)))
-    (is (= wave-watch-variables (:variables model)))))
+    (is (= wave-watch-variables (:variables model)))
+    (is (= {:latitude 0.25 :longitude 0.5} (:resolution model)))))
 
 (deftest test-model
   (is (nil? (model "unknown")))

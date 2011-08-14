@@ -17,7 +17,7 @@
         clojure.contrib.logging
         clj-time.format))
 
-(defrecord Model [name description dods variables])
+(defrecord Model [name description dods variables resolution])
 
 (defvar *models* (ref {})
   "The model cache.")
@@ -25,8 +25,8 @@
 (defvar *variables* (ref {})
   "The variable cache.")
 
-(defn make-model [& {:keys [name description dods variables]}]
-  (Model. name description dods variables))
+(defn make-model [& {:keys [name description dods variables resolution]}]
+  (Model. name description dods variables resolution))
 
 (defn model?
   "Returns true if arg is a model, otherwise false."
