@@ -11,12 +11,26 @@
         netcdf.utils
         netcdf.time))
 
+(defrecord Variable [name description unit])
+
+(defn make-variable
+  "Make a NetCDF variable."
+  [& {:keys [name description unit]}]
+  (Variable. name description unit))
+
+(defn variable?
+  "Returns true if arg is a variable, otherwise false."
+  [arg] (isa? (class arg) Variable))
+
 (defmacro defvariable
-  "Define and register a variable."
-  [name description & attributes]
-  (let [name# name description# description]
+  "Define a NetCDF variable."
+  [name description & {:keys [unit]}]
+  (let [name# name description# description unit# unit]
     `(defvar ~name#
-       ~(assoc (apply hash-map attributes) :name (str name#) :description description#)
+       (make-variable
+        :name ~(str name#)
+        :description ~description#
+        :unit ~unit#)
        ~description#)))
 
 (defn download-variable [model variable & {:keys [reference-time root-dir]}]

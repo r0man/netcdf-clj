@@ -10,6 +10,18 @@
         netcdf.model
         netcdf.variable))
 
+(deftest test-make-variable
+  (let [variable (make-variable :name "dirpwsfc" :description "Primary wave direction" :unit "°")]
+    (is (variable? variable))
+    (is (= "dirpwsfc" (:name variable)))
+    (is (= "Primary wave direction" (:description variable)))
+    (is (= "°" (:unit variable)))))
+
+(deftest test-variable?
+  (is (not (variable? nil)))
+  (is (not (variable? "")))
+  (is (variable? htsgwsfc)))
+
 (deftest test-defvariable
   (defvariable dirpwsfc-example "Primary wave direction" :unit "°")
   (is (= "dirpwsfc-example" (:name dirpwsfc-example)))
