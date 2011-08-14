@@ -6,6 +6,7 @@
         [netcdf.dataset :only (copy-dataset)]
         clojure.contrib.mock
         clojure.test
+        netcdf.bounding-box
         netcdf.model
         netcdf.dods
         netcdf.repository
@@ -17,6 +18,7 @@
   (make-model
    :description "Regional Alaska Waters Wave Model"
    :name "akw"
+   :bounding-box (make-bounding-box 44.75 159.5 75.25 -123.5)
    :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
    :variables wave-watch-variables
    :resolution {:latitude 0.25 :longitude 0.5}))
@@ -95,6 +97,7 @@
     (is (= "akw" (:name model)))
     (is (= "Regional Alaska Waters Wave Model" (:description model)))
     (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw" (:dods model)))
+    (is (.equals (make-bounding-box 44.75 159.5 75.25 -123.5) (:bounding-box model)))
     (is (= wave-watch-variables (:variables model)))
     (is (= {:latitude 0.25 :longitude 0.5} (:resolution model)))))
 

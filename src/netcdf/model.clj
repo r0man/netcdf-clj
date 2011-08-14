@@ -17,7 +17,7 @@
         clojure.contrib.logging
         clj-time.format))
 
-(defrecord Model [name description dods variables resolution])
+(defrecord Model [name description bounding-box dods resolution variables])
 
 (defvar *models* (ref {})
   "The model cache.")
@@ -25,8 +25,8 @@
 (defvar *variables* (ref {})
   "The variable cache.")
 
-(defn make-model [& {:keys [name description dods variables resolution]}]
-  (Model. name description dods variables resolution))
+(defn make-model [& {:keys [name description bounding-box dods resolution variables]}]
+  (Model. name description bounding-box dods resolution variables))
 
 (defn model?
   "Returns true if arg is a model, otherwise false."
@@ -37,15 +37,16 @@
 
 (defmacro defmodel
   "Define and register the model."
-  [name description & {:keys [dods variables resolution]}]
-  (let [name# name description# description dods# dods variables# variables resolution# resolution]
+  [name description & {:keys [bounding-box dods resolution variables]}]
+  (let [name# name description# description bounding-box# bounding-box dods# dods resolution# resolution variables# variables]
     `(do (defvar ~name#
            (make-model
+            :bounding-box ~bounding-box#
             :description ~description#
-            :name ~(str name#)
             :dods ~dods#
-            :variables (set ~variables#)
-            :resolution ~resolution#)
+            :name ~(str name#)
+            :resolution ~resolution#
+            :variables (set ~variables#))
            ~description#)
          (register-model ~name#))))
 
@@ -120,45 +121,52 @@
 
 (defmodel akw
   "Regional Alaska Waters Wave Model"
+  :bounding-box (make-bounding-box 44.75 159.5 75.25 -123.5)
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
-  :variables wave-watch-variables
-  :resolution {:latitude 0.25 :longitude 0.5})
+  :resolution {:latitude 0.25 :longitude 0.5}
+  :variables wave-watch-variables)
 
 (defmodel enp
   "Regional Eastern North Pacific Wave Model"
+  :bounding-box (make-bounding-box 4.75 -170.25 60.5 -77.25)
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/enp"
-  :variables wave-watch-variables
-  :resolution {:latitude 0.25 :longitude 0.25})
+  :resolution {:latitude 0.25 :longitude 0.25}
+  :variables wave-watch-variables)
 
 (defmodel gfs-hd
   "Global Forecast Model"
+  :bounding-box (make-bounding-box -90.0 0.0 90.0 -0.5)
   :dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
-  :variables gfs-variables
-  :resolution {:latitude 0.5 :longitude 0.5})
+  :resolution {:latitude 0.5 :longitude 0.5}
+  :variables gfs-variables)
 
 (defmodel nah
   "Regional Atlantic Hurricane Wave Model"
+  :bounding-box (make-bounding-box -0.25 -98.25 50.25 -29.75)
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nah"
-  :variables wave-watch-variables
-  :resolution {:latitude 0.5 :longitude 0.25})
+  :resolution {:latitude 0.5 :longitude 0.25}
+  :variables wave-watch-variables)
 
 (defmodel nph
   "Regional North Pacific Hurricane Wave Model"
+  :bounding-box (make-bounding-box 4.75 -170.25 60.5 -77.25)
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nph"
-  :variables wave-watch-variables
-  :resolution {:latitude 0.25 :longitude 0.5})
+  :resolution {:latitude 0.25 :longitude 0.5}
+  :variables wave-watch-variables)
 
 (defmodel nww3
   "Global NOAA Wave Watch III Model"
+  :bounding-box (make-bounding-box -78.0 0.0 78.0 -1.25)
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
-  :variables wave-watch-variables
-  :resolution {:latitude 1.0 :longitude 1.25})
+  :resolution {:latitude 1.0 :longitude 1.25}
+  :variables wave-watch-variables)
 
 (defmodel wna
   "Regional Western North Atlantic Wave Model"
+  :bounding-box (make-bounding-box -0.25 -98.25 50.25 -29.75)
   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
-  :variables wave-watch-variables
-  :resolution {:latitude 0.5 :longitude 0.5})
+  :resolution {:latitude 0.5 :longitude 0.5}
+  :variables wave-watch-variables)
 
 (defvar gfs-models
   [gfs-hd] "The models of the Global Forecast System.")
