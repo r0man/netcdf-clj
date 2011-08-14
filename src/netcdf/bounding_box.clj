@@ -2,17 +2,17 @@
   (:import (ucar.unidata.geoloc LatLonPoint LatLonRect))
   (:use netcdf.location))
 
-(defmulti make-bounding-box
-  (fn [location-1 location-2]
-    [(class location-1) (class location-2)]))
-
-(defmethod make-bounding-box [String String] [location-1 location-2]
-  (make-bounding-box (parse-location location-1) (parse-location location-2)))
-
-(defmethod make-bounding-box [LatLonPoint LatLonPoint] [location-1 location-2]
-  (if (< (longitude location-1) (longitude location-2))
-    (LatLonRect. location-1  location-2)
-    (LatLonRect. location-2  location-1)))
+(defn make-bounding-box
+  ([location-1 location-2]
+     (let [location-1 (parse-location location-1)
+           location-2 (parse-location location-2)]
+       (if (< (longitude location-1) (longitude location-2))
+         (LatLonRect. location-1  location-2)
+         (LatLonRect. location-2  location-1))))
+  ([latitude-1 longitude-1 latitude-2 longitude-2]
+     (make-bounding-box
+      (make-location latitude-1 longitude-1)
+      (make-location latitude-2 longitude-2))))
 
 (defn to-map [bounding-box]
   {:north-west

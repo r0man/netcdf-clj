@@ -59,8 +59,10 @@
   {:latitude (latitude location) :longitude (longitude location)})
 
 (defn parse-location [lat-lon-str]
-  (let [[latitude longitude] (split lat-lon-str #",|;|\t")]
-    (make-location (parse-latitude latitude) (parse-longitude longitude))))
+  (if (location? lat-lon-str)
+    lat-lon-str
+    (let [[latitude longitude] (split lat-lon-str #",|;|\t")]
+     (make-location (parse-latitude latitude) (parse-longitude longitude)))))
 
 (defn in-bounding-box?
   "Returns true if the location is in the bounding box, else false."
