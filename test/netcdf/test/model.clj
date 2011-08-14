@@ -106,7 +106,7 @@
     (is (= "Regional Alaska Waters Wave Model" (:description model)))
     (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw" (:dods model)))
     (is (.equals (make-bounding-box 44.75 159.5 75.25 -123.5) (:bounding-box model)))
-    (is (= wave-watch-variables (:variables model)))
+    (is (= (set wave-watch-variables) (:variables model)))
     (is (= {:latitude 0.25 :longitude 0.5} (:resolution model)))))
 
 (deftest test-model

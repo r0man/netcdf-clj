@@ -19,21 +19,21 @@
 
 (defrecord Model [name description bounding-box dods resolution variables])
 
-(defvar *models* (ref {})
+(defvar *models* (atom {})
   "The model cache.")
 
-(defvar *variables* (ref {})
+(defvar *variables* (atom {})
   "The variable cache.")
 
 (defn make-model [& {:keys [name description bounding-box dods resolution variables]}]
-  (Model. name description bounding-box dods resolution variables))
+  (Model. name description bounding-box dods resolution (set variables)))
 
 (defn model?
   "Returns true if arg is a model, otherwise false."
   [arg] (isa? (class arg) Model))
 
 (defn register-model [model]
-  (dosync (ref-set *models* (assoc @*models* (keyword (:name model)) model))))
+  (swap! *models* assoc (keyword (:name model)) model))
 
 (defmacro defmodel
   "Define and register the model."
