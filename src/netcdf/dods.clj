@@ -3,13 +3,11 @@
   (:import java.util.Calendar java.io.File java.io.File java.net.URI)
   (:require [clojure.xml :as xml]
             [clojure.zip :as zip]
-            [netcdf.dataset :as dataset]
-            clojure.contrib.zip-filter)
+            [netcdf.dataset :as dataset])
   (:use [clj-time.core :only (after? date-time day hour month year now)]
-        [clojure.contrib.def :only (defvar defn-memo)]
         [clojure.string :only (join replace)]
+        [clojure.data.zip.xml :only (xml-> text)]
         clj-time.format
-        clojure.contrib.zip-filter.xml
         netcdf.time
         netcdf.utils))
 
@@ -46,9 +44,8 @@
        :dods (extract dataset :dods)
        :reference-time (parse-reference-time (extract dataset :dods))})))
 
-(defn-memo find-inventory-by-url
-  "Returns the inventory at the url."
-  [url] (parse-inventory (inventory-url url)))
+(def find-inventory-by-url
+  (memoize (fn [url] (parse-inventory (inventory-url url)))))
 
 (defn find-datasets-by-url
   "Returns all datasets matching the url."

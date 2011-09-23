@@ -1,9 +1,12 @@
 (ns netcdf.utils
   (:import java.io.File)
   (:use [clojure.string :only (join)]
+        [clojure.java.io :only (writer)]
         [clj-time.core :only (now in-secs interval date-time year month day hour)]
         [clj-time.format :only (formatters unparse)]
         netcdf.time))
+
+
 
 (defn date-path-fragment [time]
   (if-let [time (to-date-time time)]
@@ -55,3 +58,11 @@
   "Returns an object of the same type and value as obj, with map m
   merged onto the object's metadata."
   [obj m] (with-meta obj (merge (meta obj) m)))
+
+(defmacro with-out-writer
+  "Opens a writer on f, binds it to *out*, and evalutes body.
+Anything printed within body will be written to f."
+  [f & body]
+  `(with-open [stream# (writer ~f)]
+     (binding [*out* stream#]
+       ~@body)))

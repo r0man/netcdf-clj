@@ -7,7 +7,7 @@
         netcdf.location
         netcdf.test.helper))
 
-(def *coord-system* (coord-system example-geo-grid))
+(def example-coord-system (coord-system example-geo-grid))
 
 (def matrix-2x2 (matrix [[6 7] [10 11]]))
 (def matrix-4x4 (matrix [[1 2 3 4] [5 6 7 8] [9 10 11 12] [13 14 15 16]]))
@@ -15,19 +15,19 @@
 (deftest test-interpolate-bilinear-2x2
   (are [x-fract y-fract expected]
     (is (= (interpolate matrix-2x2 x-fract y-fract) expected))
-    0 0 6 ; central sample
+    0 0 6.0 ; central sample
     0.2 0 6.200000002980232
     0.7 0 6.699999988079071
-    1.0 0 7
+    1.0 0 7.0
     0.5 0.5 8.5))
 
 (deftest test-interpolate-bilinear-4x4
   (are [x-fract y-fract expected]
     (is (= (interpolate matrix-4x4 x-fract y-fract) expected))
-    0 0 6 ; central sample
+    0 0 6.0 ; central sample
     0.2 0 6.200000002980232
     0.7 0 6.699999988079071
-    1.0 0 7
+    1.0 0 7.0
     0.5 0.5 8.5))
 
 ;;; TODO: wtf?
@@ -36,7 +36,7 @@
     ;; (println matrix-2x2)
     (are [x-fract y-fract expected]
       (is (= (interpolate matrix-2x2 x-fract y-fract) expected))
-      0 0 11 ; central sample ???
+      0 0 11.0 ; central sample ???
       1 1 2.90625
       )))
 
@@ -64,18 +64,18 @@
     77 0.9 1 1.25 77 0))
 
 (deftest test-sample-locations
-  (is (nil? (sample-locations *coord-system* (make-location 900 900))))
-  (let [sample (sample-locations *coord-system* (make-location 78 0))]
+  (is (nil? (sample-locations example-coord-system (make-location 900 900))))
+  (let [sample (sample-locations example-coord-system (make-location 78 0))]
     (is (= (make-location 78 0) (nth sample 0)))
     (is (= (make-location 78 1.25) (nth sample 1)))
     (is (= (make-location 77 0) (nth sample 2)))
     (is (= (make-location 77 1.25) (nth sample 3))))
-  (let [sample (sample-locations *coord-system* (make-location 77 1.25))]
+  (let [sample (sample-locations example-coord-system (make-location 77 1.25))]
     (is (= (make-location 77 1.25) (nth sample 0)))
     (is (= (make-location 77 2.5) (nth sample 1)))
     (is (= (make-location 76 1.25) (nth sample 2)))
     (is (= (make-location 76 2.5) (nth sample 3))))
-  (let [sample (sample-locations *coord-system* (make-location 77.5 0.625))]
+  (let [sample (sample-locations example-coord-system (make-location 77.5 0.625))]
     (is (= (make-location 78 0) (nth sample 0)))
     (is (= (make-location 78 1.25) (nth sample 1)))
     (is (= (make-location 77 0) (nth sample 2)))

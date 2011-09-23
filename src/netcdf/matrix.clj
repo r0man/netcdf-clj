@@ -1,8 +1,7 @@
 (ns netcdf.matrix
   (:refer-clojure :exclude (replace))
   (:require [netcdf.geo-grid :as grid])
-  (:import incanter.Matrix
-           (java.awt Color Dimension))
+  (:import (java.awt Color Dimension))
   (:use incanter.core
         [clojure.string :only (replace)]
         [netcdf.time :only (format-time to-date-time)]
@@ -30,7 +29,7 @@
 
 (defn write-meta-data
   "Write the matrix meta data to filename."
-  [^Matrix matrix filename]
+  [matrix filename]
   (spit filename (prn-str (serialize-meta (meta matrix))))
   filename)
 
@@ -40,7 +39,7 @@
 
 (defn write-matrix
   "Write the matrix to filename."
-  [^Matrix matrix filename]
+  [matrix filename]
   (write-meta-data matrix (meta-data-filename filename))
   (spit filename (prn-str matrix))
   filename)

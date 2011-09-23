@@ -1,6 +1,6 @@
 (ns leiningen.netcdf
   (:use [clojure.string :only (blank? split)]
-        clojure.contrib.command-line
+        clojure.tools.cli
         netcdf.model
         netcdf.variable))
 

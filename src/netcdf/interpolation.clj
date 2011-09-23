@@ -1,11 +1,12 @@
 (ns netcdf.interpolation
-  (:import (javax.media.jai InterpolationBicubic InterpolationBilinear))
+  (:import incanter.Matrix
+           ucar.nc2.dt.GridCoordSystem
+           (javax.media.jai InterpolationBicubic InterpolationBilinear))
   (:use [incanter.core :only (matrix ncol nrow sel)]
-        clojure.contrib.math
         netcdf.location
         netcdf.coord-system))
 
-(def *interpolation* (InterpolationBilinear.))
+(def ^:dynamic *interpolation* (InterpolationBilinear.))
 
 (defmacro with-interpolation [interpolation & body]
   `(binding [*interpolation* ~interpolation]
@@ -47,8 +48,8 @@
 
 (defn sample-location [location lat-step lon-step]
   (make-location
-   (* (ceil (/ (latitude location) lat-step)) lat-step)
-   (* (floor (/ (longitude location) lon-step)) lon-step)))
+   (* (Math/ceil (/ (latitude location) lat-step)) lat-step)
+   (* (Math/floor (/ (longitude location) lon-step)) lon-step)))
 
 (defn sample-offsets
   "Returns the sample offsets."

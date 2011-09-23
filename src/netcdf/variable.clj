@@ -1,11 +1,10 @@
 (ns netcdf.variable
   (:require [netcdf.dods :as dods]
             [netcdf.geo-grid :as grid])
-  (:use [clojure.contrib.def :only (defvar)]
-        [clj-time.core :only (now interval)]
+  (:use [clj-time.core :only (now interval)]
         [netcdf.dataset :only (copy-dataset find-geo-grid open-grid-dataset)]
         clj-time.format
-        clojure.contrib.logging
+        clojure.tools.logging
         netcdf.dods
         netcdf.repository
         netcdf.utils
@@ -26,12 +25,11 @@
   "Define a NetCDF variable."
   [name description & {:keys [unit]}]
   (let [name# name description# description unit# unit]
-    `(defvar ~name#
+    `(def ~name#
        (make-variable
         :name ~(str name#)
         :description ~description#
-        :unit ~unit#)
-       ~description#)))
+        :unit ~unit#))))
 
 (defn download-variable [model variable & {:keys [reference-time root-dir]}]
   (if-let [reference-time (to-date-time (or reference-time (latest-reference-time model)))]
@@ -126,11 +124,19 @@
   "Mean period of wind waves"
   :unit "s")
 
-(defvar gfs-variables
-  [tmpsfc tcdcclm]
-  "The variables of the Global Forecast System.")
+(def gfs-variables
+  [tmpsfc
+   tcdcclm])
 
-(defvar wave-watch-variables
-  [dirpwsfc dirswsfc htsgwsfc perpwsfc perswsfc ugrdsfc
-   vgrdsfc wdirsfc windsfc wvdirsfc wvpersfc]
-  "The variables of the NOAA Wave Watch III model.")
+(def wave-watch-variables
+  [dirpwsfc
+   dirswsfc
+   htsgwsfc
+   perpwsfc
+   perswsfc
+   ugrdsfc
+   vgrdsfc
+   wdirsfc
+   windsfc
+   wvdirsfc
+   wvpersfc])

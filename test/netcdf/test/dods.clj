@@ -6,8 +6,7 @@
         netcdf.model
         netcdf.variable
         netcdf.test.helper
-        clojure.test
-        clojure.contrib.mock))
+        clojure.test))
 
 (deftest test-current-reference-time
   (is (current-reference-time nww3)))

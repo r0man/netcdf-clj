@@ -3,8 +3,8 @@
            (ucar.nc2.dt.grid GridAsPointDataset GridDataset)
            ucar.nc2.dataset.NetcdfDataset)
   (:require [netcdf.geo-grid :as geogrid])
-  (:use [clojure.contrib.duck-streams :only (with-out-writer)]
-        netcdf.time))
+  (:use netcdf.time
+        netcdf.utils))
 
 (defn- write-dimensions [^NetcdfDataset dataset ^FileWriter writer]
   (doseq [dimension (.getDimensions dataset)]

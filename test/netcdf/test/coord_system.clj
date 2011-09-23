@@ -6,7 +6,7 @@
         netcdf.coord-system
         netcdf.test.helper))
 
-(def *coord-system* (grid/coord-system (grid/open-geo-grid example-path example-variable)))
+(def example-coord-system (grid/coord-system (grid/open-geo-grid example-path example-variable)))
 
 (deftest test-make-axis
   (let [axis (make-axis -78 78 1)]
@@ -16,26 +16,26 @@
     (is (= (:step axis) 1))))
 
 (deftest test-latitude-axis
-  (let [axis (latitude-axis *coord-system*)]
-    (is (= (:min axis) -78))
-    (is (= (:max axis) 78))
+  (let [axis (latitude-axis example-coord-system)]
+    (is (= (:min axis) -78.0))
+    (is (= (:max axis) 78.0))
     (is (= (:size axis) 157))
-    (is (= (:step axis) 1))))
+    (is (= (:step axis) 1.0))))
 
 (deftest test-longitude-axis
-  (let [axis (longitude-axis *coord-system*)]
-    (is (= (:min axis) 0))
+  (let [axis (longitude-axis example-coord-system)]
+    (is (= (:min axis) 0.0))
     (is (= (:max axis) 358.75))
     (is (= (:size axis) 288))
     (is (= (:step axis) 1.25))))
 
 (deftest test-location-axis
-  (is (= {:latitude-axis (latitude-axis *coord-system*) :longitude-axis (longitude-axis *coord-system*)}
-         (location-axis *coord-system*))))
+  (is (= {:latitude-axis (latitude-axis example-coord-system) :longitude-axis (longitude-axis example-coord-system)}
+         (location-axis example-coord-system))))
 
 (deftest test-location-on-grid
   (are [location expected]
-    (is (= expected (location-on-grid *coord-system* location)))
+    (is (= expected (location-on-grid example-coord-system location)))
     (make-location 0 0) (make-location 0 0)
     (make-location 78 0) (make-location 78 0)
     (make-location 77.5 0) (make-location 78 0)
@@ -44,30 +44,30 @@
     (make-location 78 0.625) (make-location 78 1.25)))
 
 (deftest test-projection
-  (is (isa? (class (projection *coord-system*)) Projection)))
+  (is (isa? (class (projection example-coord-system)) Projection)))
 
 (deftest test-x-y-index
-  (is (= (x-y-index *coord-system* (make-location 0 0)) [0 78]))
-  (is (= (x-y-index *coord-system* (make-location 900 900)) [144 -1])))
+  (is (= (x-y-index example-coord-system (make-location 0 0)) [0 78]))
+  (is (= (x-y-index example-coord-system (make-location 900 900)) [144 -1])))
 
 (deftest test-location-on-grid
-  (is (nil? (location-on-grid *coord-system* (make-location 900 900))))
+  (is (nil? (location-on-grid example-coord-system (make-location 900 900))))
   (is (= (make-location 0 0)
-         (location-on-grid *coord-system* (make-location 0 0)))))
+         (location-on-grid example-coord-system (make-location 0 0)))))
 
 (deftest test-fraction-of-latitudes
   (are [location-1 location-2 fraction]
-    (is (= fraction (fraction-of-latitudes *coord-system* location-1 location-2)))
-    (make-location 78 0) (make-location 78 0) 0
+    (is (= fraction (fraction-of-latitudes example-coord-system location-1 location-2)))
+    (make-location 78 0) (make-location 78 0) 0.0
     (make-location 78 0) (make-location 77.5 0) 0.5
-    (make-location 78 0) (make-location 77 0) 1))
+    (make-location 78 0) (make-location 77 0) 1.0))
 
 (deftest test-fraction-of-longitudes
   (are [location-1 location-2 fraction]
-    (is (= fraction (fraction-of-longitudes *coord-system* location-1 location-2)))
-    (make-location 78 0) (make-location 78 0) 0
+    (is (= fraction (fraction-of-longitudes example-coord-system location-1 location-2)))
+    (make-location 78 0) (make-location 78 0) 0.0
     (make-location 78 0) (make-location 78 0.625) 0.5
-    (make-location 78 0) (make-location 78 1.25) 1))
+    (make-location 78 0) (make-location 78 1.25) 1.0))
 
 (deftest test-max-axis
   (let [smaller {:min -76.0, :max 77.0, :size 154, :step 1.0}
@@ -108,6 +108,6 @@
       (is (= smaller (min-axis larger smaller larger))))))
 
 (deftest test-resolution
-  (let [resolution (resolution *coord-system*)]
+  (let [resolution (resolution example-coord-system)]
     (is (= 1.25 (:width resolution)))
     (is (= 1.0 (:height resolution)))))

@@ -2,15 +2,11 @@
   (:import java.util.Date
            (org.joda.time DateTime DateTimeZone)
            org.joda.time.format.ISODateTimeFormat)
-  (:use [clojure.contrib.def :only (defvar)]
-        [clj-time.format :only (formatters parse unparse)]
+  (:use [clj-time.format :only (formatters parse unparse)]
         [clj-time.core :only (date-time now)]))
 
-(defvar *date-formatter* :date
-  "The default formatter for parsing and formatting dates.")
-
-(defvar *time-formatter* :date-time-no-ms
-  "The default formatter for parsing and formatting times.")
+(def ^:dynamic *date-formatter* :date)
+(def ^:dynamic *time-formatter* :date-time-no-ms)
 
 (defn- parse-date-time [string formatter]
   (parse (formatters formatter) string))
@@ -86,18 +82,3 @@
 (defn sql-timestamp-now
   "Returns the current time as java.sql.Timestamp."
   [] (sql-timestamp (now)))
-
-
-;; (ns netcdf.time
-;;   (:use [clojure.contrib.def :only (defvar)]
-;;         [clj-time.coerce :only (from-date to-date)]
-;;         [clj-time.format :only (unparse parse formatters)]))
-
-;; (defvar *formatter* :basic-date-time-no-ms
-;;   "The default formatter for time formatting.")
-
-;; (defn to-date-time [string & {:keys [formatter]}]
-;;   (parse (formatters (or formatter *formatter*)) string))
-
-;; (defn format-time [date-time & {:keys [formatter]}]
-;;   (unparse (formatters (or formatter *formatter*)) date-time))

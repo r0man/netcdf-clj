@@ -4,7 +4,6 @@
   (:use [clj-time.coerce :only (to-long)]
         [clj-time.core :only (date-time interval plus minutes minus)]
         [netcdf.dataset :only (copy-dataset)]
-        clojure.contrib.mock
         clojure.test
         netcdf.bounding-box
         netcdf.model
@@ -13,15 +12,6 @@
         netcdf.test.helper
         netcdf.time
         netcdf.variable))
-
-(def *akw*
-  (make-model
-   :description "Regional Alaska Waters Wave Model"
-   :name "akw"
-   :bounding-box (make-bounding-box 44.75 159.5 75.25 -123.5)
-   :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
-   :variables wave-watch-variables
-   :resolution {:latitude 0.25 :longitude 0.5}))
 
 (deftest test-best-model-for-location
   (let [models [akw nww3 wna]]
@@ -35,8 +25,8 @@
   (with-test-inventory
     (let [reference-time (date-time 2010 10 30 6)
           filename (variable-path nww3 htsgwsfc reference-time)]
-      (expect [copy-dataset (returns filename)
-               latest-reference-time (has-args [nww3] (returns reference-time))]
+      (with-redefs [copy-dataset (constantly filename)
+                    latest-reference-time (constantly reference-time)]
         (let [model (download-model nww3)]
           (is (= (:name nww3) (:name model)))
           (is (= (:description nww3) (:description model)))
@@ -49,15 +39,15 @@
 (deftest test-download-gfs
   (let [reference-time (date-time 2010 10 30 6)]
     (with-test-inventory
-      (expect [latest-reference-time (returns reference-time)
-               copy-dataset (has-args [] (returns ""))]
+      (with-redefs [latest-reference-time (constantly reference-time)
+                    copy-dataset (constantly "")]
         (is (download-gfs))))))
 
 (deftest test-download-wave-watch
   (let [reference-time (date-time 2010 10 30 6)]
     (with-test-inventory
-      (expect [latest-reference-time (returns reference-time)
-               copy-dataset (has-args [] (returns ""))]
+      (with-redefs [latest-reference-time (constantly reference-time)
+                    copy-dataset (constantly "")]
         (is (download-wave-watch))))))
 
 (deftest test-find-dataset
@@ -101,7 +91,7 @@
                (first reference-times)))))))
 
 (deftest test-make-model
-  (let [model *akw*]
+  (let [model akw]
     (is (= "akw" (:name model)))
     (is (= "Regional Alaska Waters Wave Model" (:description model)))
     (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw" (:dods model)))

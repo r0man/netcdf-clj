@@ -2,10 +2,8 @@
   (:import java.io.File org.joda.time.Interval)
   (:require [netcdf.dods :as dods]
             [netcdf.geo-grid :as grid])
-  (:use [clojure.contrib.def :only (defvar)]
-        [clojure.string :only (join)]
-        [clojure.contrib.duck-streams :only (with-out-writer)]
-        [clojure.contrib.json :only (read-json json-str)]
+  (:use [clojure.string :only (join)]
+        [clojure.data.json :only (read-json json-str)]
         [clj-time.core :only (before? after? now in-secs interval date-time year month day hour within? minus plus minutes days)]
         [netcdf.dataset :only (copy-dataset find-geo-grid open-grid-dataset)]
         netcdf.bounding-box
@@ -13,17 +11,15 @@
         netcdf.variable
         netcdf.repository
         netcdf.dods
+        netcdf.utils
         netcdf.time
-        clojure.contrib.logging
+        clojure.tools.logging
         clj-time.format))
 
 (defrecord Model [name description bounding-box dods resolution variables])
 
-(defvar *models* (atom {})
-  "The model cache.")
-
-(defvar *variables* (atom {})
-  "The variable cache.")
+(def ^:dynamic *models* (atom {}))
+(def ^:dynamic *variables* (atom {}))
 
 (defn make-model [& {:keys [name description bounding-box dods resolution variables]}]
   (Model. name description bounding-box dods resolution (set variables)))
@@ -61,15 +57,14 @@
   "Define and register the model."
   [name description & {:keys [bounding-box dods resolution variables]}]
   (let [name# name description# description bounding-box# bounding-box dods# dods resolution# resolution variables# variables]
-    `(do (defvar ~name#
+    `(do (def ~name#
            (make-model
             :bounding-box ~bounding-box#
             :description ~description#
             :dods ~dods#
             :name ~(str name#)
             :resolution ~resolution#
-            :variables ~variables#)
-           ~description#)
+            :variables ~variables#))
          (register-model ~name#)
          (register-variables ~name# ~variables#))))
 
@@ -185,12 +180,8 @@
   :resolution {:latitude 0.5 :longitude 0.5}
   :variables wave-watch-variables)
 
-(defvar gfs-models
-  [gfs-hd] "The models of the Global Forecast System.")
-
-(defvar wave-watch-models
-  [nww3 akw enp nah nph wna]
-  "The the Wave Watch III models.")
+(def gfs-models [gfs-hd])
+(def wave-watch-models [nww3 akw enp nah nph wna])
 
 (defn download-gfs [& [reference-time]]
   (download-models gfs-models reference-time))

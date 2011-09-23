@@ -1,14 +1,12 @@
 (ns netcdf.repository
   (:import java.io.File)
-  (:use [clojure.contrib.def :only (defvar)]
-        [clojure.string :only (join)]
+  (:use [clojure.string :only (join)]
         netcdf.time
         netcdf.utils
         netcdf.dods))
 
-(defvar *repository*
-  (str (System/getenv "HOME") File/separator ".netcdf")
-  "The local NetCDF directory.")
+(def ^:dynamic *repository*
+  (str (System/getenv "HOME") File/separator ".netcdf"))
 
 (defn variable-directory
   "Returns the path to the NetCDF directory."

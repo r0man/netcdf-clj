@@ -4,7 +4,6 @@
            org.joda.time.DateTime
            ucar.nc2.dt.GridCoordSystem)
   (:use [clj-time.format :only (formatters parse unparse)]
-        [clojure.contrib.duck-streams :only (write-lines with-out-writer)]
         [clojure.string :only (join)]
         [incanter.core :only (matrix ncol nrow sel view)]
         netcdf.coord-system

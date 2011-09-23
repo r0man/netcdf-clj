@@ -9,13 +9,11 @@
            (java.awt Color Dimension)
            (java.awt.event KeyListener)
            (javax.swing JFrame JOptionPane JPanel))
-  (:use [clojure.contrib.seq :only (includes?)]
-        [clj-time.format :only (formatters show-formatters unparse)]
+  (:use [clj-time.format :only (formatters show-formatters unparse)]
         [incanter.core :only (ncol nrow sel)]
         netcdf.interpolation
         netcdf.location
         netcdf.utils
-        clojure.contrib.profile
         google.maps.static
         google.maps.projection))
 

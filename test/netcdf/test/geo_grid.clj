@@ -1,7 +1,7 @@
 (ns netcdf.test.geo-grid
   (:import ucar.unidata.geoloc.Projection)
   (:use [clj-time.core :only (date-time)]
-        [clojure.contrib.duck-streams :only (read-lines)]
+        [clojure.java.io :only (reader)]
         [clojure.string :only (split)]
         [incanter.core :only (matrix?)]
         clojure.test
@@ -176,11 +176,11 @@
   ;; "TODO: SLOW"
   (with-open-geo-grid [grid example-path example-variable]
     (let [lines (split (with-out-str (dump-grid grid)) #"\n")]
-      (is (= 27044 (count lines))))))
+      (is (= 26882 (count lines))))))
 
 (deftest test-write-grid
   ;; "TODO: SLOW"
   (with-open-geo-grid [grid example-path example-variable]
     (let [filename "/tmp/netcdf.csv"]
       (write-grid grid filename)
-      (is (= 27044 (count (read-lines filename)))))))
+      (is (= 26882 (count (line-seq (reader filename))))))))

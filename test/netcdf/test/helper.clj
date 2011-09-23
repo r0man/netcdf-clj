@@ -2,7 +2,7 @@
   (:import java.io.File)
   (:use [clj-time.core :only (date-time day days hours minus month now year)]
         clj-time.format
-        clojure.contrib.logging)
+        clojure.tools.logging)
   (:require [netcdf.dataset :as dataset]
             [netcdf.dods :as dods]))
 
@@ -13,7 +13,7 @@
 
 (defmacro with-test-inventory [& body]
   `(let [inventory# (dods/find-inventory-by-url "test-resources/dods/wave/nww3")]
-     (binding [dods/find-inventory-by-url (fn [url#] inventory#)]
+     (with-redefs [dods/find-inventory-by-url (fn [url#] inventory#)]
        ~@body)))
 
 (def example-product
@@ -28,7 +28,7 @@
 (def example-path
   (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
 
-(def *remote-uri*
+(def ^:dynamic *remote-uri*
   (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" example-product "/"
        example-product (unparse (formatters :basic-date) example-valid-time) "/"
        example-product (unparse (formatters :basic-date) example-valid-time) "_"

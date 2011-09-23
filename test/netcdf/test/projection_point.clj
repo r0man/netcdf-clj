@@ -4,8 +4,8 @@
 (deftest test-make-projection-point
   (let [point (make-projection-point 1 2)]
     (is (projection-point? point))
-    (is (= (.getX point) 1))
-    (is (= (.getY point) 2))))
+    (is (= (.getX point) 1.0))
+    (is (= (.getY point) 2.0))))
 
 (deftest test-projection-point?
   (is (not (projection-point? nil)))
