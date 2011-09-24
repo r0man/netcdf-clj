@@ -124,7 +124,7 @@
   "Mean period of wind waves"
   :unit "s")
 
-(def gfs-variables
+(def global-forecast-system-variables
   [tmpsfc
    tcdcclm])
 

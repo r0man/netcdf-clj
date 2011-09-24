@@ -150,7 +150,7 @@
   :bounding-box (make-bounding-box -90.0 0.0 90.0 -0.5)
   :dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
   :resolution {:latitude 0.5 :longitude 0.5}
-  :variables gfs-variables)
+  :variables global-forecast-system-variables)
 
 (defmodel nah
   "Regional Atlantic Hurricane Wave Model"
@@ -180,11 +180,11 @@
   :resolution {:latitude 0.5 :longitude 0.5}
   :variables wave-watch-variables)
 
-(def gfs-models [gfs-hd])
+(def global-forecast-system-models [gfs-hd])
 (def wave-watch-models [nww3 akw enp nah nph wna])
 
 (defn download-gfs [& [reference-time]]
-  (download-models gfs-models reference-time))
+  (download-models global-forecast-system-models reference-time))
 
 (defn download-wave-watch [& [reference-time]]
   (download-models wave-watch-models reference-time))
