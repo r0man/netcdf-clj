@@ -27,4 +27,5 @@
                      [org.clojure/tools.cli "0.1.0"]
                      [org.clojure/tools.logging "0.2.0"]
                      [org.slf4j/slf4j-log4j12 "1.5.6"]]
-  :repositories {"mbari" "http://mbari-maven-repository.googlecode.com/svn/repository"})
+  :repositories {"mbari" "http://mbari-maven-repository.googlecode.com/svn/repository"
+                 "geotools" "http://download.osgeo.org/webdav/geotools"})
