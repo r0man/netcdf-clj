@@ -180,8 +180,11 @@
   :resolution {:latitude 0.5 :longitude 0.5}
   :variables wave-watch-variables)
 
-(def global-forecast-system-models [gfs-hd])
-(def wave-watch-models [nww3 akw enp nah nph wna])
+(def global-forecast-system-models
+  [gfs-hd])
+
+(def wave-watch-models
+  [nww3 akw enp nah nph wna])
 
 (defn download-gfs [& [reference-time]]
   (download-models global-forecast-system-models reference-time))
