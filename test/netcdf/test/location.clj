@@ -21,7 +21,34 @@
   (is (location? (make-location 1 2)))
   (is (not (location? nil))))
 
+(deftest test-parse-latitude
+  (are [longitude]
+    (is (thrown? IllegalArgumentException (parse-latitude latitude)))
+    nil "" "x")
+  (are [latitude expected]
+    (is (= expected (parse-latitude latitude :junk-allowed true)))
+    nil nil
+    "" nil
+    "1" 1.0
+    "1.0" 1.0
+    1 1))
+
+(deftest test-parse-longitude
+  (are [longitude]
+    (is (thrown? IllegalArgumentException (parse-longitude longitude)))
+    nil "" "x")
+  (are [longitude expected]
+    (is (= expected (parse-longitude longitude :junk-allowed true)))
+    nil nil
+    "" nil
+    "1" 1.0
+    "1.0" 1.0
+    1 1))
+
 (deftest test-parse-location
+  (are [location]
+    (is (thrown? IllegalArgumentException (parse-location location)))
+    nil "" "x")
   (let [location (parse-location "52.52,13.41")]
     (is (= (latitude location) 52.52))
     (is (= (longitude location) 13.41)))

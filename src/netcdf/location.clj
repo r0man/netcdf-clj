@@ -9,21 +9,27 @@
          (Double/parseDouble (str string)))
        (catch NumberFormatException exception nil)))
 
-(defn parse-dms [string]
-  (let [[degrees minutes seconds] (map parse-double (split (replace (replace (trim string) #"^-" "") #"[NSEW]$" "") #"[^0-9.,]+"))]
-    (* (if (re-matches #"(?i)(^-).*|(.*[WS])$" string) -1.0 1.0)
-       (cond
-        (and degrees minutes seconds)
-        (+ (/ degrees 1) (/ minutes 60) (/ seconds 360))
-        (and degrees minutes)
-        (+ (/ degrees 1) (/ minutes 60))
-        :else degrees))))
+(defn parse-dms [string & {:keys [junk-allowed]}]
+  (if (number? string)
+    string
+   (try
+     (let [[degrees minutes seconds] (map parse-double (split (replace (replace (trim (or string "")) #"^-" "") #"[NSEW]$" "") #"[^0-9.,]+"))]
+       (* (if (re-matches #"(?i)(^-).*|(.*[WS])$" (or string "")) -1.0 1.0)
+          (cond
+           (and degrees minutes seconds)
+           (+ (/ degrees 1) (/ minutes 60) (/ seconds 360))
+           (and degrees minutes)
+           (+ (/ degrees 1) (/ minutes 60))
+           :else degrees)))
+     (catch Exception e
+       (if-not junk-allowed
+         (throw (IllegalArgumentException. (format "Can't parse: %s." string))))))))
 
-(defn parse-latitude [str]
-  (parse-dms str))
+(defn parse-latitude [str & {:keys [junk-allowed]}]
+  (parse-dms str :junk-allowed junk-allowed))
 
-(defn parse-longitude [str]
-  (parse-dms str))
+(defn parse-longitude [str & {:keys [junk-allowed]}]
+  (parse-dms str :junk-allowed junk-allowed))
 
 (defn latitude [location]
   (cond
@@ -58,11 +64,15 @@
 (defn location->map [location]
   {:latitude (latitude location) :longitude (longitude location)})
 
-(defn parse-location [lat-lon-str]
+(defn parse-location [lat-lon-str & {:keys [junk-allowed]}]
   (if (location? lat-lon-str)
     lat-lon-str
-    (let [[latitude longitude] (split lat-lon-str #",|;|\t")]
-     (make-location (parse-latitude latitude) (parse-longitude longitude)))))
+    (try
+      (let [[latitude longitude] (split lat-lon-str #",|;|\t")]
+        (make-location (parse-latitude latitude) (parse-longitude longitude)))
+      (catch Exception e
+        (if-not junk-allowed
+          (throw (IllegalArgumentException. (format "Can't parse: %s." lat-lon-str))))))))
 
 (defn in-bounding-box?
   "Returns true if the location is in the bounding box, else false."
