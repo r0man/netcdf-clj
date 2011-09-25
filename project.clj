@@ -1,9 +1,11 @@
 (defproject netcdf-clj "0.0.3-SNAPSHOT"
   :description "Clojure NetCDF Library."
   :url "http://github.com/r0man/netcdf-clj"
-  :aot [netcdf.forecast]
+  :aot [netcdf.forecast
+        netcdf.main]
   :dependencies [[clj-time "0.3.0"]
                  [commons-httpclient "3.1"]
+                 [commandline-clj "0.1.0-SNAPSHOT"]
                  [geocoder-clj "0.0.2"]
                  [edu.ucar/netcdf "4.2.26"]
                  [edu.ucar/opendap "4.2.26"]
