@@ -1,7 +1,8 @@
 (ns netcdf.test.dods
   (:import java.util.Calendar java.io.File java.net.URI)
-  (:use [clj-time.core :only (date-time year month day hour)]
+  (:use [clj-time.core :only (date-time year minutes minus month day hour plus)]
         clj-time.format
+        netcdf.time
         netcdf.dods
         netcdf.model
         netcdf.variable
@@ -41,6 +42,39 @@
       (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z.dds" (:dds dataset)))
       (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z" (:dods dataset)))
       (is (= (date-time 2010 10 30) (:reference-time dataset))))))
+
+(deftest test-find-reference-time
+  (with-test-inventory
+    (let [reference-times (reference-times nww3)]
+      (testing "first in inventory"
+        (is (= (find-reference-time nww3 (first reference-times))
+               (first reference-times))))
+      (testing "second in inventory"
+        (is (= (find-reference-time nww3 (second reference-times))
+               (second reference-times))))
+      (testing "last in inventory"
+        (is (= (find-reference-time nww3 (last reference-times))
+               (last reference-times))))
+      (testing "one minute after first inventory"
+        (is (= (find-reference-time nww3 (plus (first reference-times) (minutes 1)))
+               (first reference-times))))
+      (testing "one minute after second inventory"
+        (is (= (find-reference-time nww3 (plus (second reference-times) (minutes 1)))
+               (second reference-times))))
+      (testing "one minute after last inventory"
+        (is (= (find-reference-time nww3 (plus (last reference-times) (minutes 1)))
+               (last reference-times))))
+      (testing "one minute before first inventory"
+        (is (nil? (find-reference-time nww3 (minus (first reference-times) (minutes 1))))))
+      (testing "one minute before second inventory"
+        (is (= (find-reference-time nww3 (minus (second reference-times) (minutes 1)))
+               (first reference-times))))
+      (testing "one minute before last inventory"
+        (is (= (find-reference-time nww3 (minus (last reference-times) (minutes 1)))
+               (nth reference-times (- (count reference-times) 2)))))
+      (testing "with time string"
+        (is (= (find-reference-time nww3 (format-time (first reference-times)))
+               (first reference-times)))))))
 
 (deftest test-inventory-url
   (are [url expected]
