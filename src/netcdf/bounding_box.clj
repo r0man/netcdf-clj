@@ -6,9 +6,7 @@
   ([location-1 location-2]
      (let [location-1 (parse-location location-1)
            location-2 (parse-location location-2)]
-       (if (< (longitude location-1) (longitude location-2))
-         (LatLonRect. location-1  location-2)
-         (LatLonRect. location-2  location-1))))
+       (LatLonRect. location-1  location-2)))
   ([latitude-1 longitude-1 latitude-2 longitude-2]
      (make-bounding-box
       (make-location latitude-1 longitude-1)
