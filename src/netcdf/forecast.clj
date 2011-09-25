@@ -36,7 +36,7 @@
 (defn models-for-variable [forecast variable]
   (get (:variables forecast) variable))
 
-(defn download-forecast [forecast {:keys [directory reference-time]}]
+(defn download-forecast [forecast & {:keys [directory reference-time]}]
   (doseq [variable (keys (:variables forecast))
           model (get (:variables forecast) variable)]
     (download-variable model variable :reference-time reference-time :root-dir directory)))
