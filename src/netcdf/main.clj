@@ -1,7 +1,7 @@
 (ns netcdf.main
   (:gen-class)
   (:require [netcdf.dods :as dods]
-            [netcdf.model :as model])
+            [netcdf.model :as models])
   (:use [commandline.core :only (with-commandline *options*)]
         [clojure.string :only (join)]))
 
@@ -9,7 +9,7 @@
   (commandline.core/print-help "netcdf [OPTION,...] COMMAND"))
 
 (defn print-reference-times []
-  (doseq [model (vals @model/*models*)]
+  (doseq [model (vals @models/*models*)]
     (println (join "\t" [ (dods/latest-reference-time model) (:name model) (:description model)]))))
 
 (defn -main [& args]
