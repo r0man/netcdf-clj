@@ -15,7 +15,7 @@
 (defn -main [& args]
   (with-commandline [args]
     [[h help "Print this help."]
-     [r reference-time "The reference time of the model." :time "TIME"]]
+     [r reference-time "The reference TIME of the model." :time "TIME"]]
     (let [[command arguments] arguments]
       (cond
        (or (= "help" command) help)
