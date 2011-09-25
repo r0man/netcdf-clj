@@ -22,6 +22,18 @@
   (is (= (str *repository* "/htsgwsfc/2011/08/06/120000Z")
          (variable-directory {:name "htsgwsfc"} (to-date-time "2011-08-06T12:00:00Z")))))
 
+(deftest test-variable-path
+  (is (= (str *repository* "/htsgwsfc/2010/11/05/060000Z/akw.nc")
+         (variable-path akw htsgwsfc "2010-11-05T06:00:00Z")))
+  (is (= (str *repository* "/htsgwsfc/2010/11/05/060000Z/akw.nc")
+         (variable-path akw htsgwsfc (date-time 2010 11 5 6))))
+  (with-repository "/tmp"
+    (is (= "/tmp/htsgwsfc/2010/11/05/060000Z/akw.nc"
+           (variable-path akw htsgwsfc (date-time 2010 11 5 6)))))
+  (with-repository "s3n://burningswell/netcdf"
+    (is (= "s3n://burningswell/netcdf/htsgwsfc/2010/11/05/060000Z/akw.nc"
+           (variable-path akw htsgwsfc (date-time 2010 11 5 6))))))
+
 (deftest test-with-repository
   (is (= (str (System/getenv "HOME") File/separator ".netcdf") *repository*))
   (with-repository "/tmp"

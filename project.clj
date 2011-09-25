@@ -1,8 +1,10 @@
 (defproject netcdf-clj "0.0.3-SNAPSHOT"
   :description "Clojure NetCDF Library."
   :url "http://github.com/r0man/netcdf-clj"
+  :aot [netcdf.forecast]
   :dependencies [[clj-time "0.3.0"]
                  [commons-httpclient "3.1"]
+                 [geocoder-clj "0.0.2"]
                  [edu.ucar/netcdf "4.2.26"]
                  [edu.ucar/opendap "4.2.26"]
                  [google-maps "0.5.0"]
@@ -27,5 +29,5 @@
                      [org.clojure/tools.cli "0.1.0"]
                      [org.clojure/tools.logging "0.2.0"]
                      [org.slf4j/slf4j-log4j12 "1.5.6"]]
-  :repositories {"mbari" "http://mbari-maven-repository.googlecode.com/svn/repository"
-                 "geotools" "http://download.osgeo.org/webdav/geotools"})
+  :repositories {"mbari" "http://mbari-maven-repository.googlecode.com/svn/repository"}
+  :run-aliases {:forecast netcdf.forecast/-main})
