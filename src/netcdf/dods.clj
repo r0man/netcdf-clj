@@ -34,18 +34,20 @@
        (parse-integer hour))
       (catch org.joda.time.IllegalFieldValueException _ nil))))
 
-(defn parse-inventory [url]
-  (let [extract (fn [node selector] (first (xml-> node selector text)))]
-    (for [dataset (xml-> (feed-to-zip (inventory-url url)) :dataset)]
-      {:name (extract dataset :name)
-       :description (extract dataset :description)
-       :das (extract dataset :das)
-       :dds (extract dataset :dds)
-       :dods (extract dataset :dods)
-       :reference-time (parse-reference-time (extract dataset :dods))})))
+(def parse-inventory
+  (memoize
+   (fn [url]
+     (let [extract (fn [node selector] (first (xml-> node selector text)))]
+       (for [dataset (xml-> (feed-to-zip (inventory-url url)) :dataset)]
+         {:name (extract dataset :name)
+          :description (extract dataset :description)
+          :das (extract dataset :das)
+          :dds (extract dataset :dds)
+          :dods (extract dataset :dods)
+          :reference-time (parse-reference-time (extract dataset :dods))})))))
 
-(def find-inventory-by-url
-  (memoize (fn [url] (parse-inventory (inventory-url url)))))
+(defn find-inventory-by-url [url]
+  (parse-inventory (inventory-url url)))
 
 (defn find-datasets-by-url
   "Returns all datasets matching the url."
@@ -59,9 +61,9 @@
   [url reference-time]
   (let [reference-time (to-date-time reference-time)]
     (sort-by :reference-time
-            (filter #(and (:dods %) (.startsWith (:dods %) url)
-                          (= (:reference-time %) reference-time))
-                    (find-inventory-by-url url)))))
+             (filter #(and (:dods %) (.startsWith (:dods %) url)
+                           (= (:reference-time %) reference-time))
+                     (find-inventory-by-url url)))))
 
 (defn reference-times
   "Returns the sorted reference times in the inventory for the model."
