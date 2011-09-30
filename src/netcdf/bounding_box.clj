@@ -4,7 +4,10 @@
         netcdf.location))
 
 (defprotocol IBoundingBox
-  (to-bounding-box [object] "Convert object into a bounding box."))
+  (contains-location? [bounding-box location]
+    "Returns true if bounding-box contain location, otherwise false.")
+  (to-bounding-box [object]
+    "Convert object into a bounding box."))
 
 (defn make-bounding-box
   "Make a new LatLonRect."
@@ -37,10 +40,14 @@
 
 (extend-type LatLonRect
   IBoundingBox
+  (contains-location? [bounding-box location]
+    (.contains bounding-box (to-location location)))
   (to-bounding-box [object]
     object))
 
 (extend-type clojure.lang.IPersistentMap
   IBoundingBox
+  (contains-location? [bounding-box location]
+    (contains-location? (to-bounding-box bounding-box) location))
   (to-bounding-box [map]
     (make-bounding-box (:south-west map) (:north-east map))))

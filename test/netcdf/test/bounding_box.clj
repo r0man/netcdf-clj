@@ -12,6 +12,11 @@
     (is (= (.getLonMin bounds) -123.5))
     (is (= (.getLonMax bounds) 159.5))))
 
+(deftest test-contains-location?
+  (let [bounds (make-bounding-box 75.25 -123.5 44.75 159.5)]
+    (is (contains-location? bounds (make-location 75.25 -123.5)))
+    (is (contains-location? bounds (make-location 44.75 159.5)))))
+
 (deftest test-make-bounding
   (let [bounds (make-bounding-box (make-location -90 -180) (make-location 90 180))]
     (is (= (.getLatMin bounds) -90.0))
