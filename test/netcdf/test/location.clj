@@ -1,4 +1,5 @@
 (ns netcdf.test.location
+  (:import (ucar.unidata.geoloc LatLonPointImpl LatLonPoint))
   (:require [geocoder.core :as geocoder])
   (:use clojure.test
         netcdf.location))
@@ -6,6 +7,18 @@
 (def berlin (make-location 52.523 13.411))
 (def paris (make-location 48.857 2.351))
 (def vienna (make-location 48.209 16.373))
+
+(deftest test-to-location
+  (testing "LatLonPoint"
+    (let [location (to-location (LatLonPointImpl. 52.523 13.411))]
+      (isa? (class location) LatLonPoint)
+      (is (= 52.523 (.getLatitude location)))
+      (is (= 13.411 (.getLongitude location)))))
+  (testing "LatLonPoint"
+    (let [location (to-location {:latitude 52.523 :longitude 13.411})]
+      (isa? (class location) LatLonPoint)
+      (is (= 52.523 (.getLatitude location)))
+      (is (= 13.411 (.getLongitude location))))))
 
 (deftest test-make-location
   (let [location (make-location 52.523 13.411)]

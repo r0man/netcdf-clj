@@ -4,6 +4,9 @@
   (:import (ucar.unidata.geoloc Bearing LatLonPointImpl LatLonPoint))
   (:use [clojure.string :only (split replace trim)]))
 
+(defprotocol ILocation
+  (to-location [object] "Convert object into a location."))
+
 (defn parse-double [string]
   (try (if (number? string)
          string
@@ -163,3 +166,13 @@
 (defn to-point [location]
   (if location
     (LatLonPointImpl. (latitude location) (longitude location))))
+
+(extend-type LatLonPoint
+  ILocation
+  (to-location [object]
+    object))
+
+(extend-type clojure.lang.IPersistentMap
+  ILocation
+  (to-location [map]
+    (LatLonPointImpl. (:latitude map) (:longitude map))))
