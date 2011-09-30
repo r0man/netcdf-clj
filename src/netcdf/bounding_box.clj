@@ -1,16 +1,25 @@
 (ns netcdf.bounding-box
   (:import (ucar.unidata.geoloc LatLonPoint LatLonRect))
-  (:use netcdf.location))
+  (:use [clojure.string :only (split)]
+        netcdf.location))
+
+(defprotocol IBoundingBox
+  (to-bounding-box [object] "Convert object into a bounding box."))
 
 (defn make-bounding-box
+  "Make a new LatLonRect."
   ([location-1 location-2]
-     (let [location-1 (parse-location location-1)
-           location-2 (parse-location location-2)]
-       (LatLonRect. location-1  location-2)))
+     (LatLonRect.
+      (to-location location-1)
+      (to-location location-2)))
   ([latitude-1 longitude-1 latitude-2 longitude-2]
      (make-bounding-box
       (make-location latitude-1 longitude-1)
       (make-location latitude-2 longitude-2))))
+
+(defn parse-bounding-box
+  "Parse string and make a new LatLonRect."
+  [string] (apply make-bounding-box (split string #",|\s+")))
 
 (defn to-map [bounding-box]
   {:north-west
@@ -25,3 +34,13 @@
    :south-west
    {:latitude (.getLatitude (.getLowerLeftPoint bounding-box))
     :longitude (.getLongitude (.getLowerLeftPoint bounding-box))}})
+
+(extend-type LatLonRect
+  IBoundingBox
+  (to-bounding-box [object]
+    object))
+
+(extend-type clojure.lang.IPersistentMap
+  IBoundingBox
+  (to-bounding-box [map]
+    (make-bounding-box (:south-west map) (:north-east map))))
