@@ -37,7 +37,7 @@
 
 (defn find-model-by-location [models location]
   "Returns the model with the highest resolution that covers the location."
-  [location] (first (filter #(.contains (:bounding-box %) (latitude location) (longitude location)) (sort-by-resolution models))))
+  [location] (first (filter #(contains-location? (:bounding-box %) location) (sort-by-resolution models))))
 
 (defmodel akw
   "Regional Alaska Waters Wave Model"
