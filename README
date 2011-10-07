@@ -4,7 +4,7 @@ A Clojure wrapper around the NetCDF Java library.
 
 ## Installation
 
-Via Clojars: http://clojars.org/migrate
+Via Clojars: http://clojars.org/netcdf-clj
 
 ## License
 
