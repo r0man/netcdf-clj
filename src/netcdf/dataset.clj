@@ -3,7 +3,8 @@
            (ucar.nc2.dt.grid GridAsPointDataset GridDataset)
            ucar.nc2.dataset.NetcdfDataset)
   (:require [netcdf.geo-grid :as geogrid])
-  (:use netcdf.time
+  (:use [clojure.java.io :only (delete-file)]
+        netcdf.time
         netcdf.utils))
 
 (defn- write-dimensions [^NetcdfDataset dataset ^FileWriter writer]
@@ -62,12 +63,16 @@
      (with-open [dataset (open-grid-dataset source)]
        (copy-dataset source target (datatype-names dataset))))
   ([source target variables]
-     (with-open [dataset (open-dataset source)]
-       (with-file-writer writer target
-         (write-global-attributes dataset writer)
-         (write-dimensions dataset writer)
-         (write-variables dataset writer variables))
-       target)))
+     (try
+       (with-open [dataset (open-dataset source)]
+         (with-file-writer writer target
+           (write-global-attributes dataset writer)
+           (write-dimensions dataset writer)
+           (write-variables dataset writer variables))
+         target)
+       (catch Exception e
+         (delete-file target true)
+         (throw e)))))
 
 (defmacro with-open-dataset [[name uri] & body]
   `(with-open [~name (open-dataset ~uri)]
