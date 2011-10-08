@@ -53,9 +53,10 @@
 (defn read-forecast [forecast location & {:keys [reference-time]}]
   (if-let [location (resolve-location location)]
     (flatten
-     (for [variable (keys (:variables forecast))]
-       (let [model (find-model-by-location (models-for-variable forecast variable) location)
-             grid (open-grid model variable (or reference-time (dods/latest-reference-time model)))]
+     (for [variable (keys (:variables forecast))
+           :let [model (find-model-by-location (models-for-variable forecast variable) location)]
+           :when model]
+       (let [grid (open-grid model variable (or reference-time (dods/latest-reference-time model)))]
          (for [valid-time (valid-times grid)]
            {:model model
             :location location
