@@ -34,10 +34,14 @@
 
 (deftest test-reference-times
   (with-test-inventory
-    (let [reference-times (dods/reference-times nww3)]
+    (let [reference-times (reference-times nww3)]
       (is (< (to-long (first reference-times))
              (to-long (second reference-times))))
       (is (= 2 (count reference-times))))))
+
+(deftest test-latest-reference-time
+  (with-test-inventory
+    (is (= (date-time 2010 10 30 6) (latest-reference-time nww3)))))
 
 (deftest test-sort-by-resolution
   (is (= [akw wna nww3] (sort-by-resolution [wna akw nww3]))))

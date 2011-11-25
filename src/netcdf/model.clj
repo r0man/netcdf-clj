@@ -39,6 +39,14 @@
   "Returns the model with the highest resolution that covers the location."
   [location] (first (filter #(contains-location? (:bounding-box %) location) (sort-by-resolution models))))
 
+(defn reference-times [model]
+  "Returns the reference times of model."
+  [model] (dods/reference-times model))
+
+(defn latest-reference-time [model]
+  "Returns the latest reference time of model."
+  [model] (last (reference-times model)))
+
 (defmodel akw
   "Regional Alaska Waters Wave Model"
   :bounding-box (make-bounding-box 44.75 159.5 75.25 -123.5)
