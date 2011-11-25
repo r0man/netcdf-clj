@@ -47,10 +47,6 @@
   "Returns the latest reference time of model."
   [model] (last (reference-times model)))
 
-(defn valid-times
-  "Returns the reference times of model."
-  [model & [reference-time]])
-
 (defmodel akw
   "Regional Alaska Waters Wave Model"
   :bounding-box (make-bounding-box 44.75 159.5 75.25 -123.5)
