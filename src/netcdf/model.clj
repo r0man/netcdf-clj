@@ -35,17 +35,21 @@
   "Sort the models by their resolution."
   [models] (sort-by #(* (:latitude (:resolution %)) (:longitude (:resolution %))) models))
 
-(defn find-model-by-location [models location]
+(defn find-model-by-location
   "Returns the model with the highest resolution that covers the location."
-  [location] (first (filter #(contains-location? (:bounding-box %) location) (sort-by-resolution models))))
+  [models location] (first (filter #(contains-location? (:bounding-box %) location) (sort-by-resolution models))))
 
-(defn reference-times [model]
+(defn reference-times
   "Returns the reference times of model."
   [model] (dods/reference-times model))
 
-(defn latest-reference-time [model]
+(defn latest-reference-time
   "Returns the latest reference time of model."
   [model] (last (reference-times model)))
+
+(defn valid-times
+  "Returns the reference times of model."
+  [model & [reference-time]])
 
 (defmodel akw
   "Regional Alaska Waters Wave Model"
