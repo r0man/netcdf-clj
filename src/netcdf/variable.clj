@@ -72,6 +72,13 @@
             :value value
             :variable variable}))))))
 
+(defn valid-times
+  "Returns the valid times of the variable."
+  [model variable & [reference-time]]
+  (let [reference-time (or reference-time (latest-reference-time model))]
+    (with-open [dataset (open-grid-dataset ( variable-path model variable reference-time))]
+      (grid/valid-times (find-geo-grid dataset (:name variable))))))
+
 (defvariable dirpwsfc
   "Primary wave direction"
   :unit "°")

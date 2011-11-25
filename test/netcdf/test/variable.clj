@@ -1,12 +1,12 @@
 (ns netcdf.test.variable
-  (:import org.joda.time.Interval)
+  (:import org.joda.time.DateTime org.joda.time.Interval)
   (:use [clj-time.core :only (date-time)]
         [netcdf.dataset :only (copy-dataset)]
+        ;; [netcdf.dods :exclude (latest-reference-time)]
         clojure.test
         netcdf.test.helper
-        netcdf.dods
         netcdf.repository
-        netcdf.model
+        [netcdf.model :exclude (valid-times)]
         netcdf.variable))
 
 (deftest test-make-variable
@@ -45,3 +45,10 @@
           (is (= filename (:filename variable)))
           (is (= 0 (:size variable)))
           (is (= reference-time (:reference-time variable))))))))
+
+(deftest test-valid-times
+  (with-test-inventory
+    (with-redefs [variable-path (constantly "/tmp/netcdf-test.nc")]
+      (let [valid-times (valid-times nww3 htsgwsfc)]
+        (is (every? #(isa? (class %) DateTime) valid-times))
+        (is (= 61 (count valid-times)))))))

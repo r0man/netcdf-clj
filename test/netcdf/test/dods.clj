@@ -1,13 +1,12 @@
 (ns netcdf.test.dods
   (:import java.util.Calendar java.io.File java.net.URI)
   (:use [clj-time.core :only (date-time year minutes minus month day hour plus)]
+        [netcdf.model :only (nww3)]
         clj-time.format
-        netcdf.time
+        clojure.test
         netcdf.dods
-        netcdf.model
-        netcdf.variable
         netcdf.test.helper
-        clojure.test))
+        netcdf.time))
 
 (deftest test-current-reference-time
   (is (current-reference-time nww3)))

@@ -5,9 +5,7 @@
         incanter.core
         netcdf.image
         netcdf.matrix
-        netcdf.model
-        netcdf.test.helper
-        netcdf.variable))
+        netcdf.test.helper))
 
 (refer-private 'netcdf.matrix)
 
