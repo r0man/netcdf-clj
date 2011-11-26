@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+java -cp ".:src:lib/*:lib/dev/*:classes:resources" netcdf.forecast $*

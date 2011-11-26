@@ -1,16 +1,18 @@
 (ns netcdf.forecast
   (:gen-class)
-  (:require [netcdf.dods :as dods])
-  (:use [netcdf.geo-grid :only (interpolate-location open-geo-grid valid-times)]
-        [netcdf.location :only (parse-location)]
-        [netcdf.time :only (format-time)]
+  (:require [netcdf.geo-grid :as grid]
+            [netcdf.model :as model]
+            [netcdf.variable :as variable])
+  (:use [clojure.data.json :ony (read-json)]
         [clojure.java.io :only (reader)]
         [clojure.string :only (join)]
-        netcdf.model
+        [netcdf.location :only (parse-location)]
+        [netcdf.model :only (find-model-by-location global-forecast-system-models wave-watch-models)]
+        [netcdf.time :only (format-time)]
+        [netcdf.variable :exclude (valid-times)]
+        [netcdf.geo-grid :only (interpolate-location open-geo-grid)]
         netcdf.location
-        netcdf.repository
-        netcdf.variable
-        [clojure.data.json :ony (read-json)]))
+        netcdf.repository))
 
 (def ^:dynamic *cache* (atom {}))
 
@@ -30,8 +32,13 @@
         :description ~description
         :variables ~variables#))))
 
-(defn variables [forecast]
-  (set (keys (:variables forecast))))
+(defn forecast-models
+  "Returns the models of the forecast."
+  [forecast] (set (apply concat (vals (:variables forecast)))))
+
+(defn forecast-variables
+  "Returns the variables of the forecast."
+  [forecast] (set (keys (:variables forecast))))
 
 (defn models-for-variable [forecast variable]
   (get (:variables forecast) variable))
@@ -50,40 +57,56 @@
           (swap! *cache* assoc path grid)
           grid))))
 
-(defn read-forecast [forecast location & {:keys [reference-time]}]
-  (if-let [location (resolve-location location)]
-    (flatten
+(defn latest-reference-time
+  "Returns the latest reference-time of the models in the forecast."
+  [forecast]
+  (->> (forecast-models forecast)
+       (map model/latest-reference-time )
+       (apply sorted-set)
+       (last)))
+
+(defn valid-times
+  "Returns the valid times of the forecast."
+  [forecast & [reference-time]]
+  (let [reference-time (or reference-time (latest-reference-time forecast))]
+    (->>
      (for [variable (keys (:variables forecast))
-           :let [model (find-model-by-location (models-for-variable forecast variable) location)]
-           :when model]
-       (let [grid (open-grid model variable (or reference-time (dods/latest-reference-time model)))]
-         (for [valid-time (valid-times grid)]
-           {:model model
-            :location location
-            :reference-time reference-time
-            :unit (:unit variable)
-            :value (interpolate-location grid location :valid-time valid-time)
-            :valid-time valid-time
-            :variable variable}))))))
+           model (models-for-variable forecast variable)
+           :when (.exists (java.io.File. (variable-path model variable reference-time)))]
+       (grid/valid-times (open-grid model variable reference-time)))
+     (map set)
+     (apply clojure.set/union))))
 
-(defn to-csv [measure & {:keys [separator]}]
-  (join
-   (or separator "\t")
-   [(or (:id (:model measure)) (:name (:model measure)))
-    (or (:id (:variable measure)) (:name (:variable measure)))
-    (format-time (:reference-time measure))
-    (format-time (:valid-time measure))
-    (latitude (:location measure))
-    (longitude (:location measure))
-    (:value measure)
-    (:unit measure)]))
+(defn read-forecast [forecast location & {:keys [reference-time root-dir]}]
+  (let [reference-time (or reference-time (latest-reference-time forecast))]
+    (if-let [location (resolve-location location)]
+      (for [valid-time (valid-times forecast reference-time)]
+        (for [[variable models] (:variables forecast)
+              :let [model (find-model-by-location models location)]]
+          (if-let [grid (open-grid model variable reference-time)]
+            {:model model
+             :location location
+             :reference-time reference-time
+             :unit (:unit variable)
+             :value (interpolate-location grid location :valid-time valid-time)
+             :valid-time valid-time
+             :variable variable}))))))
 
-(defn print-forecast [forecast location & {:keys [reference-time separator]}]
-  (doseq [measure (read-forecast forecast "mundaka" :reference-time reference-time)]
-    (println (to-csv measure :separator separator))))
+(defn to-csv [measures & [separator]]
+  (let [separator (or separator "\t")]
+    (let [measure (first measures)]
+      (join
+       separator
+       [(:latitude (:location measure))
+        (:longitude (:location measure))
+        (format-time (:reference-time measure))
+        (format-time (:valid-time measure))
+        (join separator (map #(str (:value %) separator (:unit %)) measures))]))))
 
-(defn stdin-location-seq []
-  (remove nil? (map resolve-location (line-seq (reader *in*)))))
+(defn print-forecast [forecast location & {:keys [reference-time root-dir separator]}]
+  (->> (read-forecast forecast location :reference-time reference-time :root-dir root-dir)
+       (map #(println (to-csv % separator)))
+       (doall)))
 
 (defforecast surf-forecast
   "The surf forecast."
@@ -102,7 +125,9 @@
   tcdcclm global-forecast-system-models)
 
 (defn -main [& args]
-  (doseq [location (stdin-location-seq)]
-    (print-forecast surf-forecast location)))
+  (let [reference-time (first args)]
+    (download-forecast surf-forecast :reference-time reference-time)
+    (doseq [location (map resolve-location (line-seq (reader *in*))) :when location]
+      (print-forecast surf-forecast location :reference-time reference-time))))
 
-;; "2011-09-24T12:00:00Z"
+;; "2011-11-24T06:00:00Z"
