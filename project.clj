@@ -6,7 +6,7 @@
   :dependencies [[clj-time "0.3.0"]
                  [commons-httpclient "3.1"]
                  [commandline-clj "0.1.0-SNAPSHOT"]
-                 [geocoder-clj "0.0.3-SNAPSHOT"]
+                 [geocoder-clj "0.0.4-SNAPSHOT"]
                  [edu.ucar/netcdf "4.2.26"]
                  [edu.ucar/opendap "4.2.26"]
                  [google-maps "0.5.1-SNAPSHOT"]
