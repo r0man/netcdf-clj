@@ -1,12 +1,11 @@
 (ns netcdf.utils
   (:import java.io.File)
   (:use [clojure.string :only (join)]
-        [clojure.java.io :only (writer)]
+        [clojure.java.io :only (reader writer)]
         [clj-time.core :only (now in-secs interval date-time year month day hour)]
         [clj-time.format :only (formatters unparse)]
+        [digest :only (digest)]
         netcdf.time))
-
-
 
 (defn date-path-fragment [time]
   (if-let [time (to-date-time time)]
@@ -66,3 +65,21 @@ Anything printed within body will be written to f."
   `(with-open [stream# (writer ~f)]
      (binding [*out* stream#]
        ~@body)))
+
+(defn md5-checksum
+  "Returns the MD5 checksum of filename."
+  [filename] (digest "md5" (File. filename)))
+
+(defn save-md5-checksum
+  "Save the MD5 checksum of filename."
+  [filename]
+  (with-out-writer (str filename ".md5")
+    (println (md5-checksum filename))))
+
+(defn valid-md5-checksum?
+  "Returns the MD5 checksum of filename."
+  [filename]
+  (let [md5-filename (str filename ".md5")]
+    (and (.exists (File. md5-filename))
+         (= (md5-checksum filename)
+            (first (line-seq (reader md5-filename)))))))
