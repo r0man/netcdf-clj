@@ -77,7 +77,8 @@ Anything printed within body will be written to f."
     (println (md5-checksum filename))))
 
 (defn valid-md5-checksum?
-  "Returns the MD5 checksum of filename."
+  "Returns true if the MD5 checksum of filename is valid, otherwise
+  false."
   [filename]
   (let [md5-filename (str filename ".md5")]
     (and (.exists (File. md5-filename))
