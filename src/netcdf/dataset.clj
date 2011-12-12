@@ -65,7 +65,7 @@
        (copy-dataset source target (datatype-names dataset))))
   ([source target variables]
      (try
-       (when true ; (valid-md5-checksum? target)
+       (when (valid-md5-checksum? target)
          (with-open [dataset (open-dataset source)]
            (with-file-writer writer target
              (write-global-attributes dataset writer)

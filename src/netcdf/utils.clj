@@ -81,6 +81,7 @@ Anything printed within body will be written to f."
   false."
   [filename]
   (let [md5-filename (str filename ".md5")]
-    (and (.exists (File. md5-filename))
+    (and (.exists (File. filename))
+         (.exists (File. md5-filename))
          (= (md5-checksum filename)
             (first (line-seq (reader md5-filename)))))))
