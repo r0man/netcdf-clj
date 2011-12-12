@@ -1,9 +1,11 @@
 (ns netcdf.dataset
-  (:import (ucar.nc2 FileWriter NetcdfFile)
+  (:import (java.io File)
+           (ucar.nc2 FileWriter NetcdfFile)
            (ucar.nc2.dt.grid GridAsPointDataset GridDataset)
-           ucar.nc2.dataset.NetcdfDataset)
+           (ucar.nc2.dataset NetcdfDataset))
   (:require [netcdf.geo-grid :as geogrid])
   (:use [clojure.java.io :only (delete-file)]
+        [digest :only (digest)]
         netcdf.time
         netcdf.utils))
 
@@ -68,8 +70,10 @@
          (with-file-writer writer target
            (write-global-attributes dataset writer)
            (write-dimensions dataset writer)
-           (write-variables dataset writer variables))
-         target)
+           (write-variables dataset writer variables)))
+       (with-out-writer (str target ".md5")
+         (println (digest "md5" target)))
+       target
        (catch Exception e
          (delete-file target true)
          (throw e)))))
@@ -93,3 +97,6 @@
   [^GridDataset dataset filename & {:keys [printer valid-time z-coord separator]}]
   (with-out-writer filename
     (dump-dataset dataset :printer printer :valid-time valid-time :z-coord z-coord)))
+
+;; (digest "md5" (File. "/home/roman/.netcdf/dirswsfc/2011/12/12/120000Z/akw.nc"))
+
