@@ -23,7 +23,7 @@
   "htsgwsfc")
 
 (def example-valid-time
-  (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
+  (minus (date-time (year (now)) (month (now)) (day (now))) (days 1)))
 
 (def example-path
   (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
@@ -37,7 +37,7 @@
 (if-not (.exists (File. example-path))
   (do
     (info (str "Downloading test data:" *remote-uri*))
-    (time (dataset/copy-dataset *remote-uri* example-path [example-variable]))))
+    (dataset/copy-dataset *remote-uri* example-path [example-variable])))
 
 (def example-dataset
   (dataset/open-grid-dataset example-path))
