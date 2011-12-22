@@ -11,13 +11,13 @@
                  [edu.ucar/opendap "4.2.26"]
                  [geocoder-clj "0.0.4-SNAPSHOT"]
                  [google-maps "0.5.1-SNAPSHOT"]
-                 [incanter/incanter-core "1.2.3"]
+                 [incanter/incanter-core "1.2.4"]
                  [javax.media/jai_core "1.1.3"]
                  [org.clojure/clojure "1.3.0"]
                  [org.clojure/data.json "0.1.2"]
                  [org.clojure/data.zip "0.1.0"]
                  [org.clojure/tools.cli "0.1.0"]
-                 [org.clojure/tools.logging "0.2.0"]
+                 [org.clojure/tools.logging "0.2.3"]
                  [org.slf4j/slf4j-log4j12 "1.5.6"]]
   :repositories {"mbari" "http://mbari-maven-repository.googlecode.com/svn/repository"}
   :run-aliases {:forecast netcdf.forecast/-main})
