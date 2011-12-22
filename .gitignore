@@ -17,3 +17,4 @@ netcdf.jar
 /.lein-failures
 /logs/test.log
 /logs/debug.log
+/.lein-deps-sum
