@@ -14,6 +14,10 @@
   "Returns true if arg is a model, otherwise false."
   [arg] (isa? (class arg) Model))
 
+(defn model
+  "Returns the model by name."
+  [name] (get @*models* (keyword name)))
+
 (defn register-model
   "Register a model by name."
   [model] (swap! *models* assoc (keyword (:name model)) model))

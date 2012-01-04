@@ -27,6 +27,12 @@
     (is (.equals (make-bounding-box 44.75 159.5 75.25 -123.5) (:bounding-box model)))
     (is (= {:latitude 0.25 :longitude 0.5} (:resolution model)))))
 
+(deftest test-model
+  (is (nil? (model nil)))
+  (is (nil? (model :unknown)))
+  (is (= akw (model :akw)))
+  (is (= nww3 (model :nww3))))
+
 (deftest test-model?
   (is (not (model? nil)))
   (is (not (model? "")))
