@@ -16,6 +16,11 @@
     (is (= "Primary wave direction" (:description variable)))
     (is (= "°" (:unit variable)))))
 
+(deftest test-variable
+  (is (nil? (variable nil)))
+  (is (nil? (variable "")))
+  (is (= htsgwsfc (variable :htsgwsfc))))
+
 (deftest test-variable?
   (is (not (variable? nil)))
   (is (not (variable? "")))

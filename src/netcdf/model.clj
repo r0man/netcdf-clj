@@ -3,9 +3,9 @@
   (:use netcdf.bounding-box
         netcdf.location))
 
-(defrecord Model [name description bounding-box dods resolution])
-
 (def ^:dynamic *models* (atom {}))
+
+(defrecord Model [name description bounding-box dods resolution])
 
 (defn make-model [& {:keys [name description bounding-box dods resolution]}]
   (Model. name description bounding-box dods resolution))

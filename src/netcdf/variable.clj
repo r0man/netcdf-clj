@@ -10,12 +10,18 @@
         netcdf.utils
         netcdf.time))
 
+(def ^:dynamic *variables* (atom {}))
+
 (defrecord Variable [name description unit])
 
 (defn make-variable
   "Make a NetCDF variable."
   [& {:keys [name description unit]}]
   (Variable. name description unit))
+
+(defn variable
+  "Returns the variable by name."
+  [name] (get @*variables* (keyword name)))
 
 (defn variable?
   "Returns true if arg is a variable, otherwise false."
@@ -25,11 +31,13 @@
   "Define a NetCDF variable."
   [name description & {:keys [unit]}]
   (let [name# name description# description unit# unit]
-    `(def ~name#
-       (make-variable
-        :name ~(str name#)
-        :description ~description#
-        :unit ~unit#))))
+    `(do
+       (def ~name#
+         (make-variable
+          :name ~(str name#)
+          :description ~description#
+          :unit ~unit#))
+       (swap! *variables* assoc (keyword (:name ~name#)) ~name#))))
 
 (defn download-variable [model variable & {:keys [reference-time root-dir]}]
   (if-let [reference-time (to-date-time (or reference-time (latest-reference-time model)))]
