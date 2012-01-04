@@ -25,7 +25,7 @@
 
 (defn variable?
   "Returns true if arg is a variable, otherwise false."
-  [arg] (isa? (class arg) Variable))
+  [arg] (instance? Variable arg))
 
 (defmacro defvariable
   "Define a NetCDF variable."

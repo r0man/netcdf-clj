@@ -12,7 +12,7 @@
 
 (defn model?
   "Returns true if arg is a model, otherwise false."
-  [arg] (isa? (class arg) Model))
+  [arg] (instance? Model arg))
 
 (defn model
   "Returns the model by name."
