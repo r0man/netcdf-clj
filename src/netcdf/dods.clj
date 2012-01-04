@@ -11,12 +11,6 @@
         netcdf.time
         netcdf.utils))
 
-(defrecord DODSRepository [uri])
-
-(defn dods-repository
-  "Make a DODS repository."
-  [url] (DODSRepository. url))
-
 (defn- feed-to-zip [uri]
   (zip/xml-zip (xml/parse uri)))
 
