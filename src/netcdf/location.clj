@@ -167,12 +167,17 @@
   (if location
     (LatLonPointImpl. (latitude location) (longitude location))))
 
+(extend-type clojure.lang.IPersistentMap
+  ILocation
+  (to-location [map]
+    (LatLonPointImpl. (:latitude map) (:longitude map))))
+
 (extend-type LatLonPoint
   ILocation
   (to-location [object]
     object))
 
-(extend-type clojure.lang.IPersistentMap
+(extend-type String
   ILocation
-  (to-location [map]
-    (LatLonPointImpl. (:latitude map) (:longitude map))))
+  (to-location [object]
+    (parse-location object)))
