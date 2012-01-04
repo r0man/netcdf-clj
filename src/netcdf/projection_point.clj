@@ -3,7 +3,7 @@
 
 (defn projection-point?
   "Returns true if arg is a projection point, otherwise false."
-  [arg] (isa? (class arg) ProjectionPoint))
+  [arg] (instance? ProjectionPoint arg))
 
 (defn make-projection-point [x y]
   (ProjectionPointImpl. x y))

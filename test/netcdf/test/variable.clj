@@ -40,13 +40,13 @@
       (with-redefs [copy-dataset (constantly filename)
                     latest-reference-time (constantly reference-time)]
         (let [variable (download-variable nww3 htsgwsfc)]
-          (is (isa? (class (:interval variable)) Interval))
+          (is (instance? Interval (:interval variable)))
           (is (= filename (:filename variable)))
           (is (= 0 (:size variable)))
           (is (= reference-time (:reference-time variable)))))
       (with-redefs [copy-dataset (constantly filename)]
         (let [variable (download-variable nww3 htsgwsfc :reference-time reference-time)]
-          (is (isa? (class (:interval variable)) Interval))
+          (is (instance? Interval (:interval variable)))
           (is (= filename (:filename variable)))
           (is (= 0 (:size variable)))
           (is (= reference-time (:reference-time variable))))))))
@@ -55,5 +55,5 @@
   (with-test-inventory
     (with-redefs [variable-path (constantly "/tmp/netcdf-test.nc")]
       (let [valid-times (valid-times nww3 htsgwsfc)]
-        (is (every? #(isa? (class %) DateTime) valid-times))
+        (is (every? #(instance? DateTime %) valid-times))
         (is (= 61 (count valid-times)))))))

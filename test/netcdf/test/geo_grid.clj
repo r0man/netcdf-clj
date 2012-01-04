@@ -29,7 +29,7 @@
 (deftest test-coord-system
   (with-open-geo-grid [grid example-path example-variable]
     (let [coord-system (coord-system grid)]
-      (is (isa? (class coord-system) ucar.nc2.dt.grid.GridCoordSys)))))
+      (is (instance? ucar.nc2.dt.grid.GridCoordSys coord-system)))))
 
 (deftest test-description
   (with-open-geo-grid [grid example-path example-variable]
@@ -39,7 +39,7 @@
   (with-open-geo-grid [grid example-path example-variable]
     (let [dimensions (dimensions grid)]
       (is (seq? dimensions))
-      (is (every? #(isa? (class %) ucar.nc2.Dimension) dimensions)))))
+      (is (every? #(instance? ucar.nc2.Dimension %) dimensions)))))
 
 (deftest test-format-record
   (are [record line]
@@ -74,7 +74,7 @@
 
 (deftest test-time-axis
   (with-open-geo-grid [grid example-path example-variable]
-    (is (isa? (class (time-axis grid)) ucar.nc2.dataset.CoordinateAxis1DTime))))
+    (is (instance? ucar.nc2.dataset.CoordinateAxis1DTime (time-axis grid)))))
 
 (deftest test-vertical-axis
   (with-open-geo-grid [grid example-path example-variable]
@@ -99,7 +99,7 @@
 (deftest test-read-location
   (with-open-geo-grid [grid example-path example-variable]
     (let [value (read-location grid {:latitude 76 :longitude 0})]
-      (is (isa? (class value) Double)))))
+      (is (instance? Double value)))))
 
 (deftest test-read-locations
   (with-open-geo-grid [grid example-path example-variable]
@@ -108,7 +108,7 @@
 
 (deftest test-read-index
   (with-open-geo-grid [grid example-path example-variable]
-    (is (isa? (class (read-index grid 0 0)) Double))))
+    (is (instance? Double (read-index grid 0 0)))))
 
 (deftest test-interpolate-location
   (with-open-geo-grid [grid example-path example-variable]
@@ -123,7 +123,7 @@
 
 (deftest test-with-open-geo-grid
   (with-open-geo-grid [geo-grid example-path example-variable]
-    (is (isa? (class geo-grid) ucar.nc2.dt.grid.GeoGrid))))
+    (is (instance? ucar.nc2.dt.grid.GeoGrid geo-grid))))
 
 (deftest test-read-seq
   (let [geo-grid (open-example-geo-grid)
@@ -138,13 +138,13 @@
       (is (location? (:location record)))
       (is (= (make-location -78 0) (:location record)))
       (is (= valid-time (:valid-time record)))
-      (is (isa? (class (:value record)) java.lang.Double)))
+      (is (instance? java.lang.Double (:value record))))
     (let [record (second sequence)]
       (is (= (.getName geo-grid) (:variable record)))
       (is (location? (:location record)))
       (is (= (make-location -78 1.25) (:location record)))
       (is (= valid-time (:valid-time record)))
-      (is (isa? (class (:value record)) java.lang.Double)))
+      (is (instance? java.lang.Double (:value record))))
     (is (= (count sequence) 45216))))
 
 (deftest test-read-matrix

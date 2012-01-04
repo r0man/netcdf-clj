@@ -7,7 +7,7 @@
 
 (deftest test-to-calendar
   (let [calendar (to-calendar 0)]
-    (is (isa? (class calendar) Calendar))
+    (is (instance? Calendar calendar))
     (is (= 0 (.getTime (.getTime calendar))))))
 
 (deftest test-to-date-time
@@ -83,5 +83,5 @@
     (is (= (java.sql.Timestamp. 1296462953000) (sql-timestamp (date-time 2011 1 31 8 35 53))))))
 
 (deftest test-sql-timestamp-now
-  (is (isa? (class (sql-timestamp-now)) java.sql.Timestamp))
+  (is (instance? java.sql.Timestamp (sql-timestamp-now)))
   (= (.getTime (sql-timestamp-now)) (to-long (now))))

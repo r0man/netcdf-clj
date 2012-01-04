@@ -37,12 +37,12 @@
 
 (defn latitude [location]
   (cond
-   (isa? (class location) LatLonPointImpl) (.getLatitude location)
+   (instance? LatLonPoint location) (.getLatitude location)
    :else (:latitude location)))
 
 (defn longitude [location]
   (cond
-   (isa? (class location) LatLonPointImpl) (.getLongitude location)
+   (instance? LatLonPoint location) (.getLongitude location)
    :else (:longitude location)))
 
 (defmulti make-location

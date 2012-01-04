@@ -16,12 +16,12 @@
       (is (= 13.411 (.getLongitude location)))))
   (testing "hash map"
     (let [location (to-location {:latitude 52.523 :longitude 13.411})]
-      (isa? (class location) LatLonPoint)
+      (instance? LatLonPoint location)
       (is (= 52.523 (.getLatitude location)))
       (is (= 13.411 (.getLongitude location)))))
   (testing "string"
     (let [location (to-location "52.523,13.411")]
-      (isa? (class location) LatLonPoint)
+      (instance? LatLonPoint location)
       (is (= 52.523 (.getLatitude location)))
       (is (= 13.411 (.getLongitude location))))))
 

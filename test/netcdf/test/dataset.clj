@@ -7,19 +7,19 @@
 
 (deftest test-open-dataset
   (with-open [dataset (open-dataset example-path)]
-    (is (isa? (class dataset) ucar.nc2.dataset.NetcdfDataset))))
+    (is (instance? ucar.nc2.dataset.NetcdfDataset dataset))))
 
 (deftest test-open-dataset-with-remote
   (with-open [dataset (open-dataset *remote-uri*)]
-    (is (isa? (class dataset) ucar.nc2.dataset.NetcdfDataset))))
+    (is (instance? ucar.nc2.dataset.NetcdfDataset dataset))))
 
 (deftest test-open-grid-dataset
   (with-open [dataset (open-grid-dataset example-path)]
-    (is (isa? (class dataset) ucar.nc2.dt.grid.GridDataset))))
+    (is (instance? ucar.nc2.dt.grid.GridDataset dataset))))
 
 (deftest test-open-grid-dataset-with-remote
   (with-open [dataset (open-grid-dataset *remote-uri*)]
-    (is (isa? (class dataset) ucar.nc2.dt.grid.GridDataset))))
+    (is (instance? ucar.nc2.dt.grid.GridDataset dataset))))
 
 (deftest test-copy-dataset
   (let [target "/tmp/copy-dataset-path-as-string"]
@@ -46,14 +46,14 @@
 (deftest test-find-grid-datatype
   (with-open-grid-dataset [dataset example-path]
     (let [datatype (find-grid-datatype dataset "htsgwsfc")]
-      (is (isa? (class datatype) ucar.nc2.dt.GridDatatype))
+      (is (instance? ucar.nc2.dt.GridDatatype datatype))
       (is (= "htsgwsfc" (.getName datatype))))))
 
 (deftest test-geo-grids
   (with-open-grid-dataset [dataset example-path]
     (let [grids (geo-grids dataset)]
       (is (not (empty? grids)))
-      (is (every? #(isa? (class %) GeoGrid) grids)))))
+      (is (every? #(instance? GeoGrid %) grids)))))
 
 (deftest test-valid-times
   (with-open-grid-dataset [dataset example-path]
@@ -63,11 +63,11 @@
 
 (deftest test-with-open-dataset
   (with-open-dataset [dataset example-path]
-    (is (isa? (class dataset) ucar.nc2.dataset.NetcdfDataset))))
+    (is (instance? ucar.nc2.dataset.NetcdfDataset dataset))))
 
 (deftest test-with-open-grid-dataset
   (with-open-grid-dataset [dataset example-path]
-    (is (isa? (class dataset) ucar.nc2.dt.grid.GridDataset))))
+    (is (instance? ucar.nc2.dt.grid.GridDataset dataset))))
 
 (deftest test-write-dataset
   (with-open-grid-dataset [dataset example-path]

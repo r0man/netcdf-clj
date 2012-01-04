@@ -22,7 +22,7 @@
   (let [filename "/tmp/test-read-matrix"]
     (write-matrix example-matrix filename)
     (let [matrix (read-matrix filename)]
-      (is (isa? (class matrix) incanter.Matrix))
+      (is (instance? incanter.Matrix matrix))
       (is (= (.rows matrix) (.rows example-matrix)))
       (is (= (.columns matrix) (.columns example-matrix))))))
 
@@ -43,7 +43,7 @@
 
 (deftest test-make-image
   (let [matrix (make-image example-matrix)]
-    (is (isa? (class matrix) BufferedImage))))
+    (is (instance? BufferedImage matrix))))
 
 (deftest test-render-image
   (let [image (make-buffered-image (ncol example-matrix) (nrow example-matrix))]
@@ -51,4 +51,4 @@
 
 (deftest test-save-as-image
   (let [image (save-as-image example-matrix "/tmp/test-save-as-image.png")]
-    (is (isa? (class image) BufferedImage))))
+    (is (instance? BufferedImage image))))

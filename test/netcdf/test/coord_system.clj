@@ -44,7 +44,7 @@
     (make-location 78 0.625) (make-location 78 1.25)))
 
 (deftest test-projection
-  (is (isa? (class (projection example-coord-system)) Projection)))
+  (is (instance? Projection (projection example-coord-system))))
 
 (deftest test-x-y-index
   (is (= (x-y-index example-coord-system (make-location 0 0)) [0 78]))

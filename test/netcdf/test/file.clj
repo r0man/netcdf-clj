@@ -13,5 +13,5 @@
 
 (deftest test-netcdf-file-seq
   (let [files (netcdf-file-seq *repository*)]
-    (is (every? #(isa? (class %) File) files))
+    (is (every? #(instance? File %1) files))
     (is (every? netcdf-file? files))))

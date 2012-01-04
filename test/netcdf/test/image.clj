@@ -4,7 +4,7 @@
 
 (deftest test-make-buffered-image
   (let [image (make-buffered-image 20 10)]
-    (is (isa? (class image) BufferedImage))
+    (is (instance? BufferedImage image))
     (is (= (.getWidth image) 20))
     (is (= (.getHeight image) 10))
     (is (= (.getType image) BufferedImage/TYPE_INT_ARGB))))
