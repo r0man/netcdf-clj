@@ -96,8 +96,22 @@
              measure))
          {} (:variables forecast))))))
 
+(defforecast wave-watch-3
+  "The NOAA Wave Watch III forecast."
+  dirpwsfc wave-watch-models
+  dirswsfc wave-watch-models
+  htsgwsfc wave-watch-models
+  perpwsfc wave-watch-models
+  perswsfc wave-watch-models
+  ugrdsfc wave-watch-models
+  vgrdsfc wave-watch-models
+  wdirsfc wave-watch-models
+  windsfc wave-watch-models
+  wvdirsfc wave-watch-models
+  wvpersfc wave-watch-models)
+
 (defforecast surf-forecast
-  "The surf forecast."
+  "The Burningswell surf forecast."
   dirpwsfc wave-watch-models
   dirswsfc wave-watch-models
   htsgwsfc wave-watch-models
