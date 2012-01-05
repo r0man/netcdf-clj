@@ -11,6 +11,8 @@
 (defprotocol IRepository
   (reference-times [repository model]
     "Returns model's reference times in the repository.")
+  (save-variable [repository model variable reference-time]
+    "Save the variable in repository.")
   (variable-url [repository model variable reference-time]
     "Returns the uri to the variable."))
 

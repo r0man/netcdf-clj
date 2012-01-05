@@ -29,3 +29,10 @@
   [directory & body]
   `(binding [*repository* ~directory]
      ~@body))
+
+
+;; (with-repository :local
+;;   (read-forecast surf-forecast mundaka "2012-01-01"))
+
+;; (with-repository :dods
+;;   (read-forecast surf-forecast mundaka "2012-01-01"))
