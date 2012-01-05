@@ -1,4 +1,5 @@
 (ns netcdf.variable
+  (:import java.io.File)
   (:require [netcdf.dods :as dods]
             [netcdf.geo-grid :as grid])
   (:use [clj-time.core :only (now interval)]
@@ -86,6 +87,13 @@
   (let [reference-time (or reference-time (latest-reference-time model))]
     (with-open [dataset (open-grid-dataset ( variable-path model variable reference-time))]
       (grid/valid-times (find-geo-grid dataset (:name variable))))))
+
+(defn variable-fragment
+  "Returns the variable fragment."
+  [model variable reference-time]
+  (str (:name model) File/separator
+       (:name variable) File/separator
+       (date-time-path-fragment reference-time) ".nc"))
 
 (defvariable dirpwsfc
   "Primary wave direction"

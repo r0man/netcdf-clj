@@ -9,6 +9,8 @@
         [netcdf.model :exclude (valid-times)]
         netcdf.variable))
 
+(def example-time (date-time 2011 12 1 6))
+
 (deftest test-make-variable
   (let [variable (make-variable :name "dirpwsfc" :description "Primary wave direction" :unit "°")]
     (is (variable? variable))
@@ -57,3 +59,7 @@
       (let [valid-times (valid-times nww3 htsgwsfc)]
         (is (every? #(instance? DateTime %) valid-times))
         (is (= 61 (count valid-times)))))))
+
+(deftest test-variable-fragment
+  (is (= (str "nww3/htsgwsfc/2011/12/01/060000Z.nc")
+         (variable-fragment nww3 htsgwsfc example-time))))
