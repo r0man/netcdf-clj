@@ -5,7 +5,7 @@
         netcdf.file
         netcdf.utils))
 
-(def ^:dynamic *local-variable-root*
+(def ^:dynamic *local-root*
   (str (System/getenv "HOME") File/separator ".netcdf"))
 
 (defprotocol IRepository

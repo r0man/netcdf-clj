@@ -18,5 +18,5 @@
     reference-times))
 
 (deftest test-local-variable-url
-  (is (= (str *local-variable-root* "/nww3/htsgwsfc/2011/12/01/060000Z.nc")
+  (is (= (str *local-root* "/nww3/htsgwsfc/2011/12/01/060000Z.nc")
          (variable-url example-repository nww3 htsgwsfc example-time))))
