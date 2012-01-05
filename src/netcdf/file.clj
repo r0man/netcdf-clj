@@ -6,6 +6,5 @@
   [file] (and (.exists (File. (str file))) (.endsWith (str file) ".nc")))
 
 (defn netcdf-file-seq
-  "Returns a seq of all NetCDF files in dirctory."
-  [directory]
-  (filter netcdf-file? (file-seq (File. directory))))
+  "Returns a seq of all NetCDF files in the given directory."
+  [directory] (filter netcdf-file? (file-seq (File. directory))))
