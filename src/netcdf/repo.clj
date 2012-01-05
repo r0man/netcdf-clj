@@ -1,5 +1,6 @@
 (ns netcdf.repo
   (:import java.io.File)
+  (:require [netcdf.dods :as dods])
   (:use [clojure.string :only (join)]
         [netcdf.variable :only (download-variable variable-fragment)]
         netcdf.file
@@ -41,3 +42,16 @@
 (defn make-local-repository
   "Make a local repository."
   [& [url]] (LocalRepository. (or url *local-root*)))
+
+;; DODS REPOSITORY
+
+(defrecord DodsRepository []
+  IRepository
+  (reference-times [repository model]
+    (dods/reference-times model))
+  (variable-url [repository model variable time]
+    (dods/variable-url repository model variable time)))
+
+(defn make-dods-repository
+  "Make a DODS repository."
+  [] (DodsRepository.))

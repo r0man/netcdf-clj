@@ -19,4 +19,6 @@
 
 (deftest test-variable-url
   (is (= (str (:url example-repository) "/nww3/htsgwsfc/2011/12/01/060000Z.nc")
-         (variable-url example-repository nww3 htsgwsfc example-time))))
+         (variable-url example-repository nww3 htsgwsfc example-time)))
+  (let [repository (make-dods-repository)]
+    (variable-url example-repository nww3 htsgwsfc example-time)))
