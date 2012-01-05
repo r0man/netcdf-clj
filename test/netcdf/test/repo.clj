@@ -5,18 +5,18 @@
         clojure.test
         netcdf.repo))
 
-(def example-repository (make-local-repository "/home/roman/.netcdf"))
+(def example-repository (make-local-repository))
 (def example-time (date-time 2011 12 1 6))
 
 (deftest test-make-local-repository
-  (let [repository (make-local-repository "/home/roman/.netcdf")]
+  (let [repository (make-local-repository *local-root*)]
     (is (instance? netcdf.repo.LocalRepository repository))
-    (is (= "/home/roman/.netcdf" (:url repository)))))
+    (is (= *local-root* (:url repository)))))
 
-(deftest test-local-reference-times
-  (let [reference-times (local-reference-times example-repository nww3)]
+(deftest test-reference-times
+  (let [reference-times (reference-times example-repository nww3)]
     reference-times))
 
-(deftest test-local-variable-url
-  (is (= (str *local-root* "/nww3/htsgwsfc/2011/12/01/060000Z.nc")
+(deftest test-variable-url
+  (is (= (str (:url example-repository) "/nww3/htsgwsfc/2011/12/01/060000Z.nc")
          (variable-url example-repository nww3 htsgwsfc example-time))))

@@ -1,7 +1,7 @@
 (ns netcdf.repo
   (:import java.io.File)
   (:use [clojure.string :only (join)]
-        [netcdf.variable :only (variable-fragment)]
+        [netcdf.variable :only (download-variable variable-fragment)]
         netcdf.file
         netcdf.utils))
 
@@ -33,11 +33,13 @@
 
 (defn make-local-repository
   "Make a local repository."
-  [url] (LocalRepository. url))
+  [& [url]] (LocalRepository. (or url *local-root*)))
 
 (extend-type LocalRepository
   IRepository
   (reference-times [repository model]
     (local-reference-times repository model))
+  (save-variable [repository model variable reference-time]
+    (download-variable model variable :reference-time reference-time :root-dir (:url repository)))
   (variable-url [repository model variable time]
     (local-variable-url repository model variable time)))
