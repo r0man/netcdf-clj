@@ -18,8 +18,6 @@
 
 ;; LOCAL REPOSITORY
 
-(defrecord LocalRepository [url])
-
 (defn local-reference-times
   "Returns the reference times in the local repository."
   [repository model]
@@ -31,11 +29,7 @@
   (str (:url repository) File/separator
        (variable-fragment model variable reference-time)))
 
-(defn make-local-repository
-  "Make a local repository."
-  [& [url]] (LocalRepository. (or url *local-root*)))
-
-(extend-type LocalRepository
+(defrecord LocalRepository [url]
   IRepository
   (reference-times [repository model]
     (local-reference-times repository model))
@@ -43,3 +37,7 @@
     (download-variable model variable :reference-time reference-time :root-dir (:url repository)))
   (variable-url [repository model variable time]
     (local-variable-url repository model variable time)))
+
+(defn make-local-repository
+  "Make a local repository."
+  [& [url]] (LocalRepository. (or url *local-root*)))
