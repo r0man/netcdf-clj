@@ -13,10 +13,16 @@
   (str (System/getenv "HOME") File/separator ".netcdf"))
 
 (defprotocol IRepository
-  (-reference-times [repository model]
-    "Returns model's reference times in the repository.")
+  (-dataset-url [repository model variable reference-time]
+    "Returns the url to the dataset in repository.")
   (-open-grid [repository model variable reference-time]
-    "Open the grid for the variable from repository."))
+    "Open the grid for the variable from repository.")
+  (-reference-times [repository model]
+    "Returns model's reference times in repository."))
+
+(defn dataset-url
+  "Returns the dataset url in *repository*."
+  [model variable reference] (-dataset-url *repository* model variable reference))
 
 (defn open-grid
   "Open the geo grid in *repository*."
@@ -50,26 +56,30 @@
 
 (defrecord LocalRepository [url]
   IRepository
-  (-reference-times [repository model]
-    (local-reference-times repository model))
+  (-dataset-url [repository model variable reference-time]
+    (local-variable-url repository model variable reference-time))
   (-open-grid [repository model variable reference-time]
     (grid/open-geo-grid
      (local-variable-url repository model variable reference-time)
-     (:name variable))))
+     (:name variable)))
+  (-reference-times [repository model]
+    (local-reference-times repository model)))
 
 (defn make-local-repository
   "Make a local repository."
   [& [url]] (LocalRepository. (or url *local-root*)))
 
-;; ;; DODS REPOSITORY
+;; DODS REPOSITORY
 
 (defrecord DodsRepository []
   IRepository
-  (-reference-times [repository model]
-    (dods/reference-times model))
+  (-dataset-url [repository model variable reference-time]
+    (:dods (first (dods/find-datasets-by-url-and-reference-time (:dods model) reference-time))))
   (-open-grid [repository model variable reference-time]
-    (if-let [dataset (first (dods/find-datasets-by-url-and-reference-time (:dods model) reference-time))]
-      (grid/open-geo-grid (:dods dataset) (:name variable)))))
+    (if-let [dataset (-dataset-url repository model variable reference-time)]
+      (grid/open-geo-grid dataset (:name variable))))
+  (-reference-times [repository model]
+    (dods/reference-times model)))
 
 (defn make-dods-repository
   "Make a DODS repository."
