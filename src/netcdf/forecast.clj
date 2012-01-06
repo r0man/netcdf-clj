@@ -48,15 +48,6 @@
           model (get (:variables forecast) variable)]
     (download-variable model variable :reference-time reference-time :root-dir directory)))
 
-(defn open-grid
-  "Lookup the geo grid in *cache*, or open it."
-  [model variable reference-time]
-  (let [path (variable-path model variable reference-time)]
-    (or (get @*cache* path)
-        (let [grid (open-geo-grid path (:name variable))]
-          (swap! *cache* assoc path grid)
-          grid))))
-
 (defn latest-reference-time
   "Returns the latest reference-time of the models in the forecast."
   [forecast]
@@ -71,8 +62,7 @@
   (let [reference-time (or reference-time (latest-reference-time forecast))]
     (->>
      (for [variable (keys (:variables forecast))
-           model (models-for-variable forecast variable)
-           :when (.exists (java.io.File. ^String (variable-path model variable reference-time)))]
+           model (models-for-variable forecast variable)]
        (grid/valid-times (open-grid model variable reference-time)))
      (map set)
      (apply clojure.set/union))))

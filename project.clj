@@ -20,6 +20,6 @@
                  [org.clojure/tools.logging "0.2.3"]
                  [org.slf4j/slf4j-log4j12 "1.5.6"]]
   :repositories {"mbari" "http://mbari-maven-repository.googlecode.com/svn/repository"}
-  :run-aliases {:forecast netcdf.forecast/-main}
+  :run-aliases {:forecast netcdf.main/-main}
   ;; :warn-on-reflection true
   )

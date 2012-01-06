@@ -13,8 +13,8 @@
   (commandline.core/print-help "netcdf [OPTION,...] COMMAND"))
 
 (defn print-reference-times []
-  (doseq [model (vals @models/*models*)]
-    (println (join "\t" [ (dods/latest-reference-time model) (:name model) (:description model)]))))
+  (doseq [model (sort-by :name (vals @models/*models*))]
+    (println (join "\t" [(:name model) (dods/latest-reference-time model) (:description model)]))))
 
 (defn -main [& args]
   (with-commandline [args]
