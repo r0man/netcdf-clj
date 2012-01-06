@@ -19,16 +19,16 @@
      (with-redefs [dods/find-inventory-by-url (fn [url#] inventory#)]
        ~@body)))
 
-(def example-valid-time
-  (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
-
 (defforecast example-forecast
   "The example forecast."
   htsgwsfc [akw nww3]
   tmpsfc [gfs-hd])
 
+(def example-reference-time
+  (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
+
 (info (str "Downloading example forecast ..."))
-(download-forecast example-forecast :reference-time example-valid-time)
+(download-forecast example-forecast :reference-time example-reference-time)
 
 (def example-product
   "nww3")
@@ -41,9 +41,9 @@
 
 (def ^:dynamic *remote-uri*
   (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" example-product "/"
-       example-product (unparse (formatters :basic-date) example-valid-time) "/"
-       example-product (unparse (formatters :basic-date) example-valid-time) "_"
-       (unparse (formatters :hour) example-valid-time) "z"))
+       example-product (unparse (formatters :basic-date) example-reference-time) "/"
+       example-product (unparse (formatters :basic-date) example-reference-time) "_"
+       (unparse (formatters :hour) example-reference-time) "z"))
 
 (if-not (.exists (File. example-path))
   (do
@@ -51,7 +51,8 @@
     (dataset/copy-dataset *remote-uri* example-path [example-variable])))
 
 (def example-dataset
-  (dataset/open-grid-dataset example-path))
+  (dataset/open-grid-dataset
+   example-path))
 
 (def example-geo-grid
   (dataset/find-geo-grid example-dataset example-variable))
