@@ -1,6 +1,9 @@
 (ns netcdf.test.helper
   (:import java.io.File)
   (:use [clj-time.core :only (date-time day days hours minus month now year)]
+        [netcdf.forecast :only (defforecast download-forecast)]
+        [netcdf.model :only (akw gfs-hd nww3)]
+        [netcdf.variable :only (htsgwsfc tmpsfc)]
         clj-time.format
         clojure.tools.logging)
   (:require [netcdf.dataset :as dataset]
@@ -16,14 +19,22 @@
      (with-redefs [dods/find-inventory-by-url (fn [url#] inventory#)]
        ~@body)))
 
+(def example-valid-time
+  (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
+
+(defforecast example-forecast
+  "The example forecast."
+  htsgwsfc [akw nww3]
+  tmpsfc [gfs-hd])
+
+(info (str "Downloading example forecast ..."))
+(download-forecast example-forecast :reference-time example-valid-time)
+
 (def example-product
   "nww3")
 
 (def example-variable
   "htsgwsfc")
-
-(def example-valid-time
-  (minus (date-time (year (now)) (month (now)) (day (now))) (days 1)))
 
 (def example-path
   (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
