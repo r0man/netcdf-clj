@@ -1,16 +1,21 @@
 (ns netcdf.test.dataset
   (:import ucar.nc2.dt.grid.GeoGrid)
-  (:use clojure.test
+  (:require [netcdf.dods :as dods])
+  (:use [netcdf.model :only (nww3)]
+        clojure.test
         netcdf.dataset
         netcdf.test.helper
         netcdf.time))
+
+(def example-remote-url
+  (:dods (first (dods/find-datasets-by-url-and-reference-time (:dods nww3) example-reference-time))))
 
 (deftest test-open-dataset
   (with-open [dataset (open-dataset example-path)]
     (is (instance? ucar.nc2.dataset.NetcdfDataset dataset))))
 
 (deftest test-open-dataset-with-remote
-  (with-open [dataset (open-dataset *remote-uri*)]
+  (with-open [dataset (open-dataset example-remote-url)]
     (is (instance? ucar.nc2.dataset.NetcdfDataset dataset))))
 
 (deftest test-open-grid-dataset
@@ -18,7 +23,7 @@
     (is (instance? ucar.nc2.dt.grid.GridDataset dataset))))
 
 (deftest test-open-grid-dataset-with-remote
-  (with-open [dataset (open-grid-dataset *remote-uri*)]
+  (with-open [dataset (open-grid-dataset example-remote-url)]
     (is (instance? ucar.nc2.dt.grid.GridDataset dataset))))
 
 (deftest test-copy-dataset

@@ -4,6 +4,7 @@
         [netcdf.forecast :only (defforecast download-forecast)]
         [netcdf.model :only (akw gfs-hd nww3)]
         [netcdf.variable :only (htsgwsfc tmpsfc)]
+        [netcdf.repository :only (variable-path)]
         clj-time.format
         clojure.tools.logging)
   (:require [netcdf.dataset :as dataset]
@@ -27,9 +28,6 @@
 (def example-reference-time
   (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
 
-(info (str "Downloading example forecast ..."))
-(download-forecast example-forecast :reference-time example-reference-time)
-
 (def example-product
   "nww3")
 
@@ -37,22 +35,12 @@
   "htsgwsfc")
 
 (def example-path
-  (str (System/getProperty "java.io.tmpdir") File/separator "netcdf-test.nc"))
-
-(def ^:dynamic *remote-uri*
-  (str "http://nomads.ncep.noaa.gov:9090/dods/wave/" example-product "/"
-       example-product (unparse (formatters :basic-date) example-reference-time) "/"
-       example-product (unparse (formatters :basic-date) example-reference-time) "_"
-       (unparse (formatters :hour) example-reference-time) "z"))
-
-(if-not (.exists (File. example-path))
-  (do
-    (info (str "Downloading test data:" *remote-uri*))
-    (dataset/copy-dataset *remote-uri* example-path [example-variable])))
+  (variable-path nww3 htsgwsfc example-reference-time))
 
 (def example-dataset
-  (dataset/open-grid-dataset
-   example-path))
+  (dataset/open-grid-dataset example-path))
 
 (def example-geo-grid
-  (dataset/find-geo-grid example-dataset example-variable))
+  (dataset/find-geo-grid example-dataset (:name htsgwsfc)))
+
+(download-forecast example-forecast :reference-time example-reference-time)
