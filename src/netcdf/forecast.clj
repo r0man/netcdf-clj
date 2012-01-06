@@ -18,6 +18,8 @@
 
 (defrecord Forecast [name description variables])
 
+(def cached-open-gird (memoize open-grid))
+
 (defn make-forecast
   "Make a new forecast."
   [& {:as options}] (map->Forecast options))
@@ -63,18 +65,18 @@
     (->>
      (for [variable (keys (:variables forecast))
            model (models-for-variable forecast variable)]
-       (grid/valid-times (open-grid model variable reference-time)))
+       (grid/valid-times (cached-open-gird model variable reference-time)))
      (map set)
      (apply clojure.set/union))))
 
-(defn read-forecast [forecast location & {:keys [reference-time root-dir]}]
+(defn read-forecast [forecast location & {:keys [reference-time]}]
   (let [reference-time (or reference-time (latest-reference-time forecast))]
     (if-let [location (resolve-location location)]
       (for [valid-time (valid-times forecast reference-time)]
         (reduce
          (fn [measure [variable models]]
            (if-let [model (find-model-by-location models location)]
-             (if-let [grid (open-grid model variable reference-time)]
+             (if-let [grid (cached-open-gird model variable reference-time)]
                (with-meta
                  (assoc measure (keyword (:name variable)) (interpolate-location grid location :valid-time valid-time))
                  {:model model
@@ -85,6 +87,17 @@
                measure)
              measure))
          {} (:variables forecast))))))
+
+(defn dump-forecast
+  "Dump the forecast at location to standard out."
+  [forecast location & {:keys [reference-time]}]
+  (let [variables (sort-by :name (keys (:variables forecast)))]
+    (doseq [forecast (read-forecast forecast location :reference-time reference-time)
+            :let [location (:location (meta forecast))]]
+      (->>  (map #(get forecast (keyword (:name %1))) variables)
+            (concat [(latitude location) (longitude location)] [])
+            (join "\t")
+            (println)))))
 
 (defforecast wave-watch-3
   "The NOAA Wave Watch III forecast."

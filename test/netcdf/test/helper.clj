@@ -26,7 +26,7 @@
   tmpsfc [gfs-hd])
 
 (def example-reference-time
-  (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
+  (minus (date-time (year (now)) (month (now)) (day (now))) (days 1)))
 
 (download-forecast example-forecast :reference-time example-reference-time)
 

@@ -70,4 +70,4 @@
     (let [reference-times (reference-times nww3)]
       (is (not (empty? reference-times)))
       (is (every? #(instance? DateTime %1) reference-times))
-      (is (= [example-reference-time] reference-times)))))
+      (is (contains? (set reference-times) example-reference-time)))))

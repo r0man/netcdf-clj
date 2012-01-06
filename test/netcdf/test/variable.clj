@@ -35,10 +35,9 @@
 
 (deftest test-download-variable
   (with-test-inventory
-    (let [filename (local-dataset-url nww3 htsgwsfc example-reference-time)
-          dataset-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z"]
+    (let [filename (local-dataset-url nww3 htsgwsfc example-reference-time)]
       (with-redefs [copy-dataset (constantly filename)
-                    netcdf.repository/reference-times (constantly [example-reference-time])]
+                    netcdf.dods/reference-times (constantly [example-reference-time])]
         (let [variable (download-variable nww3 htsgwsfc)]
           (is (instance? Interval (:interval variable)))
           (is (= filename (:filename variable)))
