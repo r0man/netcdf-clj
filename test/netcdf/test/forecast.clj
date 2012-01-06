@@ -1,13 +1,9 @@
 (ns netcdf.test.forecast
   (:use [netcdf.model :only (global-forecast-system-models model? wave-watch-models)]
-        [netcdf.variable :only (windsfc tmpsfc)]
+        [netcdf.variable :only (htsgwsfc tmpsfc)]
         clojure.test
-        netcdf.forecast))
-
-(defforecast example-forecast
-  "The example forecast."
-  windsfc wave-watch-models
-  tmpsfc global-forecast-system-models)
+        netcdf.forecast
+        netcdf.test.helper))
 
 (deftest test-defforecast
   (is (= "example-forecast" (:name example-forecast)))
@@ -23,9 +19,9 @@
 
 (deftest test-forecast-models
   (let [models (forecast-models example-forecast)]
-    (is (= 7 (count models)))
+    (is (= 3 (count models)))
     (is (every? model? models))))
 
 (deftest test-forecast-variables
-  (is (contains? (forecast-variables example-forecast) tmpsfc))
-  (is (contains? (forecast-variables example-forecast) windsfc)))
+  (is (contains? (forecast-variables example-forecast) htsgwsfc))
+  (is (contains? (forecast-variables example-forecast) tmpsfc)))
