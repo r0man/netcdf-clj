@@ -1,7 +1,7 @@
 (ns netcdf.time
   (:import java.util.Date
-           (org.joda.time DateTime DateTimeZone)
-           org.joda.time.format.ISODateTimeFormat)
+           (org.joda.time DateTime DateTimeZone IllegalFieldValueException)
+           (org.joda.time.format ISODateTimeFormat))
   (:use [clj-time.format :only (formatters parse unparse)]
         [clj-time.core :only (date-time now)]))
 
@@ -21,11 +21,11 @@
 (extend-type java.lang.String
   TimeProtocol
   (to-ms
-   [string]
-   (try
-     (to-ms (parse-date-time string *time-formatter*))
-     (catch IllegalArgumentException _
-       (to-ms (parse-date-time string *date-formatter*))))))
+    [string]
+    (try
+      (to-ms (parse-date-time string *time-formatter*))
+      (catch IllegalArgumentException _
+        (to-ms (parse-date-time string *date-formatter*))))))
 
 (extend-type java.util.Calendar
   TimeProtocol
@@ -82,3 +82,19 @@
 (defn sql-timestamp-now
   "Returns the current time as java.sql.Timestamp."
   [] (sql-timestamp (now)))
+
+(def path-pattern #".*(\d{4})/(\d{2})/(\d{2})/.*(\d{2})(\d{2})(\d{2}).*")
+
+(defn parse-fragment
+  "Parse the time from a path/url fragment."
+  [path]
+  (if-let [[_ year month day hour minute second] (re-find path-pattern (str path))]
+    (try
+      (date-time
+       (Integer/parseInt year)
+       (Integer/parseInt month)
+       (Integer/parseInt day)
+       (Integer/parseInt hour)
+       (Integer/parseInt minute)
+       (Integer/parseInt second))
+      (catch IllegalFieldValueException _ nil))))
