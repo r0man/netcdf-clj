@@ -1,9 +1,11 @@
 (ns netcdf.repository
+  (:refer-clojure :exclude (replace))
   (:import java.io.File)
   (:require [netcdf.dods :as dods]
             [netcdf.geo-grid :as grid])
-  (:use [clojure.string :only (join)]
-        [netcdf.time :only (parse-fragment)]
+  (:use [clojure.string :only (join replace)]
+        [clj-time.format :only (parse)]
+        [netcdf.time :only (format-time parse-fragment)]
         netcdf.file
         netcdf.utils))
 
@@ -93,5 +95,47 @@
 (defn make-dods-repository
   "Make a DODS repository."
   [] (DodsRepository.))
+
+;; DISTRIBUTED CACHE
+
+(defn- parse-dist-cache-path [path]
+  (let [[_ model variable reference-time]
+        (re-find #"([^$]+)\$([^$]+)\$([^$]+).nc" (.getName (File. (str path))))
+        reference-time (parse reference-time)]
+    (if (and model variable reference-time)
+      {:model model :variable variable :reference-time reference-time})))
+
+(defn dist-cache-dataset-url
+  "Returns the dataset url in the distributed cache."
+  [model variable reference-time & [root]]
+  (->> [(:name model)
+        (:name variable)
+        (str (format-time reference-time) ".nc")]
+       (remove nil?)
+       (join "$")
+       (str (if root (str root File/separator)))))
+
+(defn dist-cache-reference-times
+  "Returns the dataset url in the distributed cache."
+  [repository model]
+  (->> (netcdf-file-seq (:url repository))
+       (map parse-dist-cache-path)
+       (remove #(= model (:model %1)))
+       (map :reference-time)))
+
+(defrecord DistCacheRepository [url]
+  IRepository
+  (-dataset-url [repository model variable reference-time]
+    (dist-cache-dataset-url model variable reference-time (:url repository)))
+  (-open-grid [repository model variable reference-time]
+    (grid/open-geo-grid
+     (-dataset-url repository model variable reference-time)
+     (:name variable)))
+  (-reference-times [repository model]
+    (dist-cache-reference-times repository model)))
+
+(defn make-dist-cache-repository
+  "Make a distributed cache repository."
+  [& [url]] (DistCacheRepository. (or url "/var/lib/hadoop/mapred")))
 
 (alter-var-root #'*repository* (constantly (make-local-repository)))

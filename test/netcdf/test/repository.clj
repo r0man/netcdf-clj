@@ -6,6 +6,7 @@
             [netcdf.dods :as dods])
   (:use [clj-time.core :only (date-time)]
         [netcdf.model :only (nww3)]
+        [netcdf.time :only (format-time)]
         [netcdf.variable :only (htsgwsfc variable-fragment)]
         clojure.test
         netcdf.repository
@@ -35,7 +36,12 @@
   (with-repository (make-local-repository)
     (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
       (is (string? url))
-      (is (= (str *local-root* File/separator (variable-fragment nww3 htsgwsfc example-reference-time)) url)))))
+      (is (= (str *local-root* File/separator (variable-fragment nww3 htsgwsfc example-reference-time)) url))))
+  (with-repository (make-dist-cache-repository)
+    (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
+      (is (string? url))
+      (is (= (str "/var/lib/hadoop/mapred/nww3$htsgwsfc$"
+                  (format-time example-reference-time) ".nc") url)))))
 
 (deftest test-open-grid
   (with-repository (make-local-repository)
@@ -57,4 +63,11 @@
   (with-repository (make-local-repository)
     (let [reference-times (reference-times nww3)]
       (is (not (empty? reference-times)))
-      (is (every? #(instance? DateTime %1) reference-times)))))
+      (is (every? #(instance? DateTime %1) reference-times))))
+  (with-repository (make-dist-cache-repository "/tmp/distcache")
+    (.mkdirs (File. (:url *repository*)))
+    (spit (dataset-url nww3 htsgwsfc example-reference-time) 0)
+    (let [reference-times (reference-times nww3)]
+      (is (not (empty? reference-times)))
+      (is (every? #(instance? DateTime %1) reference-times))
+      (is (= [example-reference-time] reference-times)))))
