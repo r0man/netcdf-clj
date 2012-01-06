@@ -7,4 +7,4 @@
 
 (defn netcdf-file-seq
   "Returns a seq of all NetCDF files in the given directory."
-  [directory] (filter netcdf-file? (file-seq (File. directory))))
+  [directory] (filter netcdf-file? (file-seq (File. (str directory)))))

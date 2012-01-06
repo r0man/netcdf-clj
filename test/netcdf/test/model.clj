@@ -1,12 +1,10 @@
 (ns netcdf.test.model
-  (:require [netcdf.dods :as dods])
   (:use [clj-time.coerce :only (to-long)]
         [clj-time.core :only (date-time interval plus minutes minus)]
         clojure.test
         netcdf.bounding-box
         netcdf.location
         netcdf.model
-        netcdf.repository
         netcdf.test.helper
         netcdf.time))
 

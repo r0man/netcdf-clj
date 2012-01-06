@@ -2,10 +2,10 @@
   (:import org.joda.time.DateTime org.joda.time.Interval)
   (:use [clj-time.core :only (date-time)]
         [netcdf.dataset :only (copy-dataset)]
+        [netcdf.model :exclude (valid-times)]
+        [netcdf.repository :only (local-dataset-url)]
         clojure.test
         netcdf.test.helper
-        netcdf.repository
-        [netcdf.model :exclude (valid-times)]
         netcdf.variable))
 
 (def example-time (date-time 2011 12 1 6))
@@ -35,29 +35,33 @@
 
 (deftest test-download-variable
   (with-test-inventory
-    (let [reference-time (date-time 2010 10 30 6)
-          filename (variable-path nww3 htsgwsfc reference-time)
+    (let [filename (local-dataset-url nww3 htsgwsfc example-reference-time)
           dataset-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_06z"]
       (with-redefs [copy-dataset (constantly filename)
-                    latest-reference-time (constantly reference-time)]
+                    netcdf.repository/reference-times (constantly [example-reference-time])]
         (let [variable (download-variable nww3 htsgwsfc)]
           (is (instance? Interval (:interval variable)))
           (is (= filename (:filename variable)))
-          (is (= 0 (:size variable)))
-          (is (= reference-time (:reference-time variable)))))
+          (is (< 0 (:size variable)))
+          (is (= example-reference-time (:reference-time variable)))))
       (with-redefs [copy-dataset (constantly filename)]
-        (let [variable (download-variable nww3 htsgwsfc :reference-time reference-time)]
+        (let [variable (download-variable nww3 htsgwsfc :reference-time example-reference-time)]
           (is (instance? Interval (:interval variable)))
           (is (= filename (:filename variable)))
-          (is (= 0 (:size variable)))
-          (is (= reference-time (:reference-time variable))))))))
+          (is (< 0 (:size variable)))
+          (is (= example-reference-time (:reference-time variable))))))))
 
 (deftest test-valid-times
+  (let [valid-times (valid-times nww3 htsgwsfc example-reference-time)]
+    (is (not (empty? valid-times)))
+    (is (= 61 (count valid-times)))
+    (is (every? #(instance? DateTime %) valid-times)))
   (with-test-inventory
-    (with-redefs [variable-path (constantly "/tmp/netcdf-test.nc")]
+    (with-redefs [netcdf.repository/reference-times (constantly [example-reference-time])]
       (let [valid-times (valid-times nww3 htsgwsfc)]
-        (is (every? #(instance? DateTime %) valid-times))
-        (is (= 61 (count valid-times)))))))
+        (is (not (empty? valid-times)))
+        (is (= 61 (count valid-times)))
+        (is (every? #(instance? DateTime %) valid-times))))))
 
 (deftest test-variable-fragment
   (is (= (str "nww3/htsgwsfc/2011/12/01/060000Z.nc")

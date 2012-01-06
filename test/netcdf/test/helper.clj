@@ -4,7 +4,7 @@
         [netcdf.forecast :only (defforecast download-forecast)]
         [netcdf.model :only (akw gfs-hd nww3)]
         [netcdf.variable :only (htsgwsfc tmpsfc)]
-        [netcdf.repository :only (variable-path)]
+        [netcdf.repository :only (local-dataset-url)]
         clj-time.format
         clojure.tools.logging)
   (:require [netcdf.dataset :as dataset]
@@ -37,7 +37,7 @@
   "htsgwsfc")
 
 (def example-path
-  (variable-path nww3 htsgwsfc example-reference-time))
+  (local-dataset-url nww3 htsgwsfc example-reference-time))
 
 (def example-dataset
   (dataset/open-grid-dataset example-path))

@@ -1,31 +1,60 @@
 (ns netcdf.test.repository
-  (:import java.io.File java.net.URI)
+  (:import java.io.File
+           ucar.nc2.dt.grid.GeoGrid
+           org.joda.time.DateTime)
+  (:require [netcdf.geo-grid :as grid]
+            [netcdf.dods :as dods])
   (:use [clj-time.core :only (date-time)]
-        [netcdf.model :only (akw)]
-        [netcdf.variable :only (htsgwsfc)]
+        [netcdf.model :only (nww3)]
+        [netcdf.variable :only (htsgwsfc variable-fragment)]
         clojure.test
-        netcdf.time
-        netcdf.repository))
+        netcdf.repository
+        netcdf.test.helper))
 
-(deftest test-local-variable-path
-  (is (= (local-variable-path akw htsgwsfc (date-time 2010 11 5 6))
-         (URI. (str "file:" *repository* "/akw/htsgwsfc/2010/11/05/060000Z.nc"))))
-  (with-repository "/tmp"
-    (is (= (local-variable-path akw htsgwsfc (date-time 2010 11 5 6))
-           (URI. "file:/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc")))))
+(def example-repository (make-local-repository))
+(def example-time (date-time 2011 12 1 6))
 
-(deftest test-variable-path
-  (is (= (str *repository* "/akw/htsgwsfc/2010/11/05/060000Z.nc")
-         (variable-path akw htsgwsfc "2010-11-05T06:00:00Z")))
-  (is (= (str *repository* "/akw/htsgwsfc/2010/11/05/060000Z.nc")
-         (variable-path akw htsgwsfc (date-time 2010 11 5 6))))
-  (with-repository "/tmp"
-    (is (= "/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc"
-           (variable-path akw htsgwsfc (date-time 2010 11 5 6)))))
-  (with-repository "s3n://burningswell/netcdf"
-    (is (= "s3n://burningswell/netcdf/akw/htsgwsfc/2010/11/05/060000Z.nc"
-           (variable-path akw htsgwsfc (date-time 2010 11 5 6))))))
+(deftest test-make-local-repository
+  (let [repository (make-local-repository *local-root*)]
+    (is (instance? netcdf.repository.LocalRepository repository))
+    (is (= *local-root* (:url repository)))))
 
-(deftest test-with-repository
-  (is (= (str (System/getenv "HOME") File/separator ".netcdf") *repository*))
-  (with-repository "/tmp" (is (= "/tmp" *repository*))))
+(deftest test-make-dods-repository
+  (let [repository (make-dods-repository)]
+    (is (instance? netcdf.repository.DodsRepository repository))))
+
+(deftest test-local-dataset-url
+  (is (= (str (:url example-repository) "/nww3/htsgwsfc/2011/12/01/060000Z.nc")
+         (local-dataset-url nww3 htsgwsfc example-time (:url example-repository)))))
+
+(deftest test-dataset-url
+  (with-repository (make-dods-repository)
+    (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
+      (is (string? url))
+      (is (= (:dods (first (dods/find-datasets-by-url-and-reference-time (:dods nww3) example-reference-time))) url))))
+  (with-repository (make-local-repository)
+    (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
+      (is (string? url))
+      (is (= (str *local-root* File/separator (variable-fragment nww3 htsgwsfc example-reference-time)) url)))))
+
+(deftest test-open-grid
+  (with-repository (make-local-repository)
+    (let [grid (open-grid nww3 htsgwsfc example-reference-time)]
+      (is (instance? GeoGrid grid))
+      (is (= (:name htsgwsfc) (.getName grid)))
+      (is (= example-reference-time (first (grid/valid-times grid))))))
+  (with-repository (make-dods-repository)
+    (let [grid (open-grid nww3 htsgwsfc example-reference-time)]
+      (is (instance? GeoGrid grid))
+      (is (= (:name htsgwsfc) (.getName grid)))
+      (is (= example-reference-time (first (grid/valid-times grid)))))))
+
+(deftest test-reference-times
+  (with-repository (make-dods-repository)
+    (let [reference-times (reference-times nww3)]
+      (is (not (empty? reference-times)))
+      (is (every? #(instance? DateTime %1) reference-times))))
+  (with-repository (make-local-repository)
+    (let [reference-times (reference-times nww3)]
+      (is (not (empty? reference-times)))
+      (is (every? #(instance? DateTime %1) reference-times)))))
