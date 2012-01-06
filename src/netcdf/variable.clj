@@ -1,6 +1,7 @@
 (ns netcdf.variable
   (:import java.io.File)
-  (:require [netcdf.geo-grid :as grid])
+  (:require [netcdf.dods :as dods]
+            [netcdf.geo-grid :as grid])
   (:use [clj-time.core :only (now interval)]
         [clojure.string :only (join)]
         [netcdf.dataset :only (copy-dataset find-geo-grid open-grid-dataset)]
@@ -40,26 +41,27 @@
        (swap! *variables* assoc (keyword (:name ~name#)) ~name#))))
 
 (defn download-variable [model variable & {:keys [reference-time root-dir]}]
-  (if-let [reference-time (to-date-time (or reference-time (last (reference-times model))))]
+  (if-let [reference-time (to-date-time (or reference-time (last (dods/reference-times model))))]
     (let [start-time (now)
-          filename (local-dataset-url model variable reference-time root-dir)]
-      (info (str "           Model: " (:description model) " (" (:name model) ")"))
+          source (dods-dataset-url model variable reference-time)
+          target (local-dataset-url model variable reference-time root-dir)]
       (info (str "        Variable: " (:description variable) " (" (:name variable) ")"))
+      (info (str "           Model: " (:description model) " (" (:name model) ")"))
       (info (str "  Reference Time: " (unparse (formatters :rfc822) reference-time)))
-      (info (str "     NetCDF File: " filename))
-      (if-not (> (file-size filename) 0)
-        (let [dataset (dods-dataset-url model variable reference-time)
-              _ (copy-dataset (:dods dataset) filename [(:name variable)])
+      (info (str "        DODS Url: " source))
+      (info (str "     NetCDF File: " (str "file:" target)))
+      (if-not (> (file-size target) 0)
+        (let [_ (copy-dataset source target [(:name variable)])
               interval (interval start-time (now))]
-          (info (str "            Size: " (human-file-size filename)))
-          (info (str "   Transfer Rate: " (human-transfer-rate (file-size filename) interval)))
+          (info (str "            Size: " (human-file-size target)))
+          (info (str "   Transfer Rate: " (human-transfer-rate (file-size target) interval)))
           (info (str "        Duration: " (human-duration interval))))
-        (info (str "            Size: " (human-file-size filename))))
+        (info (str "            Size: " (human-file-size target))))
       (assoc variable
         :interval (interval start-time (now))
-        :filename filename
+        :filename target
         :reference-time reference-time
-        :size (file-size filename)))))
+        :size (file-size target)))))
 
 (defn read-variable [model variable pois & [reference-time]]
   (if-let [reference-time (to-date-time (or reference-time (last (reference-times model))))]
