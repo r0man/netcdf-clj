@@ -8,6 +8,7 @@
         [clojure.string :only (join replace)]
         [clojure.data.zip.xml :only (xml-> text)]
         clj-time.format
+        clojure.tools.logging
         netcdf.time
         netcdf.utils))
 
@@ -31,6 +32,7 @@
 (def parse-inventory
   (memoize
    (fn [url]
+     (debug (str "Loading DODS inventory " url " ..."))
      (let [extract (fn [node selector] (first (xml-> node selector text)))]
        (for [dataset (xml-> (feed-to-zip (inventory-url url)) :dataset)]
          {:name (extract dataset :name)
