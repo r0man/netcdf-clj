@@ -84,8 +84,9 @@
   (-dataset-url [repository model variable reference-time]
     (dods-dataset-url model variable reference-time))
   (-open-grid [repository model variable reference-time]
-    (if-let [dataset (-dataset-url repository model variable reference-time)]
-      (grid/open-geo-grid dataset (:name variable))))
+    (grid/open-geo-grid
+     (-dataset-url repository model variable reference-time)
+     (:name variable)))
   (-reference-times [repository model]
     (dods/reference-times model)))
 
