@@ -28,6 +28,8 @@
 (def example-reference-time
   (minus (date-time (year (now)) (month (now)) (day (now))) (days 2)))
 
+(download-forecast example-forecast :reference-time example-reference-time)
+
 (def example-product
   "nww3")
 
@@ -42,5 +44,3 @@
 
 (def example-geo-grid
   (dataset/find-geo-grid example-dataset (:name htsgwsfc)))
-
-(download-forecast example-forecast :reference-time example-reference-time)

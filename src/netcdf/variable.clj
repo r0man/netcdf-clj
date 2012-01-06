@@ -3,6 +3,7 @@
   (:require [netcdf.dods :as dods]
             [netcdf.geo-grid :as grid])
   (:use [clj-time.core :only (now interval)]
+        [clojure.string :only (join)]
         [netcdf.dataset :only (copy-dataset find-geo-grid open-grid-dataset)]
         clj-time.format
         clojure.tools.logging
@@ -91,9 +92,10 @@
 (defn variable-fragment
   "Returns the variable fragment."
   [model variable reference-time]
-  (str (:name model) File/separator
-       (:name variable) File/separator
-       (date-time-path-fragment reference-time) ".nc"))
+  (->> [(:name model)
+        (:name variable)
+        (str (date-time-path-fragment reference-time) ".nc")]
+       (join File/separator)))
 
 (defvariable dirpwsfc
   "Primary wave direction"

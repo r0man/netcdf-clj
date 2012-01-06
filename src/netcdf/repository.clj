@@ -8,16 +8,14 @@
 (def ^:dynamic *repository*
   (str (System/getenv "HOME") File/separator ".netcdf"))
 
-(defn variable-directory
-  "Returns the path to the NetCDF directory."
-  [variable reference-time]
-  (join File/separator [*repository* (:name variable) (date-time-path-fragment reference-time)]))
-
 (defn variable-path
   "Returns the path to the NetCDF variable file."
   [model variable & [reference-time]]
-  (str (variable-directory variable (or reference-time (latest-reference-time model)))
-       File/separator (:name model) ".nc"))
+  (->> [*repository*
+        (:name model)
+        (:name variable)
+        (str (date-time-path-fragment reference-time) ".nc")]
+       (join File/separator)))
 
 (defn local-variable-path
   "Returns the path to the local NetCDF variable file."
@@ -29,10 +27,3 @@
   [directory & body]
   `(binding [*repository* ~directory]
      ~@body))
-
-
-;; (with-repository :local
-;;   (read-forecast surf-forecast mundaka "2012-01-01"))
-
-;; (with-repository :dods
-;;   (read-forecast surf-forecast mundaka "2012-01-01"))

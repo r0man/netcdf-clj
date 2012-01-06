@@ -9,29 +9,21 @@
 
 (deftest test-local-variable-path
   (is (= (local-variable-path akw htsgwsfc (date-time 2010 11 5 6))
-         (URI. (str "file:" *repository* "/htsgwsfc/2010/11/05/060000Z/akw.nc"))))
+         (URI. (str "file:" *repository* "/akw/htsgwsfc/2010/11/05/060000Z.nc"))))
   (with-repository "/tmp"
     (is (= (local-variable-path akw htsgwsfc (date-time 2010 11 5 6))
-           (URI. "file:/tmp/htsgwsfc/2010/11/05/060000Z/akw.nc")))))
-
-(deftest test-variable-directory
-  (is (= (str *repository* "/htsgwsfc/2011/08/06/000000Z")
-         (variable-directory {:name "htsgwsfc"} "2011-08-06")))
-  (is (= (str *repository* "/htsgwsfc/2011/08/06/000000Z")
-         (variable-directory {:name "htsgwsfc"} (to-date-time "2011-08-06"))))
-  (is (= (str *repository* "/htsgwsfc/2011/08/06/120000Z")
-         (variable-directory {:name "htsgwsfc"} (to-date-time "2011-08-06T12:00:00Z")))))
+           (URI. "file:/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc")))))
 
 (deftest test-variable-path
-  (is (= (str *repository* "/htsgwsfc/2010/11/05/060000Z/akw.nc")
+  (is (= (str *repository* "/akw/htsgwsfc/2010/11/05/060000Z.nc")
          (variable-path akw htsgwsfc "2010-11-05T06:00:00Z")))
-  (is (= (str *repository* "/htsgwsfc/2010/11/05/060000Z/akw.nc")
+  (is (= (str *repository* "/akw/htsgwsfc/2010/11/05/060000Z.nc")
          (variable-path akw htsgwsfc (date-time 2010 11 5 6))))
   (with-repository "/tmp"
-    (is (= "/tmp/htsgwsfc/2010/11/05/060000Z/akw.nc"
+    (is (= "/tmp/akw/htsgwsfc/2010/11/05/060000Z.nc"
            (variable-path akw htsgwsfc (date-time 2010 11 5 6)))))
   (with-repository "s3n://burningswell/netcdf"
-    (is (= "s3n://burningswell/netcdf/htsgwsfc/2010/11/05/060000Z/akw.nc"
+    (is (= "s3n://burningswell/netcdf/akw/htsgwsfc/2010/11/05/060000Z.nc"
            (variable-path akw htsgwsfc (date-time 2010 11 5 6))))))
 
 (deftest test-with-repository

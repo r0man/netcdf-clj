@@ -21,8 +21,6 @@
   (let [reference-times (reference-times example-repository nww3)]
     reference-times))
 
-;; (deftest test-variable-url
-;;   (is (= (str (:url example-repository) "/nww3/htsgwsfc/2011/12/01/060000Z.nc")
-;;          (variable-url example-repository nww3 htsgwsfc example-time)))
-;;   (let [repository (make-dods-repository)]
-;;     (variable-url example-repository nww3 htsgwsfc example-time)))
+(deftest test-local-variable-url
+  (is (= (str (:url example-repository) "/nww3/htsgwsfc/2011/12/01/060000Z.nc")
+         (local-variable-url example-repository nww3 htsgwsfc example-time))))

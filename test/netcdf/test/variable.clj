@@ -2,7 +2,6 @@
   (:import org.joda.time.DateTime org.joda.time.Interval)
   (:use [clj-time.core :only (date-time)]
         [netcdf.dataset :only (copy-dataset)]
-        ;; [netcdf.dods :exclude (latest-reference-time)]
         clojure.test
         netcdf.test.helper
         netcdf.repository
