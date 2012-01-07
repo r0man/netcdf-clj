@@ -77,13 +77,11 @@
          (fn [measure [variable models]]
            (if-let [model (find-model-by-location models location)]
              (if-let [grid (cached-open-gird model variable reference-time)]
-               (with-meta
-                 (assoc measure (keyword (:name variable)) (interpolate-location grid location :valid-time valid-time))
-                 {:model model
-                  :location location
-                  :reference-time reference-time
-                  :unit (:unit variable)
-                  :valid-time valid-time})
+               (assoc measure
+                 (keyword (:name variable)) (interpolate-location grid location :valid-time valid-time)
+                 :location location
+                 :reference-time reference-time
+                 :valid-time valid-time)
                measure)
              measure))
          {} (:variables forecast))))))
@@ -93,7 +91,7 @@
   [forecast location & {:keys [reference-time]}]
   (let [variables (sort-by :name (keys (:variables forecast)))]
     (doseq [forecast (read-forecast forecast location :reference-time reference-time)
-            :let [location (:location (meta forecast))]]
+            :let [location (:location forecast)]]
       (->>  (map #(get forecast (keyword (:name %1))) variables)
             (concat [(latitude location) (longitude location)] [])
             (join "\t")
