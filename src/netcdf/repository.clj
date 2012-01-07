@@ -116,11 +116,11 @@
        (str (if root (str root File/separator)))))
 
 (defn dist-cache-reference-times
-  "Returns the dataset url in the distributed cache."
+  "Returns the url of the dataset in the distributed cache."
   [repository model]
   (->> (netcdf-file-seq (:url repository))
        (map parse-dist-cache-path)
-       (remove #(= model (:model %1)))
+       (filter #(= (:name model) (:model %1)))
        (map :reference-time)))
 
 (defrecord DistCacheRepository [url]
