@@ -42,6 +42,10 @@
   "Returns the variables of the forecast."
   [forecast] (set (keys (:variables forecast))))
 
+(defn variable-keywords
+  "Returns the variable names of forecast as keywords."
+  [forecast ] (map (comp keyword :name) (keys (:variables forecast))))
+
 (defn models-for-variable [forecast variable]
   (get (:variables forecast) variable))
 

@@ -1,6 +1,6 @@
 (ns netcdf.test.forecast
   (:use [netcdf.model :only (global-forecast-system-models model? wave-watch-models)]
-        [netcdf.variable :only (htsgwsfc tmpsfc)]
+        [netcdf.variable :only (htsgwsfc tmpsfc wave-watch-variables)]
         clojure.test
         netcdf.forecast
         netcdf.test.helper))
@@ -25,3 +25,8 @@
 (deftest test-forecast-variables
   (is (contains? (forecast-variables example-forecast) htsgwsfc))
   (is (contains? (forecast-variables example-forecast) tmpsfc)))
+
+(deftest test-variable-keywords
+  (let [keywords (variable-keywords wave-watch-3)]
+    (is (every? keyword? keywords))
+    (is (= (sort (map (comp keyword :name) wave-watch-variables)) (sort keywords)))))
