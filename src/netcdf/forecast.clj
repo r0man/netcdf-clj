@@ -44,7 +44,20 @@
 
 (defn variable-keywords
   "Returns the variable names of forecast as keywords."
-  [forecast ] (map (comp keyword :name) (keys (:variables forecast))))
+  [forecast ] (map (comp keyword :name) (forecast-variables forecast)))
+
+(defn average-weather
+  "Calculates the average weather."
+  [forecast weather-seq]
+  (let [variables (variable-keywords forecast)]
+    (for [[valid-time weather] (group-by :valid-time weather-seq)]
+      (reduce
+       (fn [avg-weather variable]
+         (let [values (remove #(or (nil? %1) (Double/isNaN %1)) (map variable weather))]
+           (if (empty? values)
+             avg-weather
+             (assoc avg-weather variable (/ (reduce + values) (count values))))))
+       {:valid-time valid-time} variables))))
 
 (defn models-for-variable [forecast variable]
   (get (:variables forecast) variable))
