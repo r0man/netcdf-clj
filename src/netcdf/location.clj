@@ -160,7 +160,7 @@
   "Resolves a location by parsing or geocoding."
   [location]
   (or (parse-location location :junk-allowed true)
-      (if-let [location (:location (first (geocoder/geocode location)))]
+      (if-let [location (:location (first (geocoder/geocode-address location)))]
         (make-location (:latitude location) (:longitude location)))))
 
 (defn to-point [location]

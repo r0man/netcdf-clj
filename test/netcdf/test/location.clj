@@ -219,7 +219,7 @@
   (let [location (resolve-location "43.4073349,-2.6983217")]
     (is (= 43.4073349 (latitude location)))
     (is (= -2.6983217 (longitude location))))
-  (with-redefs [geocoder/geocode (constantly [{:location {:latitude 43.4073349 :longitude -2.6983217}}])]
+  (with-redefs [geocoder/geocode-address (constantly [{:location {:latitude 43.4073349 :longitude -2.6983217}}])]
     (let [location (resolve-location "mundaka")]
       (is (= 43.4073349 (latitude location)))
       (is (= -2.6983217 (longitude location))))))
