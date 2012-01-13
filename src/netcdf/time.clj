@@ -8,9 +8,6 @@
 (def ^:dynamic *date-formatter* :date)
 (def ^:dynamic *time-formatter* :date-time-no-ms)
 
-(defn- parse-date-time [string formatter]
-  (parse (formatters formatter) string))
-
 (defprotocol TimeProtocol
   (to-ms [this] "Returns the time in milliseconds."))
 
@@ -23,9 +20,9 @@
   (to-ms
     [string]
     (try
-      (to-ms (parse-date-time string *time-formatter*))
-      (catch IllegalArgumentException _
-        (to-ms (parse-date-time string *date-formatter*))))))
+      (to-ms (parse string))
+      (catch Exception _
+        nil))))
 
 (extend-type java.util.Calendar
   TimeProtocol
