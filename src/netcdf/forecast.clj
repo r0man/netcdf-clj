@@ -71,7 +71,8 @@
   "Returns the latest reference-time of the models in the forecast."
   [forecast]
   (->> (forecast-models forecast)
-       (map model/latest-reference-time )
+       (map model/reference-times)
+       (apply clojure.set/intersection)
        (apply sorted-set)
        (last)))
 
