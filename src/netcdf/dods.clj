@@ -63,7 +63,7 @@
 
 (defn reference-times
   "Returns the sorted reference times in the inventory for the model."
-  [model] (sort (map :reference-time (find-datasets-by-url (:dods model)))))
+  [model] (apply sorted-set (map :reference-time (find-datasets-by-url (:dods model)))))
 
 (defn find-reference-time
   "Returns the closest reference time of the model to time."

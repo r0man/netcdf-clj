@@ -66,7 +66,7 @@
                (first reference-times))))
       (testing "one minute before last inventory"
         (is (= (find-reference-time nww3 (minus (last reference-times) (minutes 1)))
-               (nth reference-times (- (count reference-times) 2)))))
+               (nth (seq reference-times) (- (count reference-times) 2)))))
       (testing "with time string"
         (is (= (find-reference-time nww3 (format-time (first reference-times)))
                (first reference-times)))))))
