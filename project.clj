@@ -3,7 +3,7 @@
   :url "http://github.com/r0man/netcdf-clj"
   :aot [netcdf.forecast
         netcdf.main]
-  :dependencies [[clj-time "0.3.3"]
+  :dependencies [[clj-time "0.3.4"]
                  [commandline-clj "0.1.0-SNAPSHOT"]
                  [commons-httpclient "3.1"]
                  [digest "1.3.0"]
