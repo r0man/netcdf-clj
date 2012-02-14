@@ -1,8 +1,9 @@
 (ns netcdf.dataset
-  (:import (java.io File)
-           (ucar.nc2 FileWriter NetcdfFile)
+  (:import (ucar.nc2 FileWriter NetcdfFile)
            (ucar.nc2.dt.grid GridAsPointDataset GridDataset)
-           (ucar.nc2.dataset NetcdfDataset))
+           java.io.File
+           ucar.nc2.dataset.NetcdfDataset
+           ucar.nc2.geotiff.GeotiffWriter)
   (:require [netcdf.geo-grid :as geogrid])
   (:use [clojure.java.io :only (delete-file)]
         netcdf.time
@@ -96,3 +97,10 @@
   [^GridDataset dataset filename & {:keys [printer valid-time z-coord separator]}]
   (with-out-writer filename
     (dump-dataset dataset :printer printer :valid-time valid-time :z-coord z-coord)))
+
+(defn write-geotiff
+  "Write the `grid` in `dataset` as a GeoTiff image to `filename`."
+  [^GridDataset dataset grid filename]
+  (let [grid (find-geo-grid dataset grid)]
+    (doto (GeotiffWriter. filename)
+      (.writeGrid dataset grid (.readVolumeData grid 0) true))))

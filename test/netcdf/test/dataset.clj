@@ -77,3 +77,9 @@
 (deftest test-write-dataset
   (with-open-grid-dataset [dataset example-path]
     (write-dataset dataset "/tmp/netcdf.csv")))
+
+(deftest test-write-geotiff
+  (with-open-grid-dataset [dataset example-path]
+    (let [filename "/tmp/test-write-geotiff.tif"]
+      (write-geotiff dataset example-variable filename)
+      (is (.exists (java.io.File. filename))))))
