@@ -18,3 +18,4 @@ netcdf.jar
 /logs/test.log
 /logs/debug.log
 /.lein-deps-sum
+/target
