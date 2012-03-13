@@ -1,4 +1,4 @@
-(defproject netcdf-clj/netcdf-clj "0.0.3-SNAPSHOT"
+(defproject netcdf-clj/netcdf-clj "0.0.4-SNAPSHOT"
   :description "Clojure NetCDF Library."
   :url "http://github.com/r0man/netcdf-clj"
   :dependencies [[clj-time "0.3.7"]
