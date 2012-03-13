@@ -1,9 +1,7 @@
-(defproject netcdf-clj "0.0.3-SNAPSHOT"
+(defproject netcdf-clj/netcdf-clj "0.0.3-SNAPSHOT"
   :description "Clojure NetCDF Library."
   :url "http://github.com/r0man/netcdf-clj"
-  :aot [netcdf.forecast
-        netcdf.main]
-  :dependencies [[clj-time "0.3.4"]
+  :dependencies [[clj-time "0.3.7"]
                  [commandline-clj "0.1.0-SNAPSHOT"]
                  [commons-httpclient "3.1"]
                  [digest "1.3.0"]
@@ -19,7 +17,8 @@
                  [org.clojure/tools.cli "0.1.0"]
                  [org.clojure/tools.logging "0.2.3"]
                  [org.slf4j/slf4j-log4j12 "1.5.6"]]
-  :repositories {"mbari" "http://mbari-maven-repository.googlecode.com/svn/repository"}
   :run-aliases {:forecast netcdf.main/-main}
-  ;; :warn-on-reflection true
-  )
+  :profiles {:dev {:resource-paths ["test-resources"]}}
+  :repositories {"mbari" "http://mbari-maven-repository.googlecode.com/svn/repository"}
+  :aot [netcdf.forecast netcdf.main]
+  :min-lein-version "2.0.0")
