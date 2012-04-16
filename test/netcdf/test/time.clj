@@ -74,11 +74,11 @@
 
 (deftest test-parse-fragment
   (are [fragment expected]
-    (is (= expected (parse-fragment fragment))))
-  "2012/01/04/000000Z" (date-time 2012 1 4)
-  "/home/roman/.netcdf/gfs-hd/tmpsfc/2012/01/04/000000Z.nc" (date-time 2012 1 4)
-  "http://example.com/netcdf/gfs-hd/tmpsfc/2012/01/04/000000Z.nc" (date-time 2012 1 4)
-  "s3://my-bucket/netcdf/gfs-hd/tmpsfc/2012/01/04/000000Z.nc" (date-time 2012 1 4))
+    (is (= expected (parse-fragment fragment)))
+    "2012/01/04/000000Z" (date-time 2012 1 4)
+    "/home/roman/.netcdf/gfs-hd/tmpsfc/2012/01/04/000000Z.nc" (date-time 2012 1 4)
+    "http://example.com/netcdf/gfs-hd/tmpsfc/2012/01/04/000000Z.nc" (date-time 2012 1 4)
+    "s3://my-bucket/netcdf/gfs-hd/tmpsfc/2012/01/04/000000Z.nc" (date-time 2012 1 4)))
 
 (deftest test-sql-timestamp
   (testing "nil"
