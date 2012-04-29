@@ -9,7 +9,7 @@
                  [edu.ucar/opendap "4.2.32"]
                  [geocoder-clj "0.0.6-SNAPSHOT"]
                  [google-maps "0.5.1-SNAPSHOT"]
-                 [incanter/incanter-core "1.2.4"]
+                 [incanter/incanter-core "1.3.0"]
                  [javax.media.jai/com.springsource.javax.media.jai.core "1.1.3"]
                  [org.clojure/clojure "1.4.0"]
                  [org.clojure/data.json "0.1.2"]
