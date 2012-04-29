@@ -30,16 +30,15 @@
        (println (join "\t" [(:name model) (dods/latest-reference-time model) (:description model)]))))
 
 (defn -main [& args]
-  (with-commandline [args]
+  (with-commandline [[command arguments] args]
     [[h help "Print this help."]
      [d directory "The DIRECTORY where the NetCDF files are stored (default: ~/.netcdf)." :string "DIRECTORY"]
      [r reference-time "The reference TIME of the model." :time "TIME"]]
-    (let [[command arguments] arguments]
-      (cond
-       (= "download" command)
-       (download reference-time directory)
-       (= "dump" command)
-       (dump reference-time)
-       (= "reference-times" command)
-       (print-reference-times)
-       :else (print-help)))))
+    (cond
+     (= "download" command)
+     (download reference-time directory)
+     (= "dump" command)
+     (dump reference-time)
+     (= "reference-times" command)
+     (print-reference-times)
+     :else (print-help))))
