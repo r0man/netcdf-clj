@@ -15,7 +15,7 @@
                  [org.clojure/data.json "0.1.2"]
                  [org.clojure/data.zip "0.1.0"]
                  [org.clojure/tools.logging "0.2.3"]
-                 [org.slf4j/slf4j-log4j12 "1.6.1"]]
+                 [org.slf4j/slf4j-log4j12 "1.6.4"]]
   :run-aliases {:forecast netcdf.main/-main}
   :profiles {:dev {:resource-paths ["test-resources"]}}
   :repositories {"geotoolkit" "http://maven.geotoolkit.org"
