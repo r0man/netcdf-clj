@@ -99,8 +99,13 @@
     (dump-dataset dataset :printer printer :valid-time valid-time :z-coord z-coord)))
 
 (defn write-geotiff
-  "Write the `grid` in `dataset` as a GeoTiff image to `filename`."
-  [^GridDataset dataset grid filename]
-  (let [grid (find-geo-grid dataset grid)]
-    (doto (GeotiffWriter. filename)
-      (.writeGrid dataset grid (.readVolumeData grid 0) true))))
+  "Write the `grid` at `time` in `dataset` as a GeoTiff image to
+  `filename`."
+  [^GridDataset dataset grid time filename & [grey-scale]]
+  (let [geo-grid (find-geo-grid dataset grid)]
+    (assert geo-grid (str "Couldn't find grid:" grid))
+    (let [t-index (geogrid/time-index geo-grid time)]
+      (assert geo-grid (str "Couldn't find time index:" time))
+      (doto (GeotiffWriter. filename)
+        (.writeGrid dataset geo-grid (.readVolumeData geo-grid t-index) (boolean grey-scale)))
+      filename)))

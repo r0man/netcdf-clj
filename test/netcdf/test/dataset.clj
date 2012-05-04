@@ -80,6 +80,7 @@
 
 (deftest test-write-geotiff
   (with-open-grid-dataset [dataset example-path]
-    (let [filename "/tmp/test-write-geotiff.tif"]
-      (write-geotiff dataset example-variable filename)
+    (let [filename "/tmp/test-write-geotiff.tif"
+          time (first (valid-times dataset))]
+      (is (= filename (write-geotiff dataset example-variable time filename false)))
       (is (.exists (java.io.File. filename))))))
