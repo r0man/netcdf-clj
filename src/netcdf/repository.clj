@@ -5,7 +5,6 @@
             [netcdf.geo-grid :as grid])
   (:use [clojure.string :only (join replace)]
         [clj-time.format :only (parse)]
-        netcdf.file
         netcdf.time
         netcdf.utils))
 

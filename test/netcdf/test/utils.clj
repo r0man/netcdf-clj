@@ -2,6 +2,8 @@
   (:import java.io.File)
   (:use [clj-time.core :only (now in-secs interval date-time year month day hour)]
         clojure.test
+        netcdf.repository
+        netcdf.test.helper
         netcdf.utils))
 
 (deftest test-file-exists?
@@ -39,3 +41,14 @@
     (is (= (meta (with-meta+ obj m)) m))
     (is (= (meta (with-meta+ (with-meta obj {:key "x"}) m)) m))
     (is (= (meta (with-meta+ (with-meta obj m) {:key2 "val2"})) (merge m {:key2 "val2"})))))
+
+(deftest test-netcdf-file?
+  (is (netcdf-file? example-path))
+  (is (netcdf-file? (File. example-path)))
+  (is (not (netcdf-file? "test")))
+  (is (not (netcdf-file? (File. "test")))))
+
+(deftest test-netcdf-file-seq
+  (let [files (netcdf-file-seq *repository*)]
+    (is (every? #(instance? File %1) files))
+    (is (every? netcdf-file? files))))
