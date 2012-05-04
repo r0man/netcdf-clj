@@ -48,7 +48,7 @@
   (->> (netcdf-file-seq (:url repository))
        (map parse-fragment)
        (remove nil?)
-       (sort)))
+       (apply sorted-set)))
 
 (defn local-dataset-url
   "Returns the variable url in the local repository."
@@ -121,7 +121,8 @@
   (->> (netcdf-file-seq (:url repository))
        (map parse-dist-cache-path)
        (filter #(= (:name model) (:model %1)))
-       (map :reference-time)))
+       (map :reference-time)
+       (apply sorted-set)))
 
 (defrecord DistCacheRepository [url]
   IRepository

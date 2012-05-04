@@ -58,16 +58,19 @@
 (deftest test-reference-times
   (with-repository (make-dods-repository)
     (let [reference-times (reference-times nww3)]
+      (is (set? reference-times))
       (is (not (empty? reference-times)))
       (is (every? #(instance? DateTime %1) reference-times))))
   (with-repository (make-local-repository)
     (let [reference-times (reference-times nww3)]
+      (is (set? reference-times))
       (is (not (empty? reference-times)))
       (is (every? #(instance? DateTime %1) reference-times))))
   (with-repository (make-dist-cache-repository "/tmp/distcache")
     (.mkdirs (File. (:url *repository*)))
     (spit (dataset-url nww3 htsgwsfc example-reference-time) 0)
     (let [reference-times (reference-times nww3)]
+      (is (set? reference-times))
       (is (not (empty? reference-times)))
       (is (every? #(instance? DateTime %1) reference-times))
       (is (contains? (set reference-times) example-reference-time)))))
