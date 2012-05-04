@@ -9,7 +9,8 @@
         clj-time.format
         clojure.tools.logging
         netcdf.repository
-        netcdf.utils))
+        netcdf.utils
+        netcdf.time))
 
 (def ^:dynamic *variables* (atom {}))
 

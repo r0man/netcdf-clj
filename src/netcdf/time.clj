@@ -1,8 +1,10 @@
 (ns netcdf.time
+  (:import java.io.File)
   (:import org.joda.time.DateTime org.joda.time.IllegalFieldValueException)
-  (:use [clj-time.core :only (date-time)]
+  (:use [clj-time.core :only (now in-secs interval date-time year month day hour)]
         [clj-time.coerce :only (to-date-time)]
-        [clj-time.format :only (formatters parse unparse)]))
+        [clj-time.format :only (formatters parse unparse)]
+        [clojure.string :only (join)]))
 
 (def ^:dynamic *date-formatter* :date)
 (def ^:dynamic *time-formatter* :date-time-no-ms)
@@ -33,3 +35,15 @@
        (Integer/parseInt minute)
        (Integer/parseInt second))
       (catch IllegalFieldValueException _ nil))))
+
+(defn date-path-fragment [time]
+  (if-let [time (to-date-time time)]
+    (format (join File/separator ["%4d" "%02d" "%02d"]) (year time) (month time) (day time))))
+
+(defn time-path-fragment [time]
+  (if-let [time (to-date-time time)]
+    (unparse (formatters :basic-time-no-ms) time)))
+
+(defn date-time-path-fragment [time]
+  (if time
+    (str (date-path-fragment time) File/separator (time-path-fragment time))))

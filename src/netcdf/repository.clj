@@ -5,8 +5,8 @@
             [netcdf.geo-grid :as grid])
   (:use [clojure.string :only (join replace)]
         [clj-time.format :only (parse)]
-        [netcdf.time :only (format-time parse-fragment)]
         netcdf.file
+        netcdf.time
         netcdf.utils))
 
 (def ^:dynamic *repository* nil)
