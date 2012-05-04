@@ -3,13 +3,13 @@
            incanter.Matrix
            org.joda.time.DateTime
            ucar.nc2.dt.GridCoordSystem)
-  (:use [clj-time.format :only (formatters parse unparse)]
+  (:use [clj-time.coerce :only (to-date to-date-time to-long)]
+        [clj-time.format :only (formatters parse unparse)]
         [clojure.string :only (join)]
         [incanter.core :only (matrix ncol nrow sel view)]
         netcdf.coord-system
         netcdf.interpolation
         netcdf.location
-        netcdf.time
         netcdf.utils))
 
 (defn coord-system
@@ -135,7 +135,7 @@
   (join
    (or separator "\t")
    [(:variable record)
-    (to-ms (:valid-time record))
+    (to-long (:valid-time record))
     (latitude (:location record))
     (longitude (:location record))
     (:value record)]))

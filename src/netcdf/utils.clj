@@ -2,10 +2,10 @@
   (:import java.io.File)
   (:use [clojure.string :only (join)]
         [clojure.java.io :only (reader writer)]
+        [clj-time.coerce :only (to-date-time)]
         [clj-time.core :only (now in-secs interval date-time year month day hour)]
         [clj-time.format :only (formatters unparse)]
-        [digest :only (digest)]
-        netcdf.time))
+        [digest :only (digest)]))
 
 (defn date-path-fragment [time]
   (if-let [time (to-date-time time)]

@@ -2,9 +2,10 @@
   (:refer-clojure :exclude (replace))
   (:require [netcdf.geo-grid :as grid])
   (:import (java.awt Color Dimension))
-  (:use incanter.core
+  (:use [clj-time.coerce :only (to-date-time)]
         [clojure.string :only (replace)]
-        [netcdf.time :only (format-time to-date-time)]
+        [netcdf.time :only (format-time)]
+        incanter.core
         netcdf.image))
 
 (defn- meta-data-filename

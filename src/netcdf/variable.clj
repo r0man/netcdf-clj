@@ -2,14 +2,14 @@
   (:import java.io.File)
   (:require [netcdf.dods :as dods]
             [netcdf.geo-grid :as grid])
-  (:use [clj-time.core :only (now interval)]
+  (:use [clj-time.coerce :only (to-date-time)]
+        [clj-time.core :only (now interval)]
         [clojure.string :only (join)]
         [netcdf.dataset :only (copy-dataset find-geo-grid open-grid-dataset)]
         clj-time.format
         clojure.tools.logging
         netcdf.repository
-        netcdf.utils
-        netcdf.time))
+        netcdf.utils))
 
 (def ^:dynamic *variables* (atom {}))
 

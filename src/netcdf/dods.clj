@@ -4,12 +4,12 @@
   (:require [clojure.xml :as xml]
             [clojure.zip :as zip]
             [netcdf.dataset :as dataset])
-  (:use [clj-time.core :only (after? date-time day hour month year now)]
+  (:use [clj-time.coerce :only (to-date-time)]
+        [clj-time.core :only (after? date-time day hour month year now)]
         [clojure.string :only (join replace)]
         [clojure.data.zip.xml :only (xml-> text)]
         clj-time.format
         clojure.tools.logging
-        netcdf.time
         netcdf.utils))
 
 (defn- feed-to-zip [uri]

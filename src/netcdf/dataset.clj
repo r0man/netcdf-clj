@@ -5,8 +5,8 @@
            ucar.nc2.dataset.NetcdfDataset
            ucar.nc2.geotiff.GeotiffWriter)
   (:require [netcdf.geo-grid :as geogrid])
-  (:use [clojure.java.io :only (delete-file)]
-        netcdf.time
+  (:use [clj-time.coerce :only (to-date-time)]
+        [clojure.java.io :only (delete-file)]
         netcdf.utils))
 
 (defn- write-dimensions [^NetcdfDataset dataset ^FileWriter writer]
