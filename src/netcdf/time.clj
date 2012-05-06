@@ -2,7 +2,7 @@
   (:import java.io.File)
   (:import org.joda.time.DateTime org.joda.time.IllegalFieldValueException)
   (:use [clj-time.core :only (now in-secs interval date-time year month day hour)]
-        [clj-time.coerce :only (to-date-time)]
+        [clj-time.coerce :only (to-date to-date-time)]
         [clj-time.format :only (formatters parse unparse)]
         [clojure.string :only (join)]))
 
@@ -37,7 +37,7 @@
       (catch IllegalFieldValueException _ nil))))
 
 (defn date-path-fragment [time]
-  (if-let [time (to-date-time time)]
+  (if-let [time (to-date-time (to-date time))]
     (format (join File/separator ["%4d" "%02d" "%02d"]) (year time) (month time) (day time))))
 
 (defn time-path-fragment [time]
