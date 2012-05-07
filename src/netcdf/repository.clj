@@ -63,9 +63,9 @@
   (-dataset-url [repository model variable reference-time]
     (local-dataset-url model variable reference-time (:url repository)))
   (-open-grid [repository model variable reference-time]
-    (grid/open-geo-grid
-     (-dataset-url repository model variable reference-time)
-     (:name variable)))
+    (let [url (-dataset-url repository model variable reference-time)]
+      (if (file-exists? url)
+        (grid/open-geo-grid url (:name variable)))))
   (-reference-times [repository model]
     (local-reference-times repository model)))
 
@@ -85,9 +85,11 @@
   (-dataset-url [repository model variable reference-time]
     (dods-dataset-url model variable reference-time))
   (-open-grid [repository model variable reference-time]
-    (grid/open-geo-grid
-     (-dataset-url repository model variable reference-time)
-     (:name variable)))
+    (try
+      (grid/open-geo-grid
+       (-dataset-url repository model variable reference-time)
+       (:name variable))
+      (catch java.io.FileNotFoundException _ nil)))
   (-reference-times [repository model]
     (dods/reference-times model)))
 
@@ -128,9 +130,9 @@
   (-dataset-url [repository model variable reference-time]
     (dist-cache-dataset-url model variable reference-time (:url repository)))
   (-open-grid [repository model variable reference-time]
-    (grid/open-geo-grid
-     (-dataset-url repository model variable reference-time)
-     (:name variable)))
+    (let [url (-dataset-url repository model variable reference-time)]
+      (if (file-exists? url)
+        (grid/open-geo-grid url (:name variable)))))
   (-reference-times [repository model]
     (dist-cache-reference-times repository model)))
 

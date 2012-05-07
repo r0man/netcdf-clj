@@ -43,13 +43,17 @@
       (is (= (str "/var/lib/hadoop/mapred/nww3$htsgwsfc$"
                   (format-time example-reference-time) ".nc") url)))))
 
+;; (open-grid nww3 htsgwsfc example-reference-time)
+
 (deftest test-open-grid
   (with-repository (make-local-repository)
+    (is (nil? (open-grid nww3 htsgwsfc (date-time 2000 1 1))))
     (let [grid (open-grid nww3 htsgwsfc example-reference-time)]
       (is (instance? GeoGrid grid))
       (is (= (:name htsgwsfc) (.getName grid)))
       (is (= example-reference-time (first (grid/valid-times grid))))))
   (with-repository (make-dods-repository)
+    (is (nil? (open-grid nww3 htsgwsfc (date-time 2000 1 1))))
     (let [grid (open-grid nww3 htsgwsfc example-reference-time)]
       (is (instance? GeoGrid grid))
       (is (= (:name htsgwsfc) (.getName grid)))
