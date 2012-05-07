@@ -20,4 +20,6 @@
   :profiles {:dev {:resource-paths ["test-resources"]}}
   :repositories {"geotoolkit" "http://maven.geotoolkit.org"
                  "springsource" "http://repository.springsource.com/maven/bundles/external"}
-  :aot [netcdf.forecast netcdf.main])
+  ;; :aot [netcdf.forecast
+  ;;       netcdf.main]
+  )
