@@ -1,4 +1,5 @@
 (ns netcdf.test.forecast
+  (:import org.joda.time.DateTime)
   (:use [netcdf.model :only (global-forecast-system-models model? wave-watch-models)]
         [netcdf.variable :only (htsgwsfc tmpsfc wave-watch-variables)]
         clojure.test
@@ -17,6 +18,10 @@
     (is (= "example-forecast" (:name forecast)))
     (is (= "The example forecast." (:description forecast)))))
 
+(deftest test-latest-reference-time
+  (let [time (latest-reference-time surf-forecast)]
+    (is (or (nil? time) (instance? DateTime time)))))
+
 (deftest test-forecast-models
   (let [models (forecast-models example-forecast)]
     (is (= 3 (count models)))
@@ -30,3 +35,7 @@
   (let [keywords (variable-keywords wave-watch-3)]
     (is (every? keyword? keywords))
     (is (= (sort (map (comp keyword :name) wave-watch-variables)) (sort keywords)))))
+
+;; (deftest test-valid-times
+;;   (let [valid-times (valid-times surf-forecast)]
+;;     (prn valid-times)))
