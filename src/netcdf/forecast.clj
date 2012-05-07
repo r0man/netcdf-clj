@@ -18,7 +18,7 @@
 
 (defrecord Forecast [name description variables])
 
-(def cached-open-gird (memoize open-grid))
+(def cached-open-grid (memoize open-grid))
 
 (defn make-forecast
   "Make a new forecast."
@@ -83,7 +83,7 @@
     (->>
      (for [variable (keys (:variables forecast))
            model (models-for-variable forecast variable)]
-       (grid/valid-times (cached-open-gird model variable reference-time)))
+       (grid/valid-times (cached-open-grid model variable reference-time)))
      (map set)
      (apply clojure.set/union))))
 
@@ -94,7 +94,7 @@
         (reduce
          (fn [measure [variable models]]
            (if-let [model (find-model-by-location models location)]
-             (if-let [grid (cached-open-gird model variable reference-time)]
+             (if-let [grid (cached-open-grid model variable reference-time)]
                (assoc measure
                  (keyword (:name variable)) (interpolate-location grid location :valid-time valid-time)
                  :location location
