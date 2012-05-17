@@ -1,6 +1,7 @@
 (ns netcdf.forecast
   (:gen-class)
-  (:require [netcdf.geo-grid :as grid]
+  (:require [netcdf.dods :as dods]
+            [netcdf.geo-grid :as grid]
             [netcdf.model :as model]
             [netcdf.variable :as variable])
   (:use [clojure.data.json :ony (read-json)]
@@ -62,19 +63,20 @@
 (defn models-for-variable [forecast variable]
   (get (:variables forecast) variable))
 
-(defn download-forecast [forecast & {:keys [directory reference-time]}]
-  (doseq [variable (keys (:variables forecast))
-          model (get (:variables forecast) variable)]
-    (download-variable model variable :reference-time reference-time :root-dir directory)))
-
 (defn latest-reference-time
   "Returns the latest reference-time of the models in the forecast."
   [forecast]
   (->> (forecast-models forecast)
-       (map model/reference-times)
+       (map dods/reference-times)
        (apply clojure.set/intersection)
        (apply sorted-set)
        (last)))
+
+(defn download-forecast [forecast & {:keys [directory reference-time]}]
+  (let [reference-time (or reference-time (latest-reference-time forecast))]
+    (doseq [variable (keys (:variables forecast))
+            model (get (:variables forecast) variable)]
+      (download-variable model variable :reference-time reference-time :root-dir directory))))
 
 (defn valid-times
   "Returns the valid times of the forecast."
