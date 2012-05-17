@@ -121,10 +121,11 @@
   (if location
     (if-let [locations (sample-locations (coord-system grid) location :width width :height height)]
       (let [values (read-locations grid locations :valid-time valid-time :z-coord z-coord)]
-        (interpolate
-         (matrix (map #(if (Double/isNaN %) 0 %) values) 2)
-         (fraction-of-longitudes (coord-system grid) (first locations) location)
-         (fraction-of-latitudes (coord-system grid) (first locations) location))))))
+        (if-not (every? #(Double/isNaN %1) values)
+          (interpolate
+           (matrix (map #(if (Double/isNaN %) 0 %) values) 2)
+           (fraction-of-longitudes (coord-system grid) (first locations) location)
+           (fraction-of-latitudes (coord-system grid) (first locations) location)))))))
 
 (defn interpolate-locations [^GeoGrid grid locations & options]
   (map #(apply interpolate-location grid % options) locations))
