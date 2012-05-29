@@ -51,7 +51,7 @@
     (is (= "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 6.0))" (str writer))))
   (let [writer (java.io.StringWriter.)]
     (print-matrix (matrix [[1 2 3] [4 5 Double/NaN]]) writer)
-    (is (= "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 #netcdf/nan :double))" (str writer)))))
+    (is (= "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 nil))" (str writer)))))
 
 (deftest test-print-dup-matrix
   (let [writer (java.io.StringWriter.)]
@@ -71,4 +71,4 @@
   (is (= (matrix [[1 2 3] [4 5 6]])
          (read-string "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 6.0))")))
   (is (= (matrix [[1 2 3] [4 5 Double/NaN]])
-         (read-string "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 #netcdf/nan :double))"))))
+         (read-string "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 nil))"))))
