@@ -89,3 +89,18 @@
 
 (defn save-as-image [matrix filename]
   (write-buffered-image (make-image matrix) filename))
+
+(defn print-matrix
+  "Print the incanter.Matrix `m` to the writer `w`."
+  [^incanter.Matrix m, ^java.io.Writer w]
+  (.write w "#matrix \"")
+  (.write w (pr-str (to-list m)))
+  (.write w "\"")  )
+
+(defmethod print-method incanter.Matrix
+  [^incanter.Matrix m, ^java.io.Writer w]
+  (print-matrix m w))
+
+(defmethod print-dup incanter.Matrix
+  [^incanter.Matrix m, ^java.io.Writer w]
+  (print-matrix m w))
