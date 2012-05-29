@@ -158,3 +158,10 @@
   `(with-open [dataset# (. GridDataset open (str ~uri))]
      (let [~name (.findGridDatatype dataset# ~variable)]
        ~@body)))
+
+;; (def htsgwsfc (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/2012/05/28/000000Z.nc" "htsgwsfc"))
+;; (spit "/tmp/matrix" (prn-str (read-matrix htsgwsfc)))
+;; (read-string (slurp "/tmp/matrix"))
+;; (read-string (slurp "/tmp/matrix"))
+;; (spit "/tmp/matrix" (prn-str [1 2 3]))
+;; (read-string (slurp "/tmp/matrix"))

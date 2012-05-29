@@ -82,24 +82,62 @@
 (defn save-as-image [matrix filename]
   (write-buffered-image (make-image matrix) filename))
 
+(defn print-double
+  "Print the java.lang.Double `m` to the writer `w` with Double/isNaN handling."
+  [^Double d, ^java.io.Writer w]
+  (if (Double/isNaN d)
+    (.write w "#netcdf/nan :double")
+    (.write w (str d))))
+
+(defn print-float
+  "Print the java.lang.Float `m` to the writer `w` with Float/isNaN handling."
+  [^Float d, ^java.io.Writer w]
+  (if (Float/isNaN d)
+    (.write w "#netcdf/nan :float")
+    (.write w (str d))))
+
 (defn print-matrix
   "Print the incanter.Matrix `m` to the writer `w`."
   [^incanter.Matrix m, ^java.io.Writer w]
   (.write w "#incanter/matrix ")
-  (.write w (pr-str (to-list m))))
+  (.write w (pr-str (map #(seq %) (seq (.toArray m))))))
 
-(defmethod print-method incanter.Matrix
-  [^incanter.Matrix m, ^java.io.Writer w]
-  (print-matrix m w))
+(defmethod print-dup Double
+  [^Double d, ^java.io.Writer w]
+  (print-double d w))
+
+(defmethod print-dup Float
+  [^Float d, ^java.io.Writer w]
+  (print-float d w))
 
 (defmethod print-dup incanter.Matrix
   [^incanter.Matrix m, ^java.io.Writer w]
   (print-matrix m w))
 
+(defmethod print-method Double
+  [^Double d, ^java.io.Writer w]
+  (print-double d w))
+
+(defmethod print-method Float
+  [^Float d, ^java.io.Writer w]
+  (print-float d w))
+
+(defmethod print-method incanter.Matrix
+  [^incanter.Matrix m, ^java.io.Writer w]
+  (print-matrix m w))
+
+(defn read-not-a-number
+  [type]
+  {:pre [(keyword? type)]}
+  (condp = type
+    :double Double/NaN
+    :float Float/NaN))
+
 (defn read-incanter-matrix
   "Read a incanter.Matrix from `form`, which must be a list."
   [form]
   {:pre [(list? form)]}
-  (matrix form))
+  (matrix (map (fn [row] (map #(if (nil? %1) Double/NaN %1) row)) form)))
 
 (alter-var-root #'default-data-readers assoc 'incanter/matrix read-incanter-matrix)
+(alter-var-root #'default-data-readers assoc 'netcdf/nan read-not-a-number)
