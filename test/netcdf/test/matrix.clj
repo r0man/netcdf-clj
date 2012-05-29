@@ -2,11 +2,10 @@
   (:import java.awt.image.BufferedImage java.io.File)
   (:require [netcdf.geo-grid :as grid])
   (:use clojure.test
-        ;; incanter.core
-        ;; netcdf.image
+        incanter.core
+        netcdf.image
         netcdf.matrix
-        ;; netcdf.test.helper
-        ))
+        netcdf.test.helper))
 
 (refer-private 'netcdf.matrix)
 
@@ -18,14 +17,6 @@
     "matrix" "matrix.meta"
     "matrix.json" "matrix.meta"
     "/tmp/matrix.json" "/tmp/matrix.meta"))
-
-;; (deftest test-read-matrix
-;;   (let [filename "/tmp/test-read-matrix"]
-;;     (write-matrix example-matrix filename)
-;;     (let [matrix (read-matrix filename)]
-;;       (is (instance? incanter.Matrix matrix))
-;;       (is (= (.rows matrix) (.rows example-matrix)))
-;;       (is (= (.columns matrix) (.columns example-matrix))))))
 
 (deftest test-write-matrix
   (let [filename "/tmp/test-write-matrix"]
@@ -57,14 +48,22 @@
 (deftest test-print-matrix
   (let [writer (java.io.StringWriter.)]
     (print-matrix (matrix [[1 2 3] [4 5 6]]) writer)
-    (is (= "#matrix \"((1.0 2.0 3.0) (4.0 5.0 6.0))\"" (str writer)))))
+    (is (= "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 6.0))" (str writer)))))
 
 (deftest test-print-dup-matrix
   (let [writer (java.io.StringWriter.)]
     (print-dup (matrix [[1 2 3] [4 5 6]]) writer)
-    (is (= "#matrix \"((1.0 2.0 3.0) (4.0 5.0 6.0))\"" (str writer)))))
+    (is (= "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 6.0))" (str writer)))))
 
 (deftest test-print-method-matrix
   (let [writer (java.io.StringWriter.)]
     (print-method (matrix [[1 2 3] [4 5 6]]) writer)
-    (is (= "#matrix \"((1.0 2.0 3.0) (4.0 5.0 6.0))\"" (str writer)))))
+    (is (= "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 6.0))" (str writer)))))
+
+(deftest test-read-incanter-matrix
+  (is (= (matrix [[1 2 3] [4 5 6]])
+         (read-incanter-matrix '((1.0 2.0 3.0) (4.0 5.0 6.0))))))
+
+(deftest test-read-string
+  (is (= (matrix [[1 2 3] [4 5 6]])
+         (read-string "#incanter/matrix ((1.0 2.0 3.0) (4.0 5.0 6.0))"))))

@@ -49,14 +49,6 @@
   "Read the matrix sequence from filename."
   [filename] (deserialize-seq (read-string (slurp filename))))
 
-(defn read-matrix
-  "Read the matrix from filename."
-  [filename]
-  (let [meta (read-meta-data (meta-data-filename filename))]
-    (with-meta
-      (matrix (read-seq filename) (:size (:longitude-axis meta)))
-      meta)))
-
 (defn value->color [^Double value]
   (cond
    (.isNaN value) Color/BLACK
@@ -93,9 +85,8 @@
 (defn print-matrix
   "Print the incanter.Matrix `m` to the writer `w`."
   [^incanter.Matrix m, ^java.io.Writer w]
-  (.write w "#matrix \"")
-  (.write w (pr-str (to-list m)))
-  (.write w "\"")  )
+  (.write w "#incanter/matrix ")
+  (.write w (pr-str (to-list m))))
 
 (defmethod print-method incanter.Matrix
   [^incanter.Matrix m, ^java.io.Writer w]
@@ -104,3 +95,11 @@
 (defmethod print-dup incanter.Matrix
   [^incanter.Matrix m, ^java.io.Writer w]
   (print-matrix m w))
+
+(defn read-incanter-matrix
+  "Read a incanter.Matrix from `form`, which must be a list."
+  [form]
+  {:pre [(list? form)]}
+  (matrix form))
+
+(alter-var-root #'default-data-readers assoc 'incanter/matrix read-incanter-matrix)
