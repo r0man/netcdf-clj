@@ -160,8 +160,10 @@
        ~@body)))
 
 ;; (def htsgwsfc (open-geo-grid "/home/roman/.netcdf/nww3/htsgwsfc/2012/05/28/000000Z.nc" "htsgwsfc"))
-;; (spit "/tmp/matrix" (prn-str (read-matrix htsgwsfc)))
-;; (read-string (slurp "/tmp/matrix"))
+;; (bean (projection (coord-system htsgwsfc)))
+;; (time (spit "/tmp/matrix" (prn-str (read-matrix htsgwsfc))))
+;; (time (do (read-string (slurp "/tmp/matrix"))
+;;           nil))
 ;; (read-string (slurp "/tmp/matrix"))
 ;; (spit "/tmp/matrix" (prn-str [1 2 3]))
 ;; (read-string (slurp "/tmp/matrix"))
