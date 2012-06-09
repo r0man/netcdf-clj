@@ -6,7 +6,7 @@
            ucar.nc2.geotiff.GeotiffWriter)
   (:require [netcdf.geo-grid :as geogrid])
   (:use [clj-time.coerce :only (to-date-time)]
-        [clojure.java.io :only (delete-file)]
+        [clojure.java.io :only (delete-file make-parents)]
         netcdf.utils))
 
 (defn- write-dimensions [^NetcdfDataset dataset ^FileWriter writer]
@@ -103,9 +103,14 @@
   `filename`."
   [^GridDataset dataset grid time filename & [grey-scale]]
   (let [geo-grid (find-geo-grid dataset grid)]
-    (assert geo-grid (str "Couldn't find grid:" grid))
+    (assert geo-grid (format "Couldn't find geo grid %s." grid))
     (let [t-index (geogrid/time-index geo-grid time)]
-      (assert geo-grid (str "Couldn't find time index:" time))
-      (doto (GeotiffWriter. filename)
-        (.writeGrid dataset geo-grid (.readVolumeData geo-grid t-index) (boolean grey-scale)))
-      filename)))
+      (assert geo-grid (format "Couldn't find time index for %s." time))
+      (make-parents filename)
+      (with-open [writer (GeotiffWriter. filename)]
+        (.writeGrid writer dataset geo-grid (.readVolumeData geo-grid t-index) (boolean grey-scale))
+        filename))))
+
+;; (with-open-grid-dataset [dataset "/home/roman/.netcdf/nww3/htsgwsfc/2012/06/01/060000Z.nc"]
+;;   (write-geotiff dataset "htsgwsfc" (first (valid-times dataset))
+;;                  "/home/roman/htsgwsfc.tif"))
