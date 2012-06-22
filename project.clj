@@ -2,7 +2,7 @@
   :description "Clojure NetCDF Library."
   :min-lein-version "2.0.0"
   :url "http://github.com/r0man/netcdf-clj"
-  :dependencies [[clj-time "0.4.2"]
+  :dependencies [[clj-time "0.4.3"]
                  [commandline-clj "0.1.2"]
                  [digest "1.3.0"]
                  [edu.ucar/netcdf "4.2.32" :exclusions [org.slf4j/slf4j-api]]
