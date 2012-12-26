@@ -4,8 +4,7 @@
             [netcdf.geo-grid :as grid]
             [netcdf.model :as model]
             [netcdf.variable :as variable])
-  (:use [clojure.data.json :ony (read-json)]
-        [clojure.java.io :only (reader)]
+  (:use [clojure.java.io :only (reader)]
         [clojure.string :only (join)]
         [netcdf.location :only (parse-location)]
         [netcdf.model :only (find-model-by-location global-forecast-system-models wave-watch-models)]
