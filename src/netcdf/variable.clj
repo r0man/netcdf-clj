@@ -46,7 +46,7 @@
     (let [start-time (now)
           source (dods-dataset-url model variable reference-time)
           target (local-dataset-url model variable reference-time root-dir)]
-      (infof "Downloading %s model %s ..." (:description variable) (:description model))
+      (infof "Downloading %s from %s ..." (:description variable) (:description model))
       (infof "  Model........... %s (%s)" (:description model) (:name model))
       (infof "  Variable........ %s (%s)" (:description variable) (:name variable))
       (infof "  Reference Time.. %s" (unparse (formatters :rfc822) reference-time))
