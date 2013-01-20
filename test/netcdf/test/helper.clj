@@ -22,6 +22,9 @@
 (def example-reference-time
   (minus (date-time (year (now)) (month (now)) (day (now))) (days 1)))
 
+(defonce example-variable
+  (download-variable nww3 htsgwsfc :reference-time example-reference-time))
+
 (def example-variable
   "htsgwsfc")
 
@@ -33,5 +36,3 @@
 
 (def example-geo-grid
   (dataset/find-geo-grid example-dataset (:name htsgwsfc)))
-
-(download-variable nww3 htsgwsfc)

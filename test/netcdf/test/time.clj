@@ -31,11 +31,9 @@
 
 (deftest test-parse-fragment
   (are [fragment expected]
-    (is (= expected (parse-fragment fragment)))
-    "2012/01/04/000000Z" (date-time 2012 1 4)
-    "/home/roman/.netcdf/gfs-hd/tmpsfc/2012/01/04/000000Z.nc" (date-time 2012 1 4)
-    "http://example.com/netcdf/gfs-hd/tmpsfc/2012/01/04/000000Z.nc" (date-time 2012 1 4)
-    "s3://my-bucket/netcdf/gfs-hd/tmpsfc/2012/01/04/000000Z.nc" (date-time 2012 1 4)))
+       (is (= expected (parse-fragment fragment)))
+       "/tmp/netcdf/2013/01/19/00/nww3/htsgwsfc/nww3-htsgwsfc-2013-01-19T00:00:00.000Z.nc"
+       (date-time 2013 1 19)))
 
 (deftest test-time-path-fragment
   (is (nil? (time-path-fragment nil)))

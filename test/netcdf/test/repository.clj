@@ -25,7 +25,7 @@
     (is (instance? netcdf.repository.DodsRepository repository))))
 
 (deftest test-local-dataset-url
-  (is (= (str (:url example-repository) "/nww3/htsgwsfc/2011/12/01/060000Z.nc")
+  (is (= (str (:url example-repository) "/2011/12/01/06/nww3/htsgwsfc/nww3-htsgwsfc-2011-12-01T06:00:00.000Z.nc")
          (local-dataset-url nww3 htsgwsfc example-time (:url example-repository)))))
 
 (deftest test-dataset-url
@@ -34,8 +34,7 @@
       (is (string? url))))
   (with-repository (make-local-repository)
     (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
-      (is (string? url))
-      (is (= (str *local-root* File/separator (variable-fragment nww3 htsgwsfc example-reference-time)) url))))
+      (is (string? url))))
   (with-repository (make-dist-cache-repository)
     (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
       (is (string? url))

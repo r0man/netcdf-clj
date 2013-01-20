@@ -4,6 +4,7 @@
   (:require [netcdf.dods :as dods]
             [netcdf.geo-grid :as grid])
   (:use [clojure.string :only (join replace)]
+        [clj-time.core :only (year month day hour)]
         [clj-time.format :only (parse)]
         netcdf.time
         netcdf.utils))
@@ -52,11 +53,17 @@
 (defn local-dataset-url
   "Returns the variable url in the local repository."
   [model variable reference-time & [root-dir]]
-  (->> [(or root-dir *local-root*)
-        (:name model)
-        (:name variable)
-        (str (date-time-path-fragment reference-time) ".nc")]
-       (join File/separator)))
+  (format "%s/%4d/%02d/%02d/%02d/%s/%s/%s-%s-%s.nc"
+          (or root-dir *local-root*)
+          (year reference-time)
+          (month reference-time)
+          (day reference-time)
+          (hour reference-time)
+          (:name model)
+          (:name variable)
+          (:name model)
+          (:name variable)
+          (str reference-time)))
 
 (defrecord LocalRepository [url]
   IRepository

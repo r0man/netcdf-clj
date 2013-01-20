@@ -1,6 +1,6 @@
 (ns netcdf.test.dods
   (:import java.util.Calendar java.io.File java.net.URI)
-  (:use [clj-time.core :only (date-time year minutes minus month day hour plus)]
+  (:use [clj-time.core :only (now date-time year minutes minus month day hour plus)]
         [netcdf.model :only (nww3)]
         clj-time.format
         clojure.test
