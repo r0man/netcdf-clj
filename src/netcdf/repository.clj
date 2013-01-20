@@ -5,7 +5,8 @@
             [netcdf.geo-grid :as grid])
   (:use [clojure.string :only (join replace)]
         [clj-time.core :only (year month day hour)]
-        [clj-time.format :only (parse)]
+        [clj-time.coerce :only (to-date)]
+        [clj-time.format :only (parse unparse formatters)]
         netcdf.time
         netcdf.utils))
 
@@ -63,7 +64,7 @@
           (:name variable)
           (:name model)
           (:name variable)
-          (str reference-time)))
+          (unparse (formatters :date-hour) reference-time)))
 
 (defrecord LocalRepository [url]
   IRepository

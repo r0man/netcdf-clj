@@ -25,7 +25,7 @@
     (is (instance? netcdf.repository.DodsRepository repository))))
 
 (deftest test-local-dataset-url
-  (is (= (str (:url example-repository) "/2011/12/01/06/nww3/htsgwsfc/nww3-htsgwsfc-2011-12-01T06:00:00.000Z.nc")
+  (is (= (str (:url example-repository) "/2011/12/01/06/nww3/htsgwsfc/nww3-htsgwsfc-2011-12-01T06.nc")
          (local-dataset-url nww3 htsgwsfc example-time (:url example-repository)))))
 
 (deftest test-dataset-url

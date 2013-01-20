@@ -23,8 +23,8 @@
 (defn parse-fragment
   "Parse the time from a path/url fragment."
   [path]
-  (if-let [matches (re-matches #".*(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z?.*)\.nc$" (str path))]
-    (to-date-time (second matches))))
+  (if-let [matches (re-matches #".*(\d{4}-\d{2}-\d{2}T\d{2})\.nc$" (str path))]
+    (parse (formatters :date-hour) (second matches))))
 
 (defn date-path-fragment [time]
   (if-let [time (to-date-time (str time))]

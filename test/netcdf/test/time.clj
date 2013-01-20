@@ -32,7 +32,7 @@
 (deftest test-parse-fragment
   (are [fragment expected]
        (is (= expected (parse-fragment fragment)))
-       "/tmp/netcdf/2013/01/19/00/nww3/htsgwsfc/nww3-htsgwsfc-2013-01-19T00:00:00.000Z.nc"
+       "/tmp/netcdf/2013/01/19/00/nww3/htsgwsfc/nww3-htsgwsfc-2013-01-19T00.nc"
        (date-time 2013 1 19)))
 
 (deftest test-time-path-fragment
