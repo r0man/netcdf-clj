@@ -8,78 +8,63 @@
         netcdf.test.helper
         netcdf.time))
 
-(deftest test-current-reference-time
-  (is (current-reference-time nww3)))
-
-(deftest test-datasets-by-url
+(deftest test-datasources
   (with-test-inventory
-    (is (= 2 (count (datasets-by-url "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"))))))
+    (let [sources (datasources nww3)]
+      (is (= 2 (count sources)))
+      (let [source (first sources)]
+        (is (= "/wave/nww3/nww320101030/nww320101030_00z" (:name source)))
+        (is (= "WAVE_nww3 Global wave model fcst from 00Z30oct2010, downloaded Oct 30 04:39 UTC" (:description source)))
+        (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.das" (:das source)))
+        (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.dds" (:dds source)))
+        (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z" (:dods source)))
+        (is (= (date-time 2010 10 30) (:reference-time source)))))))
 
-(deftest test-datasets-by-url-and-reference-time
+(deftest test-datasource
   (with-test-inventory
-    (let [datasets (datasets-by-url-and-reference-time "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3" (date-time 2010 10 30 0))]
-      (is (= 1 (count datasets)))
-      (let [dataset (first datasets)]
-        (is (= (:dods dataset) "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z"))
-        (is (= (date-time 2010 10 30) (:reference-time dataset)))))
-    (is (= (datasets-by-url-and-reference-time "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3" (date-time 2010 10 30 0))
-           (datasets-by-url-and-reference-time "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3" "2010-10-30T00:00:00Z")))))
-
-(deftest test-inventory
-  (is (= (inventory "test-resources/dods/wave/akw")
-         (inventory "test-resources/dods/wave/nww3")))
-  (let [datasets (inventory "test-resources/dods/wave/akw")]
-    (is (= 9 (count datasets)))
-    (let [dataset (first datasets)]
-      (is (= "/wave/akw/akw20101030/akw20101030_00z" (:name dataset)))
-      (is (= "WAVE_AKW Regional Alaska Waters wave model fcst from 00Z30oct2010, downloaded Oct 30 04:28 UTC" (:description dataset)))
-      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z.das" (:das dataset)))
-      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z.dds" (:dds dataset)))
-      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z" (:dods dataset)))
-      (is (= (date-time 2010 10 30) (:reference-time dataset))))))
-
-(deftest test-reference-time
-  (with-test-inventory
-    (let [reference-times (reference-times nww3)]
+    (let [source (datasource nww3 (date-time 2010 10 30))]
+      (is (= "/wave/nww3/nww320101030/nww320101030_00z" (:name source)))
+      (is (= "WAVE_nww3 Global wave model fcst from 00Z30oct2010, downloaded Oct 30 04:39 UTC" (:description source)))
+      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.das" (:das source)))
+      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.dds" (:dds source)))
+      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z" (:dods source)))
+      (is (= (date-time 2010 10 30) (:reference-time source))))
+    (let [times (reference-times nww3)]
       (testing "first in inventory"
-        (is (= (reference-time nww3 (first reference-times))
-               (first reference-times))))
+        (is (= (:reference-time (datasource nww3 (first times)))
+               (first times))))
       (testing "second in inventory"
-        (is (= (reference-time nww3 (second reference-times))
-               (second reference-times))))
+        (is (= (:reference-time (datasource nww3 (second times)))
+               (second times))))
       (testing "last in inventory"
-        (is (= (reference-time nww3 (last reference-times))
-               (last reference-times))))
+        (is (= (:reference-time (datasource nww3 (last times)))
+               (last times))))
       (testing "one minute after first inventory"
-        (is (= (reference-time nww3 (plus (first reference-times) (minutes 1)))
-               (first reference-times))))
+        (is (= (:reference-time (datasource nww3 (plus (first times) (minutes 1))))
+               (first times))))
       (testing "one minute after second inventory"
-        (is (= (reference-time nww3 (plus (second reference-times) (minutes 1)))
-               (second reference-times))))
+        (is (= (:reference-time (datasource nww3 (plus (second times) (minutes 1))))
+               (second times))))
       (testing "one minute after last inventory"
-        (is (= (reference-time nww3 (plus (last reference-times) (minutes 1)))
-               (last reference-times))))
+        (is (= (:reference-time (datasource nww3 (plus (last times) (minutes 1))))
+               (last times))))
       (testing "one minute before first inventory"
-        (is (nil? (reference-time nww3 (minus (first reference-times) (minutes 1))))))
+        (is (nil? (:reference-time (datasource nww3 (minus (first times) (minutes 1)))))))
       (testing "one minute before second inventory"
-        (is (= (reference-time nww3 (minus (second reference-times) (minutes 1)))
-               (first reference-times))))
+        (is (= (:reference-time (datasource nww3 (minus (second times) (minutes 1))))
+               (first times))))
       (testing "one minute before last inventory"
-        (is (= (reference-time nww3 (minus (last reference-times) (minutes 1)))
-               (nth (seq reference-times) (- (count reference-times) 2)))))
+        (is (= (:reference-time (datasource nww3 (minus (last times) (minutes 1))))
+               (nth (seq times) (- (count times) 2)))))
       (testing "with time string"
-        (is (= (reference-time nww3 (format-time (first reference-times)))
-               (first reference-times)))))))
+        (is (= (:reference-time (datasource nww3 (format-time (first times))))
+               (first times)))))))
 
-(deftest test-inventory-url
-  (are [url expected]
-    (is (= (inventory-url url) expected))
-    "http://nomads.ncep.noaa.gov:9090/dods/wave/akw" "http://nomads.ncep.noaa.gov:9090/dods/xml"
-    "file:/home/roman/workspace/netcdf-clj/test-resources/dods/wave/akw" "file:/home/roman/workspace/netcdf-clj/test-resources/dods/xml"))
-
-(deftest test-latest-reference-time
+(deftest test-reference-times
   (with-test-inventory
-    (is (= (latest-reference-time nww3) (date-time 2010 10 30 6)))))
+    (let [times (reference-times nww3)]
+      (is (= (date-time 2010 10 30) (first times)))
+      (is (= (date-time 2010 10 30 6) (last times))))))
 
 (deftest test-parse-inventory
   (let [datasets (parse-inventory "test-resources/dods/xml")]

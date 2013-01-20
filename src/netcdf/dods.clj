@@ -29,53 +29,31 @@
        (parse-integer hour))
       (catch org.joda.time.IllegalFieldValueException _ nil))))
 
-(def parse-inventory
-  (memoize
-   (fn [url]
-     (debug (str "Loading DODS inventory " url " ..."))
-     (let [extract (fn [node selector] (first (xml-> node selector text)))]
-       (for [dataset (xml-> (feed-to-zip (inventory-url url)) :dataset)]
-         {:name (extract dataset :name)
-          :description (extract dataset :description)
-          :das (extract dataset :das)
-          :dds (extract dataset :dds)
-          :dods (extract dataset :dods)
-          :reference-time (parse-reference-time (extract dataset :dods))})))))
+(defn parse-inventory [url]
+  (debug (str "Loading DODS inventory " url " ..."))
+  (let [extract (fn [node selector] (first (xml-> node selector text)))]
+    (for [dataset (xml-> (feed-to-zip (inventory-url url)) :dataset)]
+      {:name (extract dataset :name)
+       :description (extract dataset :description)
+       :das (extract dataset :das)
+       :dds (extract dataset :dds)
+       :dods (extract dataset :dods)
+       :reference-time (parse-reference-time (extract dataset :dods))})))
 
-(defn inventory
-  "Returns the dataset inventory at `url`."
-  [url] (parse-inventory (inventory-url url)))
+(defn datasources
+  "Returns the datasources of `model`."
+  [model]
+  (let [url (:dods model)]
+    (->> (filter #(and (:dods %) (.startsWith (:dods %) url))
+                 (parse-inventory (inventory-url url)))
+         (sort-by :reference-time))))
 
-(defn datasets-by-url
-  "Returns all datasets matching the url."
-  [url]
-  (sort-by :reference-time
-           (filter #(and (:dods %) (.startsWith (:dods %) url))
-                   (inventory url))))
-
-(defn datasets-by-url-and-reference-time
-  "Returns all datasets matching the url and reference time."
-  [url reference-time]
-  (let [reference-time (to-date-time reference-time)]
-    (sort-by :reference-time
-             (filter #(and (:dods %) (.startsWith (:dods %) url)
-                           (= (:reference-time %) reference-time))
-                     (inventory url)))))
+(defn datasource
+  "Returns the datasource of `model` at `reference-time`."
+  [model reference-time]
+  (let [time (to-date-time reference-time)]
+    (last (remove #(after? (:reference-time %) time) (datasources model)))))
 
 (defn reference-times
-  "Returns the sorted reference times in the inventory for the model."
-  [model] (apply sorted-set (map :reference-time (datasets-by-url (:dods model)))))
-
-(defn reference-time
-  "Returns the closest reference time of the model to time."
-  [model time]
-  (let [time (to-date-time time)]
-    (last (remove #(after? % time) (reference-times model)))))
-
-(defn current-reference-time
-  "Returns the current reference time of model."
-  [model] (reference-time model (now)))
-
-(defn latest-reference-time
-  "Returns the latest reference time of model."
-  [model] (last (reference-times model)))
+  "Returns the reference times of `model`."
+  [model] (map :reference-time (datasources model)))

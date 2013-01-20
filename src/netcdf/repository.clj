@@ -78,7 +78,7 @@
 (defn dods-dataset-url
   "Returns the DODS dataset url."
   [model variable reference-time]
-  (:dods (first (dods/datasets-by-url-and-reference-time (:dods model) reference-time))))
+  (:dods (dods/datasource model reference-time)))
 
 (defrecord DodsRepository []
   IRepository
@@ -91,7 +91,7 @@
        (:name variable))
       (catch java.io.FileNotFoundException _ nil)))
   (-reference-times [repository model]
-    (dods/reference-times model)))
+    (map :reference-time (dods/datasources model))))
 
 (defn make-dods-repository
   "Make a DODS repository."

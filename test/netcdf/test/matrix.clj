@@ -3,7 +3,6 @@
   (:require [netcdf.geo-grid :as grid])
   (:use clojure.test
         incanter.core
-        netcdf.image
         netcdf.matrix
         netcdf.test.helper))
 
@@ -32,18 +31,6 @@
   (let [filename "/tmp/test-write-meta-data"]
     (is (= (write-meta-data example-matrix filename) filename))
     (is (.exists (File. filename)))))
-
-(deftest test-make-image
-  (let [matrix (make-image example-matrix)]
-    (is (instance? BufferedImage matrix))))
-
-(deftest test-render-image
-  (let [image (make-buffered-image (ncol example-matrix) (nrow example-matrix))]
-    (is (= (render-image example-matrix image) image))))
-
-(deftest test-save-as-image
-  (let [image (save-as-image example-matrix "/tmp/test-save-as-image.png")]
-    (is (instance? BufferedImage image))))
 
 (deftest test-print-matrix
   (let [writer (java.io.StringWriter.)]

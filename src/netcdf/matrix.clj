@@ -5,8 +5,7 @@
   (:use [clj-time.coerce :only (to-date-time)]
         [clojure.string :only (replace)]
         [netcdf.time :only (format-time)]
-        incanter.core
-        netcdf.image))
+        incanter.core))
 
 (defn- meta-data-filename
   "Returns the filename that contains the matrix meta data."
@@ -74,13 +73,6 @@
                 color (value->color value)]]
     (.setRGB image col row (.getRGB color)))
   image)
-
-(defn make-image [matrix]
-  (let [image (make-buffered-image (ncol matrix) (nrow matrix))]
-    (render-image matrix image)))
-
-(defn save-as-image [matrix filename]
-  (write-buffered-image (make-image matrix) filename))
 
 (defn print-double
   "Print the java.lang.Double `m` to the writer `w` with Double/isNaN handling."

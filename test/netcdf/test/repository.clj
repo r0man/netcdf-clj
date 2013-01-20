@@ -31,8 +31,7 @@
 (deftest test-dataset-url
   (with-repository (make-dods-repository)
     (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
-      (is (string? url))
-      (is (= (:dods (first (dods/datasets-by-url-and-reference-time (:dods nww3) example-reference-time))) url))))
+      (is (string? url))))
   (with-repository (make-local-repository)
     (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
       (is (string? url))
@@ -42,8 +41,6 @@
       (is (string? url))
       (is (= (str "/var/lib/hadoop/mapred/nww3$htsgwsfc$"
                   (format-time example-reference-time) ".nc") url)))))
-
-;; (open-grid nww3 htsgwsfc example-reference-time)
 
 (deftest test-open-grid
   (with-repository (make-local-repository)
@@ -62,7 +59,6 @@
 (deftest test-reference-times
   (with-repository (make-dods-repository)
     (let [reference-times (reference-times nww3)]
-      (is (set? reference-times))
       (is (not (empty? reference-times)))
       (is (every? #(instance? DateTime %1) reference-times))))
   (with-repository (make-local-repository)

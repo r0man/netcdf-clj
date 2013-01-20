@@ -1,9 +1,8 @@
 (ns netcdf.test.helper
   (:import java.io.File)
   (:use [clj-time.core :only (date-time day days hours minus month now year)]
-        [netcdf.forecast :only (defforecast download-forecast)]
         [netcdf.model :only (akw gfs-hd nww3)]
-        [netcdf.variable :only (htsgwsfc tmpsfc)]
+        [netcdf.variable :only (download-variable htsgwsfc tmpsfc)]
         [netcdf.repository :only (local-dataset-url)]
         clj-time.format
         clojure.tools.logging)
@@ -16,22 +15,12 @@
       (intern *ns* symbol var))))
 
 (defmacro with-test-inventory [& body]
-  `(let [inventory# (dods/inventory "test-resources/dods/wave/nww3")]
-     (with-redefs [dods/inventory (fn [url#] inventory#)]
+  `(let [inventory# (dods/parse-inventory "test-resources/dods/wave/nww3")]
+     (with-redefs [dods/parse-inventory (fn [url#] inventory#)]
        ~@body)))
-
-(defforecast example-forecast
-  "The example forecast."
-  htsgwsfc [akw nww3]
-  tmpsfc [gfs-hd])
 
 (def example-reference-time
   (minus (date-time (year (now)) (month (now)) (day (now))) (days 1)))
-
-(download-forecast example-forecast :reference-time example-reference-time)
-
-(def example-product
-  "nww3")
 
 (def example-variable
   "htsgwsfc")
@@ -44,3 +33,5 @@
 
 (def example-geo-grid
   (dataset/find-geo-grid example-dataset (:name htsgwsfc)))
+
+(download-variable nww3 htsgwsfc)

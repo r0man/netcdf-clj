@@ -1,0 +1,17 @@
+<configuration scan="true" scanPeriod="30 seconds">
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>
+    </encoder>
+    <file>logs/test.log</file>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>DEBUG</level>
+    </filter>
+  </appender>
+
+  <root level="DEBUG">
+    <appender-ref ref="FILE" />
+  </root>
+
+</configuration>

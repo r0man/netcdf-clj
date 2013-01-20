@@ -45,7 +45,7 @@
 
 (defn reference-times
   "Returns the reference times of model."
-  [model] (dods/reference-times model))
+  [model] (map :reference-time (dods/datasources model)))
 
 (defn latest-reference-time
   "Returns the latest reference time of model."
