@@ -1,11 +1,12 @@
 (ns netcdf.dods
   (:refer-clojure :exclude (replace))
   (:import java.util.Calendar java.io.File java.io.File java.net.URI)
-  (:require [clojure.xml :as xml]
+  (:require [clojure.core.memoize :refer [memo-ttl]]
+            [clojure.xml :as xml]
             [clojure.zip :as zip]
             [netcdf.dataset :as dataset])
   (:use [clj-time.coerce :only (to-date-time)]
-        [clj-time.core :only (after? date-time day hour month year now)]
+        [clj-time.core :only (after? date-time day hour month year now )]
         [clojure.string :only (join replace)]
         [clojure.data.zip.xml :only (xml-> text)]
         clj-time.format
@@ -29,8 +30,8 @@
        (parse-integer hour))
       (catch org.joda.time.IllegalFieldValueException _ nil))))
 
-(defn parse-inventory [url]
-  (debug (str "Loading DODS inventory " url " ..."))
+(defn parse-inventory* [url]
+  (debug (str "Parsing DODS inventory " url " ..."))
   (let [extract (fn [node selector] (first (xml-> node selector text)))]
     (for [dataset (xml-> (feed-to-zip (inventory-url url)) :dataset)]
       {:name (extract dataset :name)
@@ -39,6 +40,10 @@
        :dds (extract dataset :dds)
        :dods (extract dataset :dods)
        :reference-time (parse-reference-time (extract dataset :dods))})))
+
+(def parse-inventory
+  ;; Cache inventories for 15 minutes.
+  (memo-ttl parse-inventory* (* 15 60 1000)))
 
 (defn datasources
   "Returns the datasources of `model`."

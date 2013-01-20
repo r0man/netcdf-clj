@@ -12,6 +12,7 @@
                  [incanter/incanter-core "1.4.1"]
                  [javax.media.jai/com.springsource.javax.media.jai.core "1.1.3"]
                  [org.clojure/clojure "1.4.0"]
+                 [org.clojure/core.memoize "0.5.2"]
                  [org.clojure/data.zip "0.1.1"]
                  [org.clojure/tools.logging "0.2.3"]]
   :profiles {:dev {:dependencies [[ch.qos.logback/logback-classic "1.0.7"]

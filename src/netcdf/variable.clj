@@ -46,18 +46,19 @@
     (let [start-time (now)
           source (dods-dataset-url model variable reference-time)
           target (local-dataset-url model variable reference-time root-dir)]
-      (info (str "        Variable: " (:description variable) " (" (:name variable) ")"))
-      (info (str "           Model: " (:description model) " (" (:name model) ")"))
-      (info (str "  Reference Time: " (unparse (formatters :rfc822) reference-time)))
-      (info (str "        DODS Url: " source))
-      (info (str "     NetCDF File: " (str "file:" target)))
+      (infof "Downloading %s model %s ..." (:description variable) (:description model))
+      (infof "  Model........... %s (%s)" (:description model) (:name model))
+      (infof "  Variable........ %s (%s)" (:description variable) (:name variable))
+      (infof "  Reference Time.. %s" (unparse (formatters :rfc822) reference-time))
+      (infof "  DODS Url........ %s" source)
+      (infof "  File Name....... %s" target)
       (if-not (> (file-size target) 0)
         (let [_ (copy-dataset source target [(:name variable)])
               interval (interval start-time (now))]
-          (info (str "            Size: " (human-file-size target)))
-          (info (str "   Transfer Rate: " (human-transfer-rate (file-size target) interval)))
-          (info (str "        Duration: " (human-duration interval))))
-        (info (str "            Size: " (human-file-size target))))
+          (infof "  File Size....... %s" (human-file-size target))
+          (infof "  Transfer Rate... %s" (human-transfer-rate (file-size target) interval))
+          (infof "  Duration........ %s" (human-duration interval)))
+        (infof "  File Size....... %s" (human-file-size target)))
       (assoc variable
         :interval (interval start-time (now))
         :filename target
