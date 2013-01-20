@@ -78,7 +78,7 @@
 (defn dods-dataset-url
   "Returns the DODS dataset url."
   [model variable reference-time]
-  (:dods (first (dods/find-datasets-by-url-and-reference-time (:dods model) reference-time))))
+  (:dods (first (dods/datasets-by-url-and-reference-time (:dods model) reference-time))))
 
 (defrecord DodsRepository []
   IRepository

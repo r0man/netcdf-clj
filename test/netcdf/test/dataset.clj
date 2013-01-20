@@ -8,7 +8,7 @@
         netcdf.time))
 
 (def example-remote-url
-  (:dods (first (dods/find-datasets-by-url-and-reference-time (:dods nww3) example-reference-time))))
+  (:dods (first (dods/datasets-by-url-and-reference-time (:dods nww3) example-reference-time))))
 
 (deftest test-open-dataset
   (with-open [dataset (open-dataset example-path)]

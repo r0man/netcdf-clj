@@ -42,38 +42,39 @@
           :dods (extract dataset :dods)
           :reference-time (parse-reference-time (extract dataset :dods))})))))
 
-(defn find-inventory-by-url [url]
-  (parse-inventory (inventory-url url)))
+(defn inventory
+  "Returns the dataset inventory at `url`."
+  [url] (parse-inventory (inventory-url url)))
 
-(defn find-datasets-by-url
+(defn datasets-by-url
   "Returns all datasets matching the url."
   [url]
   (sort-by :reference-time
            (filter #(and (:dods %) (.startsWith (:dods %) url))
-                   (find-inventory-by-url url))))
+                   (inventory url))))
 
-(defn find-datasets-by-url-and-reference-time
+(defn datasets-by-url-and-reference-time
   "Returns all datasets matching the url and reference time."
   [url reference-time]
   (let [reference-time (to-date-time reference-time)]
     (sort-by :reference-time
              (filter #(and (:dods %) (.startsWith (:dods %) url)
                            (= (:reference-time %) reference-time))
-                     (find-inventory-by-url url)))))
+                     (inventory url)))))
 
 (defn reference-times
   "Returns the sorted reference times in the inventory for the model."
-  [model] (apply sorted-set (map :reference-time (find-datasets-by-url (:dods model)))))
+  [model] (apply sorted-set (map :reference-time (datasets-by-url (:dods model)))))
 
-(defn find-reference-time
+(defn reference-time
   "Returns the closest reference time of the model to time."
   [model time]
   (let [time (to-date-time time)]
     (last (remove #(after? % time) (reference-times model)))))
 
 (defn current-reference-time
-  "Returns the latest reference time of model."
-  [model] (find-reference-time model (now)))
+  "Returns the current reference time of model."
+  [model] (reference-time model (now)))
 
 (defn latest-reference-time
   "Returns the latest reference time of model."

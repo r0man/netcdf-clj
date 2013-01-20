@@ -16,8 +16,8 @@
       (intern *ns* symbol var))))
 
 (defmacro with-test-inventory [& body]
-  `(let [inventory# (dods/find-inventory-by-url "test-resources/dods/wave/nww3")]
-     (with-redefs [dods/find-inventory-by-url (fn [url#] inventory#)]
+  `(let [inventory# (dods/inventory "test-resources/dods/wave/nww3")]
+     (with-redefs [dods/inventory (fn [url#] inventory#)]
        ~@body)))
 
 (defforecast example-forecast

@@ -32,7 +32,7 @@
   (with-repository (make-dods-repository)
     (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
       (is (string? url))
-      (is (= (:dods (first (dods/find-datasets-by-url-and-reference-time (:dods nww3) example-reference-time))) url))))
+      (is (= (:dods (first (dods/datasets-by-url-and-reference-time (:dods nww3) example-reference-time))) url))))
   (with-repository (make-local-repository)
     (let [url (dataset-url nww3 htsgwsfc example-reference-time)]
       (is (string? url))
