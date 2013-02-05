@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+URL="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar"
+wget -c $URL
+mvn install:install-file -Dfile=netcdfAll-4.3.jar -DgroupId=edu.ucar -DartifactId=netcdf -Dversion=4.3.15 -Dpackaging=jar
