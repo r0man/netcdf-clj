@@ -4,7 +4,8 @@
            java.io.File
            ucar.nc2.dataset.NetcdfDataset
            ucar.nc2.geotiff.GeotiffWriter)
-  (:require [netcdf.geo-grid :as geogrid])
+  (:require [netcdf.geo-grid :as geogrid]
+            netcdf.time)
   (:use [clj-time.coerce :only (to-date-time)]
         [clojure.java.io :only (delete-file make-parents)]
         netcdf.utils))
@@ -111,6 +112,6 @@
         (.writeGrid writer dataset geo-grid (.readVolumeData geo-grid t-index) (boolean grey-scale))
         filename))))
 
-;; (with-open-grid-dataset [dataset "/home/roman/.netcdf/nww3/htsgwsfc/2012/06/01/060000Z.nc"]
+;; (with-open-grid-dataset [dataset "/home/roman/.netcdf/2013/02/14/06/nww3/htsgwsfc/nww3-htsgwsfc-2013-02-14T06.nc"]
 ;;   (write-geotiff dataset "htsgwsfc" (first (valid-times dataset))
-;;                  "/home/roman/htsgwsfc.tif"))
+;;                  "/home/roman/workspace/burningswell/nww3-htsgwsfc-2013-02-14T06.tif"))
