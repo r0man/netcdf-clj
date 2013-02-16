@@ -78,11 +78,11 @@
          (delete-file target true)
          (throw e)))))
 
-(defmacro with-open-dataset [[name uri] & body]
+(defmacro with-dataset [[name uri] & body]
   `(with-open [~name (open-dataset ~uri)]
      ~@body))
 
-(defmacro with-open-grid-dataset [[name uri] & body]
+(defmacro with-grid-dataset [[name uri] & body]
   `(with-open [~name (open-grid-dataset ~uri)]
      ~@body))
 
@@ -111,6 +111,11 @@
         (.writeGrid writer dataset geo-grid (.readVolumeData geo-grid t-index) (boolean grey-scale))
         filename))))
 
-;; (with-open-grid-dataset [dataset "/home/roman/.netcdf/nww3/htsgwsfc/2012/06/01/060000Z.nc"]
-;;   (write-geotiff dataset "htsgwsfc" (first (valid-times dataset))
-;;                  "/home/roman/htsgwsfc.tif"))
+;; (defn write-geotiffs
+;;   "Write the `variables of `dataset` to `directory`."
+;;   [^GridDataset dataset variables directory]
+;;   (let [grids (map (partial find-geo-grid dataset) variables)]
+;;     grids))
+
+;; (with-grid-dataset [dataset "nww3-htsgwsfc-2013-02-10T12.nc"]
+;;   (write-geotiff dataset "htsgwsfc" (first (valid-times dataset)) "nww3-htsgwsfc-2013-02-10T12.tif" true))

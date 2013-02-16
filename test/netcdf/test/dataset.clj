@@ -40,46 +40,46 @@
     (is (= (.exists (java.io.File. target)) true))))
 
 (deftest test-datatype-names
-  (with-open-grid-dataset [dataset example-path]
+  (with-grid-dataset [dataset example-path]
     (is (= (datatype-names dataset) ["htsgwsfc"]))))
 
 (deftest test-find-geo-grid
-  (with-open-grid-dataset [dataset example-path]
+  (with-grid-dataset [dataset example-path]
     (let [geo-grid (last (geo-grids dataset)) name (.getName geo-grid)]
       (is (= geo-grid (find-geo-grid dataset name))))))
 
 (deftest test-find-grid-datatype
-  (with-open-grid-dataset [dataset example-path]
+  (with-grid-dataset [dataset example-path]
     (let [datatype (find-grid-datatype dataset "htsgwsfc")]
       (is (instance? ucar.nc2.dt.GridDatatype datatype))
       (is (= "htsgwsfc" (.getName datatype))))))
 
 (deftest test-geo-grids
-  (with-open-grid-dataset [dataset example-path]
+  (with-grid-dataset [dataset example-path]
     (let [grids (geo-grids dataset)]
       (is (not (empty? grids)))
       (is (every? #(instance? GeoGrid %) grids)))))
 
 (deftest test-valid-times
-  (with-open-grid-dataset [dataset example-path]
+  (with-grid-dataset [dataset example-path]
     (let [valid-times (valid-times dataset)]
       (is (not (empty? valid-times)))
       (is (every? date-time? valid-times)))))
 
-(deftest test-with-open-dataset
-  (with-open-dataset [dataset example-path]
+(deftest test-with-dataset
+  (with-dataset [dataset example-path]
     (is (instance? ucar.nc2.dataset.NetcdfDataset dataset))))
 
-(deftest test-with-open-grid-dataset
-  (with-open-grid-dataset [dataset example-path]
+(deftest test-with-grid-dataset
+  (with-grid-dataset [dataset example-path]
     (is (instance? ucar.nc2.dt.grid.GridDataset dataset))))
 
 (deftest test-write-dataset
-  (with-open-grid-dataset [dataset example-path]
+  (with-grid-dataset [dataset example-path]
     (write-dataset dataset "/tmp/netcdf.csv")))
 
 (deftest test-write-geotiff
-  (with-open-grid-dataset [dataset example-path]
+  (with-grid-dataset [dataset example-path]
     (let [filename "/tmp/test-write-geotiff.tif"
           time (first (valid-times dataset))]
       (is (= filename (write-geotiff dataset example-variable time filename false)))
