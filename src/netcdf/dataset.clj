@@ -119,8 +119,9 @@
     (debugf "Writing %s GeoTIFF at %s to %s." variable time filename)
     (with-open [writer (GeotiffWriter. (str filename))]
       (let [data (.readVolumeData grid index)]
-        (.writeGrid writer dataset grid data (boolean grey-scale))
-        filename))))
+        (.writeGrid writer dataset grid data (boolean grey-scale))))
+    (save-md5-checksum filename)
+    filename))
 
 (defn write-geotiffs
   "Write the `variables of `dataset` to `directory`."
