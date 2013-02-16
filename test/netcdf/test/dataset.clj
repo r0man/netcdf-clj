@@ -1,8 +1,9 @@
 (ns netcdf.test.dataset
   (:import ucar.nc2.dt.grid.GeoGrid)
-  (:require [netcdf.dods :as dods])
-  (:use [netcdf.model :only (nww3)]
-        clojure.test
+  (:require [netcdf.dods :as dods]
+            [netcdf.model :refer [nww3]]
+            [clj-time.core :refer [date-time]])
+  (:use clojure.test
         netcdf.dataset
         netcdf.test.helper
         netcdf.time))
@@ -84,3 +85,13 @@
           time (first (valid-times dataset))]
       (is (= filename (write-geotiff dataset example-variable time filename false)))
       (is (.exists (java.io.File. filename))))))
+
+(deftest test-geotiff-filename
+  (is (= "htsgwsfc/2013/01/01/00.tif"
+         (geotiff-filename "htsgwsfc" (date-time 2013 1 1)))))
+
+(deftest test-write-geotiffs
+  (with-grid-dataset [dataset example-path]
+    (let [directory "/tmp/test-write-geotiffs"
+          filenames (write-geotiffs dataset [example-variable] directory)]
+      (is (= 61 (count filenames))))))

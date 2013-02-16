@@ -1,13 +1,16 @@
 (ns netcdf.dataset
-  (:import (ucar.nc2 FileWriter NetcdfFile)
-           (ucar.nc2.dt.grid GridAsPointDataset GridDataset)
+  (:import [ucar.nc2 FileWriter NetcdfFile]
+           [ucar.nc2.dt.grid GridAsPointDataset GridDataset]
            java.io.File
            ucar.nc2.dataset.NetcdfDataset
            ucar.nc2.geotiff.GeotiffWriter)
-  (:require [netcdf.geo-grid :as geogrid])
-  (:use [clj-time.coerce :only (to-date-time)]
-        [clojure.java.io :only (delete-file make-parents)]
-        netcdf.utils))
+  (:require [clj-time.core :refer [year month day hour]]
+            [clj-time.coerce :refer [to-date-time]]
+            [clj-time.format :refer [formatters unparse]]
+            [clojure.java.io :refer [delete-file file make-parents]]
+            [clojure.tools.logging :refer [debugf]]
+            [netcdf.geo-grid :as geogrid]
+            [netcdf.utils :refer [save-md5-checksum valid-md5-checksum? with-out-writer]]))
 
 (defn- write-dimensions [^NetcdfDataset dataset ^FileWriter writer]
   (doseq [dimension (.getDimensions dataset)]
@@ -98,24 +101,31 @@
   (with-out-writer filename
     (dump-dataset dataset :printer printer :valid-time valid-time :z-coord z-coord)))
 
+(defn geotiff-filename
+  "Returns the GeoTIFF filename for `variable` at `time`."
+  [variable time]
+  (format "%s/%4d/%02d/%02d/%02d.tif"
+          variable (year time) (month time) (day time) (hour time)))
+
 (defn write-geotiff
-  "Write the `grid` at `time` in `dataset` as a GeoTiff image to
+  "Write the `variable` at `time` in `dataset` as a GeoTiff image to
   `filename`."
-  [^GridDataset dataset grid time filename & [grey-scale]]
-  (let [geo-grid (find-geo-grid dataset grid)]
-    (assert geo-grid (format "Couldn't find geo grid %s." grid))
-    (let [t-index (geogrid/time-index geo-grid time)]
-      (assert geo-grid (format "Couldn't find time index for %s." time))
-      (make-parents filename)
-      (with-open [writer (GeotiffWriter. filename)]
-        (.writeGrid writer dataset geo-grid (.readVolumeData geo-grid t-index) (boolean grey-scale))
+  [^GridDataset dataset variable time filename & [grey-scale]]
+  (let [grid (find-geo-grid dataset variable)
+        index (geogrid/time-index grid time)]
+    (assert grid (format "Couldn't find geo grid %s." variable))
+    (assert index (format "Couldn't find time index for %s." time))
+    (make-parents filename)
+    (debugf "Writing %s GeoTIFF at %s to %s." variable time filename)
+    (with-open [writer (GeotiffWriter. (str filename))]
+      (let [data (.readVolumeData grid index)]
+        (.writeGrid writer dataset grid data (boolean grey-scale))
         filename))))
 
-;; (defn write-geotiffs
-;;   "Write the `variables of `dataset` to `directory`."
-;;   [^GridDataset dataset variables directory]
-;;   (let [grids (map (partial find-geo-grid dataset) variables)]
-;;     grids))
-
-;; (with-grid-dataset [dataset "nww3-htsgwsfc-2013-02-10T12.nc"]
-;;   (write-geotiff dataset "htsgwsfc" (first (valid-times dataset)) "nww3-htsgwsfc-2013-02-10T12.tif" true))
+(defn write-geotiffs
+  "Write the `variables of `dataset` to `directory`."
+  [^GridDataset dataset variables directory]
+  (.mkdirs (file directory))
+  (doall (for [variable variables, time (valid-times dataset)
+               :let [file (file directory (geotiff-filename variable time))]]
+           (write-geotiff dataset variable time file))))
