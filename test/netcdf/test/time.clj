@@ -39,3 +39,7 @@
   (is (nil? (time-path-fragment nil)))
   (is (= "143905Z" (time-path-fragment (date-time 2011 2 4 14 39 5))))
   (is (= "143905Z" (time-path-fragment "2010-02-14T14:39:05Z"))))
+
+(deftest test-rfc822-time
+  (is (= "Fri, 04 Feb 2011 14:39:05 +0000"
+         (rfc822-time (date-time 2011 2 4 14 39 5)))))

@@ -20,6 +20,10 @@
     (unparse (or formatter (formatters *time-formatter*))
              (to-date-time object))))
 
+(defn rfc822-time
+  "Returns the RFC822 formatted `time`."
+  [time] (unparse (formatters :rfc822) time))
+
 (defn parse-fragment
   "Parse the time from a path/url fragment."
   [path]
