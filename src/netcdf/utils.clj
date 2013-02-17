@@ -49,6 +49,14 @@
         (when-not junk-allowed
           (throw NumberFormatException e))))))
 
+(defmacro with-out-writer
+  "Opens a writer on f, binds it to *out*, and evalutes body.
+Anything printed within body will be written to f."
+  [f & body]
+  `(with-open [stream# (writer ~f)]
+     (binding [*out* stream#]
+       ~@body)))
+
 (defn md5-checksum
   "Returns the MD5 checksum of filename."
   [filename] (digest "md5" (file filename)))
@@ -73,11 +81,3 @@
   "Returns an object of the same type and value as obj, with map m
   merged onto the object's metadata."
   [obj m] (with-meta obj (merge (meta obj) m)))
-
-(defmacro with-out-writer
-  "Opens a writer on f, binds it to *out*, and evalutes body.
-Anything printed within body will be written to f."
-  [f & body]
-  `(with-open [stream# (writer ~f)]
-     (binding [*out* stream#]
-       ~@body)))
