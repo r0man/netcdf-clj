@@ -10,7 +10,8 @@
             [clojure.java.io :refer [delete-file file make-parents]]
             [clojure.tools.logging :refer [debugf]]
             [netcdf.geo-grid :as geogrid]
-            [netcdf.utils :refer [save-md5-checksum valid-md5-checksum? with-out-writer]]))
+            [netcdf.utils :refer [save-md5-checksum valid-md5-checksum? with-out-writer]]
+            netcdf.time))
 
 (defn- write-dimensions [^NetcdfDataset dataset ^FileWriter writer]
   (doseq [dimension (.getDimensions dataset)]
