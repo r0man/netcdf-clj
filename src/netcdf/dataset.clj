@@ -126,8 +126,8 @@
 
 (defn write-geotiffs
   "Write the `variables of `dataset` to `directory`."
-  [^GridDataset dataset variables directory]
+  [^GridDataset dataset variables directory & [grey-scale]]
   (.mkdirs (file directory))
   (doall (for [variable variables, time (valid-times dataset)
                :let [file (file directory (geotiff-filename variable time))]]
-           (write-geotiff dataset variable time file))))
+           (write-geotiff dataset variable time file grey-scale))))
