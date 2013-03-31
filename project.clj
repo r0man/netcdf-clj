@@ -2,6 +2,8 @@
   :description "Clojure NetCDF Library."
   :min-lein-version "2.0.0"
   :url "http://github.com/r0man/netcdf-clj"
+  :license {:name "Eclipse Public License"
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[clj-time "0.5.0"]
                  [commandline-clj "0.1.3"]
                  [digest "1.4.2"]
