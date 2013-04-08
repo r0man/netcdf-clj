@@ -6,7 +6,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[clj-time "0.5.0"]
                  [commandline-clj "0.1.5"]
-                 [digest "1.4.2"]
+                 [digest "1.4.3"]
                  [edu.ucar/netcdf "4.3.16"]
                  [edu.ucar/opendap "4.3.16"]
                  [geocoder-clj "0.1.2"]
