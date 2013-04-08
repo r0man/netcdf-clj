@@ -5,7 +5,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[clj-time "0.5.0"]
-                 [commandline-clj "0.1.3"]
+                 [commandline-clj "0.1.5"]
                  [digest "1.4.2"]
                  [edu.ucar/netcdf "4.3.15"]
                  [edu.ucar/opendap "4.3.15"]
@@ -19,5 +19,5 @@
   :profiles {:dev {:dependencies [[ch.qos.logback/logback-classic "1.0.7"]
                                   [ch.qos.logback/logback-core "1.0.7"]]
                    :resource-paths ["test-resources"]}}
-  :repositories {"jboss" "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases"
+  :repositories {"jboss-third-party" "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases"
                  "unidata" "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases"})
