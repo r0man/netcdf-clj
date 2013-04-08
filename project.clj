@@ -9,7 +9,7 @@
                  [digest "1.4.2"]
                  [edu.ucar/netcdf "4.3.15"]
                  [edu.ucar/opendap "4.3.15"]
-                 [geocoder-clj "0.1.0"]
+                 [geocoder-clj "0.1.2"]
                  [incanter/incanter-core "1.4.1"]
                  [javax.media/jai-core "1.1.3"]
                  [org.clojure/clojure "1.5.1"]
