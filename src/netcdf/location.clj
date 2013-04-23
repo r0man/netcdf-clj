@@ -1,6 +1,5 @@
 (ns netcdf.location
   (:refer-clojure :exclude (replace))
-  (:require [geocoder.core :as geocoder])
   (:import (ucar.unidata.geoloc Bearing LatLonPointImpl LatLonPoint))
   (:use [clojure.string :only (split replace trim)]))
 
@@ -155,13 +154,6 @@
   (print-method
    {:latitude (latitude location)
     :longitude (longitude location)} writer))
-
-(defn resolve-location
-  "Resolves a location by parsing or geocoding."
-  [location]
-  (or (parse-location location :junk-allowed true)
-      (if-let [location (:location (first (geocoder/geocode-address location)))]
-        (make-location (:latitude location) (:longitude location)))))
 
 (defn to-point [location]
   (if location

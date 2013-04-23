@@ -1,6 +1,5 @@
 (ns netcdf.test.location
   (:import (ucar.unidata.geoloc LatLonPointImpl LatLonPoint))
-  (:require [geocoder.core :as geocoder])
   (:use clojure.test
         netcdf.location))
 
@@ -214,12 +213,3 @@
          (read-string (prn-str (make-location 1 2)))))
   (is (= {:latitude 1.1 :longitude 2.2}
          (read-string (prn-str (make-location 1.1 2.2))))))
-
-(deftest test-resolve-location
-  (let [location (resolve-location "43.4073349,-2.6983217")]
-    (is (= 43.4073349 (latitude location)))
-    (is (= -2.6983217 (longitude location))))
-  (with-redefs [geocoder/geocode-address (constantly [{:location {:latitude 43.4073349 :longitude -2.6983217}}])]
-    (let [location (resolve-location "mundaka")]
-      (is (= 43.4073349 (latitude location)))
-      (is (= -2.6983217 (longitude location))))))
