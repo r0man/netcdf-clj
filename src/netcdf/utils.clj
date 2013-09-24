@@ -1,6 +1,6 @@
 (ns netcdf.utils
   (:require [clj-time.coerce :refer [to-date-time]]
-            [clj-time.core :refer [now in-secs interval date-time year month day hour]]
+            [clj-time.core :refer [now in-seconds interval date-time year month day hour]]
             [clj-time.format :refer [formatters unparse]]
             [clojure.java.io :refer [file reader writer]]
             [digest :refer [digest]]))
@@ -26,15 +26,15 @@
   [directory] (filter netcdf-file? (file-seq (file (str directory)))))
 
 (defn human-duration [interval]
-  (str (in-secs interval) " s"))
+  (str (in-seconds interval) " s"))
 
 (defn human-file-size [filename]
   (str (file-size filename) " bytes"))
 
 (defn human-transfer-rate [size interval]
   (str (float (/ (/ size 1000)
-                 (if (> (in-secs interval) 0)
-                   (in-secs interval) 1)))
+                 (if (> (in-seconds interval) 0)
+                   (in-seconds interval) 1)))
        " KB/s"))
 
 (defn nan?

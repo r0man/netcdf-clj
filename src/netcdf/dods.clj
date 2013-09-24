@@ -1,7 +1,7 @@
 (ns netcdf.dods
   (:refer-clojure :exclude (replace))
   (:import java.util.Calendar java.io.File java.io.File java.net.URI)
-  (:require [clojure.core.memoize :refer [memo-ttl]]
+  (:require [clojure.core.memoize :refer [ttl]]
             [clojure.xml :as xml]
             [clojure.zip :as zip]
             [netcdf.dataset :as dataset])
@@ -43,7 +43,7 @@
 
 (def parse-inventory
   ;; Cache inventories for 15 minutes.
-  (memo-ttl parse-inventory* (* 15 60 1000)))
+  (ttl parse-inventory* :ttl/threshold (* 15 60 1000)))
 
 (defn datasources
   "Returns the datasources of `model`."
