@@ -58,7 +58,7 @@ public class GridDatasetInputFormat implements InputFormat<NullWritable, TupleWr
 	private DateTime sliceStartedAt;
 
         protected GridDatasetRecordReader(GridDatasetInputSplit split, JobConf job) throws IOException {
-            LOG.info("NetCDF Dataset: " + split.getUrl());
+            LOG.debug("NetCDF Dataset: " + split.getUrl());
             this.dataset = GridDataset.open(split.getUrl());
             this.datatype = dataset.findGridDatatype(split.getDatatype());
             this.split = split;
@@ -74,9 +74,9 @@ public class GridDatasetInputFormat implements InputFormat<NullWritable, TupleWr
 		appendMillis().appendSuffix(" ms").
 		printZeroRarelyFirst().
 		toFormatter();
-            LOG.info("      Datatype: " + datatype.getName());
-            LOG.info("   Description: " + datatype.getDescription());
-            LOG.info("   Coordinates: " + datatype.getCoordinateSystem());
+            LOG.debug("      Datatype: " + datatype.getName());
+            LOG.debug("   Description: " + datatype.getDescription());
+            LOG.debug("   Coordinates: " + datatype.getCoordinateSystem());
         }
 
         @Override
@@ -84,9 +84,9 @@ public class GridDatasetInputFormat implements InputFormat<NullWritable, TupleWr
             this.slice = null;
             this.iterator = null;
             this.dataset.close();
-            LOG.info("   Total Bytes: " + StringUtils.byteDesc(total) + ", " + pos + " records");
-            LOG.info("Total Duration: " + formatter.print(new Period(splitStartedAt, new DateTime())));
-            LOG.info("NetCDF dataset " + split.getUrl() + " closed.");
+            LOG.debug("   Total Bytes: " + StringUtils.byteDesc(total) + ", " + pos + " records");
+            LOG.debug("Total Duration: " + formatter.print(new Period(splitStartedAt, new DateTime())));
+            LOG.debug("NetCDF dataset " + split.getUrl() + " closed.");
         }
 
         @Override
@@ -145,7 +145,7 @@ public class GridDatasetInputFormat implements InputFormat<NullWritable, TupleWr
                 }
 
                 if (sliceStartedAt != null) {
-		    LOG.info("      Duration: " + formatter.print(new Period(sliceStartedAt, new DateTime())));
+		    LOG.debug("      Duration: " + formatter.print(new Period(sliceStartedAt, new DateTime())));
                 }
 
                 sliceStartedAt = new DateTime();
@@ -174,8 +174,8 @@ public class GridDatasetInputFormat implements InputFormat<NullWritable, TupleWr
             int timeIndex = coords.getTimeAxis1D().findTimeIndexFromDate(timestamp.toDate());
             Array slice = datatype.readDataSlice(timeIndex, -1, -1, -1);
 	    //            Array slice = datatype.readVolumeData(timeIndex);
-            LOG.info("     Timestamp: " + timestamp);
-            LOG.info("         Bytes: " + StringUtils.byteDesc(slice.getSizeBytes()) + ", " + slice.getSize() + " records");
+            LOG.debug("     Timestamp: " + timestamp);
+            LOG.debug("         Bytes: " + StringUtils.byteDesc(slice.getSizeBytes()) + ", " + slice.getSize() + " records");
             total += slice.getSizeBytes();
             return slice;
         }

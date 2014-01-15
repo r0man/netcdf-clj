@@ -17,14 +17,16 @@ import org.joda.time.DateTime;
 public class GridDatasetTap extends Tap<JobConf, RecordReader, OutputCollector> {
 
     String url;
+    GridDatasetScheme scheme;
 
     public GridDatasetTap(String model, String url, String[] datatypes) {
     	this(model, url, datatypes, null);
     }
 
     public GridDatasetTap(String model, String url, String[] datatypes, DateTime[] timestamps) {
-        setScheme(new GridDatasetScheme(model, url, datatypes, timestamps));
+	this.scheme = new GridDatasetScheme(model, url, datatypes, timestamps);
         this.url = url;
+        setScheme(scheme);
     }
 
     @Override
@@ -74,6 +76,10 @@ public class GridDatasetTap extends Tap<JobConf, RecordReader, OutputCollector> 
 
     public Path getPath() {
         return new Path(url);
+    }
+
+    public GridDatasetScheme getScheme() {
+        return scheme;
     }
 
     @Override

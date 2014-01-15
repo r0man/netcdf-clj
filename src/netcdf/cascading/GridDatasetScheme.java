@@ -36,6 +36,22 @@ public class GridDatasetScheme extends Scheme<JobConf, RecordReader, OutputColle
         this.timestamps = timestamps;
     }
 
+    public String getModel() {
+	return model;
+    }
+
+    public String getUrl() {
+	return url;
+    }
+
+    public String[] getDatatypes() {
+	return datatypes;
+    }
+
+    public DateTime[] getTimestamps() {
+	return timestamps;
+    }
+
     // @Override
     // public void sourceInit(Tap tap, JobConf job) throws IOException {
     //     // a hack for MultiInputFormat to see that there is a child format
@@ -60,20 +76,28 @@ public class GridDatasetScheme extends Scheme<JobConf, RecordReader, OutputColle
     // }
 
     @Override
-    public void sourceConfInit(FlowProcess<JobConf> flowProcess, Tap<JobConf, RecordReader, OutputCollector> tap, JobConf conf) {
-    }
-
-    @Override
-    public void sinkConfInit(FlowProcess<JobConf> flowProcess, Tap<JobConf, RecordReader, OutputCollector> tap, JobConf conf) {
-    }
-
-    @Override
     public boolean source(FlowProcess<JobConf> flowProcess, SourceCall<Object[], RecordReader> sourceCall) throws IOException {
+	System.out.println("SOURCE");
+	// TupleEntry entry =  sourceCall.getInput();
 	return false;
     }
 
     @Override
+    public void sourceConfInit(FlowProcess<JobConf> flowProcess, Tap<JobConf, RecordReader, OutputCollector> tap, JobConf conf) {
+	System.out.println("SOURCE CONF INIT");
+        // a hack for MultiInputFormat to see that there is a child format
+        FileInputFormat.setInputPaths(conf, url);
+        GridDatasetInputFormat.setInput(conf, model, url, datatypes, timestamps);
+    }
+
+    @Override
     public void sink(FlowProcess<JobConf> flowProcess, SinkCall<Object[], OutputCollector> sinkCall) throws IOException {
+        throw new UnsupportedOperationException("Cannot be used as a sink.");
+    }
+
+    @Override
+    public void sinkConfInit(FlowProcess<JobConf> flowProcess, Tap<JobConf, RecordReader, OutputCollector> tap, JobConf conf) {
+        throw new UnsupportedOperationException("Cannot be used as a sink.");
     }
 
 }
