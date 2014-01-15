@@ -1,8 +1,8 @@
-(ns netcdf.cascading.dataset-test
+(ns netcdf.cascalog.dataset-test
   (:require [clj-time.coerce :refer [to-date-time]]
             [cascalog.api :refer :all]
             [clojure.test :refer :all]
-            [netcdf.cascading.dataset :refer :all]))
+            [netcdf.cascalog.dataset :refer :all]))
 
 (def model "akw")
 

@@ -1,9 +1,9 @@
-(ns netcdf.test.utils
+(ns netcdf.utils-test
   (:import java.io.File)
   (:use [clj-time.core :only (now in-secs interval date-time year month day hour)]
         clojure.test
         netcdf.repository
-        netcdf.test.helper
+        netcdf.test
         netcdf.utils))
 
 (deftest test-file-exists?

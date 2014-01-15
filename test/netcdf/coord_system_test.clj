@@ -1,10 +1,10 @@
-(ns netcdf.test.coord-system
+(ns netcdf.coord-system-test
   (:import ucar.unidata.geoloc.Projection)
   (:require [netcdf.geo-grid :as grid])
   (:use clojure.test
         netcdf.location
         netcdf.coord-system
-        netcdf.test.helper))
+        netcdf.test))
 
 (def example-coord-system (grid/coord-system (grid/open-geo-grid example-path example-variable)))
 

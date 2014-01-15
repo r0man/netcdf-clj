@@ -1,11 +1,11 @@
-(ns netcdf.test.model
+(ns netcdf.model-test
   (:use [clj-time.coerce :only (to-long)]
         [clj-time.core :only (date-time interval plus minutes minus)]
         clojure.test
         netcdf.bounding-box
         netcdf.location
         netcdf.model
-        netcdf.test.helper
+        netcdf.test
         netcdf.time))
 
 (deftest test-find-model-by-location

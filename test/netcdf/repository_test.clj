@@ -1,4 +1,4 @@
-(ns netcdf.test.repository
+(ns netcdf.repository-test
   (:import java.io.File
            ucar.nc2.dt.grid.GeoGrid
            org.joda.time.DateTime)
@@ -10,7 +10,7 @@
         [netcdf.variable :only (htsgwsfc variable-fragment)]
         clojure.test
         netcdf.repository
-        netcdf.test.helper))
+        netcdf.test))
 
 (def example-repository (make-local-repository))
 (def example-time (date-time 2011 12 1 6))

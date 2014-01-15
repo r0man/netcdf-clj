@@ -1,11 +1,11 @@
-(ns netcdf.test.dods
+(ns netcdf.dods-test
   (:import java.util.Calendar java.io.File java.net.URI)
   (:use [clj-time.core :only (now date-time year minutes minus month day hour plus)]
         [netcdf.model :only (nww3)]
         clj-time.format
         clojure.test
         netcdf.dods
-        netcdf.test.helper
+        netcdf.test
         netcdf.time))
 
 (deftest test-datasources

@@ -1,11 +1,11 @@
-(ns netcdf.test.dataset
+(ns netcdf.dataset-test
   (:import ucar.nc2.dt.grid.GeoGrid)
   (:require [netcdf.dods :as dods]
             [netcdf.model :refer [nww3]]
             [clj-time.core :refer [date-time]])
   (:use clojure.test
         netcdf.dataset
-        netcdf.test.helper
+        netcdf.test
         netcdf.time))
 
 (defonce example-remote-url

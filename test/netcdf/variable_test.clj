@@ -1,11 +1,11 @@
-(ns netcdf.test.variable
+(ns netcdf.variable-test
   (:import org.joda.time.DateTime org.joda.time.Interval)
   (:use [clj-time.core :only (date-time)]
         [netcdf.dataset :only (copy-dataset)]
         [netcdf.model :exclude (valid-times)]
         [netcdf.repository :only (local-dataset-url)]
         clojure.test
-        netcdf.test.helper
+        netcdf.test
         netcdf.variable))
 
 (def example-time (date-time 2011 12 1 6))

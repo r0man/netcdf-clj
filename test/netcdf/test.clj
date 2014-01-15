@@ -1,4 +1,4 @@
-(ns netcdf.test.helper
+(ns netcdf.test
   (:import java.io.File)
   (:use [clj-time.core :only (date-time day days hours minus month now year)]
         [netcdf.model :only (akw gfs-hd nww3)]

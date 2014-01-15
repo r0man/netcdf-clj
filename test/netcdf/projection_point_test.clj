@@ -1,4 +1,4 @@
-(ns netcdf.test.projection-point
+(ns netcdf.projection-point-test
   (:use clojure.test netcdf.projection-point))
 
 (deftest test-make-projection-point

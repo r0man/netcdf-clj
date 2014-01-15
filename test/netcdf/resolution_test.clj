@@ -1,4 +1,4 @@
-(ns netcdf.test.resolution
+(ns netcdf.resolution-test
   (:use clojure.test
         netcdf.resolution))
 

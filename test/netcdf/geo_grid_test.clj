@@ -1,4 +1,4 @@
-(ns netcdf.test.geo-grid
+(ns netcdf.geo-grid-test
   (:import ucar.unidata.geoloc.Projection)
   (:use [clj-time.core :only (date-time)]
         [clojure.java.io :only (reader)]
@@ -8,7 +8,7 @@
         netcdf.coord-system
         netcdf.geo-grid
         netcdf.location
-        netcdf.test.helper
+        netcdf.test
         netcdf.time)
   (:require [netcdf.dataset :as dataset]))
 

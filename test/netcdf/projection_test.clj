@@ -1,11 +1,11 @@
-(ns netcdf.test.projection
+(ns netcdf.projection-test
   (:import ucar.unidata.geoloc.projection.LatLonProjection)
   (:require [netcdf.geo-grid :as grid])
   (:use clojure.test
         netcdf.location
         netcdf.projection
         netcdf.projection-point
-        netcdf.test.helper))
+        netcdf.test))
 
 (def grid (grid/open-geo-grid example-path example-variable))
 (def projection (.. grid getCoordinateSystem getProjection))

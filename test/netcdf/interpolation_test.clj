@@ -1,11 +1,11 @@
-(ns netcdf.test.interpolation
+(ns netcdf.interpolation-test
   (:import (javax.media.jai InterpolationBicubic InterpolationBilinear))
   (:use [incanter.core :only (matrix)]
         clojure.test
         netcdf.geo-grid
         netcdf.interpolation
         netcdf.location
-        netcdf.test.helper))
+        netcdf.test))
 
 (def example-coord-system (coord-system example-geo-grid))
 

@@ -1,4 +1,4 @@
-(ns netcdf.test.location
+(ns netcdf.location-test
   (:import (ucar.unidata.geoloc LatLonPointImpl LatLonPoint))
   (:use clojure.test
         netcdf.location))

@@ -1,4 +1,4 @@
-(ns netcdf.test.time
+(ns netcdf.time-test
   (:import java.sql.Timestamp)
   (:use [clj-time.core :only (date-time)]
         netcdf.time

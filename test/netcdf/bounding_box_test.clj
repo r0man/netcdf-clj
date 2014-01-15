@@ -1,4 +1,4 @@
-(ns netcdf.test.bounding-box
+(ns netcdf.bounding-box-test
   (:use clojure.test
         netcdf.bounding-box
         netcdf.location))

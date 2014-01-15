@@ -1,4 +1,4 @@
-(ns netcdf.cascading.dataset
+(ns netcdf.cascalog.dataset
   (:require [clj-time.coerce :refer [to-date-time]])
   (:import netcdf.cascading.GridDatasetTap
            org.joda.time.DateTime))
