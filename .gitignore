@@ -19,3 +19,4 @@ netcdf.jar
 /logs/debug.log
 /.lein-deps-sum
 /target
+/.nrepl-port
