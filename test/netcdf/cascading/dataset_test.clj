@@ -25,7 +25,7 @@
            (seq (.getSourceFields dataset))))))
 
 (deftest test-query-dataset
-  (?- (stdout)
+  (?- (hfs-textline "/tmp/test-query-dataset")
       (dataset model url datatypes timestamps)))
 
 (comment

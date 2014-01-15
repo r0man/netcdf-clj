@@ -77,9 +77,12 @@ public class GridDatasetScheme extends Scheme<JobConf, RecordReader, OutputColle
 
     @Override
     public boolean source(FlowProcess<JobConf> flowProcess, SourceCall<Object[], RecordReader> sourceCall) throws IOException {
-	System.out.println("SOURCE");
-	// TupleEntry entry =  sourceCall.getInput();
-	return false;
+	Object key = sourceCall.getContext()[0];
+        Object value = sourceCall.getContext()[1];
+        boolean result = sourceCall.getInput().next( key, value);
+        if (!result) return false;
+	sourceCall.getIncomingEntry().setTuple(((TupleWrapper) value).tuple);
+	return true;
     }
 
     @Override
@@ -88,6 +91,12 @@ public class GridDatasetScheme extends Scheme<JobConf, RecordReader, OutputColle
         // a hack for MultiInputFormat to see that there is a child format
         FileInputFormat.setInputPaths(conf, url);
         GridDatasetInputFormat.setInput(conf, model, url, datatypes, timestamps);
+    }
+
+    @Override
+    public void sourcePrepare(FlowProcess<JobConf> flowProcess, SourceCall<Object[], RecordReader> sourceCall) {
+        Object[] pair = new Object[]{sourceCall.getInput().createKey(), sourceCall.getInput().createValue()};
+        sourceCall.setContext(pair);
     }
 
     @Override
