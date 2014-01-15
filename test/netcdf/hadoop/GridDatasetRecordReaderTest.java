@@ -91,20 +91,26 @@ public class GridDatasetRecordReaderTest {
     	assertEquals("akw", value.tuple.getString(0));
     	assertEquals("htsgwsfc", value.tuple.getString(1));
     	assertEquals(new DateTime(1389830400000L), value.tuple.getObject(2));
-    	assertEquals(0, value.tuple.getLong(3));
-    	assertEquals(0, value.tuple.getLong(4));
-    	assertEquals(44.75, value.tuple.getDouble(5), 0);
-    	assertEquals(159.5, value.tuple.getDouble(6), 0);
-    	assertEquals(Double.NaN, value.tuple.getDouble(7), 0);
+    	assertEquals(44.75, value.tuple.getDouble(3), 0);
+    	assertEquals(159.5, value.tuple.getDouble(4), 0);
+    	assertEquals(Double.NaN, value.tuple.getDouble(5), 0);
+    	assertEquals("", value.tuple.getString(6));
+    	assertEquals(155, value.tuple.getLong(7));
+    	assertEquals(123, value.tuple.getLong(8));
+    	assertEquals(0, value.tuple.getLong(9));
+    	assertEquals(0, value.tuple.getLong(10));
     	reader.next(key, value);
     	assertEquals("akw", value.tuple.getString(0));
     	assertEquals("htsgwsfc", value.tuple.getString(1));
     	assertEquals(new DateTime(1389830400000L), value.tuple.getObject(2));
-    	assertEquals(1, value.tuple.getLong(3));
-    	assertEquals(0, value.tuple.getLong(4));
-    	assertEquals(44.75, value.tuple.getDouble(5), 0);
-    	assertEquals(160, value.tuple.getDouble(6), 0);
-    	assertEquals(Double.NaN, value.tuple.getDouble(7), 0);
+    	assertEquals(44.75, value.tuple.getDouble(3), 0);
+    	assertEquals(160, value.tuple.getDouble(4), 0);
+    	assertEquals(Double.NaN, value.tuple.getDouble(5), 0);
+    	assertEquals("", value.tuple.getString(6));
+    	assertEquals(155, value.tuple.getLong(7));
+    	assertEquals(123, value.tuple.getLong(8));
+    	assertEquals(1, value.tuple.getLong(9));
+    	assertEquals(0, value.tuple.getLong(10));
     }
 
     @Test

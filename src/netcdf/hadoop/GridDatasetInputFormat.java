@@ -160,12 +160,14 @@ public class GridDatasetInputFormat implements InputFormat<NullWritable, TupleWr
             value.tuple.add(model);
             value.tuple.add(variable);
             value.tuple.add(timestamp);
-            value.tuple.add(getX(pos));
-            value.tuple.add(getY(pos));
             value.tuple.add(location.getLatitude());
             value.tuple.add(location.getLongitude());
             value.tuple.add(iterator.next());
             value.tuple.add(unit);
+            value.tuple.add(getWidth());
+            value.tuple.add(getHeight());
+            value.tuple.add(getX(pos));
+            value.tuple.add(getY(pos));
 
             pos++;
             return true;

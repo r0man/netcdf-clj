@@ -29,7 +29,7 @@ public class GridDatasetScheme extends Scheme<JobConf, RecordReader, OutputColle
     }
 
     public GridDatasetScheme(String model, String url, String[] datatypes, DateTime[] timestamps) {
-        super(new Fields("model", "datatype", "timestamp", "x", "y", "latitude", "longitude", "value", "unit"));
+        super(new Fields("model", "datatype", "timestamp", "latitude", "longitude", "value", "unit", "width", "height", "x", "y"));
         this.model = model;
         this.url = url;
         this.datatypes = datatypes;

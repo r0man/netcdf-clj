@@ -21,7 +21,7 @@
       (is (= url (.getUrl scheme)))
       (is (= datatypes (seq (.getDatatypes scheme))))
       (is (= timestamps (seq (.getTimestamps scheme)))))
-    (is (= ["model" "datatype" "timestamp" "x" "y" "latitude" "longitude" "value" "unit"]
+    (is (= ["model" "datatype" "timestamp" "latitude" "longitude" "value" "unit" "width" "height" "x" "y"]
            (seq (.getSourceFields dataset))))))
 
 (deftest test-query-dataset
