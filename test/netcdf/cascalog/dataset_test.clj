@@ -6,7 +6,7 @@
 
 (def model "akw")
 
-(def url "/home/roman/workspace/netcdf-clj/test-resources/akw-htsgwsfc-2014-01-14T00.nc")
+(def url "test-resources/akw-htsgwsfc-2014-01-14T00.nc")
 
 (def datatypes
   ["htsgwsfc"])
