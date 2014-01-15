@@ -25,8 +25,8 @@
            (seq (.getSourceFields dataset))))))
 
 (deftest test-query-dataset
-  (?- (hfs-textline "/tmp/test-query-dataset")
-      (dataset model url datatypes timestamps)))
+  (?- (hfs-textline "/tmp/test-query-dataset" :sinkmode :replace)
+      (dataset model url nil nil)))
 
 (comment
   (?- (stdout)

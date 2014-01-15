@@ -52,29 +52,6 @@ public class GridDatasetScheme extends Scheme<JobConf, RecordReader, OutputColle
 	return timestamps;
     }
 
-    // @Override
-    // public void sourceInit(Tap tap, JobConf job) throws IOException {
-    //     // a hack for MultiInputFormat to see that there is a child format
-    //     FileInputFormat.setInputPaths(job, url);
-    //     GridDatasetInputFormat.setInput(job, model, url, datatypes, timestamps);
-    // }
-
-    // @Override
-    // public void sinkInit(Tap tap, JobConf job) throws IOException {
-    //     throw new UnsupportedOperationException("Cannot be used as a sink");
-    // }
-
-    // @Override
-    // public Tuple source(Object key, Object value) {
-    //     return ((TupleWrapper) value).tuple;
-    // }
-
-    // @SuppressWarnings("rawtypes")
-    // @Override
-    // public void sink(TupleEntry entry, OutputCollector collector) throws IOException {
-    //     throw new UnsupportedOperationException("Cannot be used as a sink.");
-    // }
-
     @Override
     public boolean source(FlowProcess<JobConf> flowProcess, SourceCall<Object[], RecordReader> sourceCall) throws IOException {
 	Object key = sourceCall.getContext()[0];
@@ -87,7 +64,6 @@ public class GridDatasetScheme extends Scheme<JobConf, RecordReader, OutputColle
 
     @Override
     public void sourceConfInit(FlowProcess<JobConf> flowProcess, Tap<JobConf, RecordReader, OutputCollector> tap, JobConf conf) {
-	System.out.println("SOURCE CONF INIT");
         // a hack for MultiInputFormat to see that there is a child format
         FileInputFormat.setInputPaths(conf, url);
         GridDatasetInputFormat.setInput(conf, model, url, datatypes, timestamps);

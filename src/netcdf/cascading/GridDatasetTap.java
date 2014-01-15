@@ -54,26 +54,6 @@ public class GridDatasetTap extends Tap<JobConf, RecordReader, OutputCollector> 
         return true;
     }
 
-    // @Override
-    // public boolean makeDirs(JobConf jc) throws IOException {
-    //     return true;
-    // }
-
-    // @Override
-    // public boolean deletePath(JobConf jc) throws IOException {
-    //     return false;
-    // }
-
-    // @Override
-    // public boolean pathExists(JobConf jc) throws IOException {
-    //     return true;
-    // }
-
-    // @Override
-    // public long getPathModified(JobConf jc) throws IOException {
-    //     return System.currentTimeMillis();
-    // }
-
     public Path getPath() {
         return new Path(url);
     }
@@ -84,8 +64,6 @@ public class GridDatasetTap extends Tap<JobConf, RecordReader, OutputCollector> 
 
     @Override
     public TupleEntryIterator openForRead(FlowProcess<JobConf> flowProcess, RecordReader input) throws IOException {
-        // return new TupleEntryIterator(getSourceFields(), new TapIterator(this, conf));
-    	// throw new UnsupportedOperationException("Not supported.");
 	return new HadoopTupleEntrySchemeIterator(flowProcess, this, input);
     }
 
