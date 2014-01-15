@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-
+import org.joda.time.DateTime;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
@@ -90,7 +90,7 @@ public class GridDatasetRecordReaderTest {
     	reader.next(key, value);
     	assertEquals("akw", value.tuple.getString(0));
     	assertEquals("htsgwsfc", value.tuple.getString(1));
-    	assertEquals(1389830400000L, value.tuple.getLong(2));
+    	assertEquals(new DateTime(1389830400000L), value.tuple.getObject(2));
     	assertEquals(0, value.tuple.getLong(3));
     	assertEquals(0, value.tuple.getLong(4));
     	assertEquals(44.75, value.tuple.getDouble(5), 0);
@@ -99,7 +99,7 @@ public class GridDatasetRecordReaderTest {
     	reader.next(key, value);
     	assertEquals("akw", value.tuple.getString(0));
     	assertEquals("htsgwsfc", value.tuple.getString(1));
-    	assertEquals(1389830400000L, value.tuple.getLong(2));
+    	assertEquals(new DateTime(1389830400000L), value.tuple.getObject(2));
     	assertEquals(1, value.tuple.getLong(3));
     	assertEquals(0, value.tuple.getLong(4));
     	assertEquals(44.75, value.tuple.getDouble(5), 0);
