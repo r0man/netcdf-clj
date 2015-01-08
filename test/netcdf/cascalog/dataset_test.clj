@@ -24,9 +24,10 @@
     (is (= ["model" "datatype" "timestamp" "latitude" "longitude" "value" "unit" "width" "height" "x" "y"]
            (seq (.getSourceFields dataset))))))
 
-(deftest test-query-dataset
-  (?- (hfs-textline "/tmp/test-query-dataset" :sinkmode :replace)
-      (dataset model url nil nil)))
+(comment
+  (deftest test-query-dataset
+   (?- (hfs-textline "/tmp/test-query-dataset" :sinkmode :replace)
+       (dataset model url nil nil))))
 
 (comment
   (?- (stdout)
