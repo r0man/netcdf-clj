@@ -45,11 +45,22 @@
   ;; Cache inventories for 15 minutes.
   (ttl parse-inventory* :ttl/threshold (* 15 60 1000)))
 
+(defn- compile-pattern [model]
+  (cond
+    (instance? java.util.regex.Pattern (:pattern model))
+    (:pattern model)
+    (string? (:pattern model))
+    (re-pattern (:pattern model))
+    :else #".*"))
+
 (defn datasources
   "Returns the datasources of `model`."
   [model]
-  (let [url (:dods model)]
-    (->> (filter #(and (:dods %) (.startsWith (:dods %) url))
+  (let [url (:dods model)
+        pattern (compile-pattern model)]
+    (->> (filter #(and (:dods %)
+                       (.startsWith (:dods %) url)
+                       (re-matches pattern (:dods %)))
                  (parse-inventory (inventory-url url)))
          (sort-by :reference-time))))
 

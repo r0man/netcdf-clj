@@ -69,5 +69,20 @@
     <das>http://nomads.ncep.noaa.gov:9090/dods/gfs_hd/gfs_hd20101030/gfs_hd_00z.das</das>
   </dataset>
 
-</serverdirectory>
+  <dataset protocol="dods" rank="2191">
+    <name>/gfs_0p25/gfs20150224/gfs_0p25_00z</name>
+    <description>GFS 0.25 deg starting from 00Z24feb2015, downloaded Feb 24 04:46 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.das</das>
+  </dataset>
 
+  <dataset protocol="dods" rank="2192">
+    <name>/gfs_0p25/gfs20150224/gfs_0p25_00z_anl</name>
+    <description>GFS 0.25 deg analysis at 00Z24feb2015, downloaded Feb 24 04:46 UTC</description>
+    <dods>http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z_anl</dods>
+    <dds>http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z_anl.dds</dds>
+    <das>http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z_anl.das</das>
+  </dataset>
+
+</serverdirectory>

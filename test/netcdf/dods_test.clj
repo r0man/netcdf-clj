@@ -1,5 +1,6 @@
 (ns netcdf.dods-test
   (:import java.util.Calendar java.io.File java.net.URI)
+  (:require [netcdf.model :refer [nww3 gfs-0p25]])
   (:use [clj-time.core :only (now date-time year minutes minus month day hour plus)]
         [netcdf.model :only (nww3)]
         clj-time.format
@@ -19,6 +20,22 @@
         (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.dds" (:dds source)))
         (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z" (:dods source)))
         (is (= (date-time 2010 10 30) (:reference-time source)))))))
+
+(deftest test-datasources-with-pattern
+  (with-test-inventory
+    (let [sources (datasources gfs-0p25)]
+      (is (= 1 (count sources)))
+      (let [source (first sources)]
+        (is (=  (:name source) "/gfs_0p25/gfs20150224/gfs_0p25_00z"))
+        (is (= (:description source)
+               "GFS 0.25 deg starting from 00Z24feb2015, downloaded Feb 24 04:46 UTC"))
+        (is (= (:das source)
+               "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.das"))
+        (is (= (:dds source)
+               "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.dds"))
+        (is (= (:dods source)
+               "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z"))
+        (is (= (date-time 2015 02 24) (:reference-time source)))))))
 
 (deftest test-datasource
   (with-test-inventory
@@ -60,6 +77,20 @@
         (is (= (:reference-time (datasource nww3 (format-time (first times))))
                (first times)))))))
 
+(deftest test-datasource-with-pattern
+  (with-test-inventory
+    (let [source (datasource gfs-0p25 (date-time 2015 02 24))]
+      (is (=  (:name source) "/gfs_0p25/gfs20150224/gfs_0p25_00z"))
+      (is (= (:description source)
+             "GFS 0.25 deg starting from 00Z24feb2015, downloaded Feb 24 04:46 UTC"))
+      (is (= (:das source)
+             "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.das"))
+      (is (= (:dds source)
+             "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.dds"))
+      (is (= (:dods source)
+             "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z"))
+      (is (= (date-time 2015 02 24) (:reference-time source))))))
+
 (deftest test-reference-times
   (with-test-inventory
     (let [times (reference-times nww3)]
@@ -68,7 +99,7 @@
 
 (deftest test-parse-inventory
   (let [datasets (parse-inventory "test-resources/dods/xml")]
-    (is (= 9 (count datasets)))
+    (is (= 11 (count datasets)))
     (let [dataset (first datasets)]
       (is (= "/wave/akw/akw20101030/akw20101030_00z" (:name dataset)))
       (is (= "WAVE_AKW Regional Alaska Waters wave model fcst from 00Z30oct2010, downloaded Oct 30 04:28 UTC" (:description dataset)))

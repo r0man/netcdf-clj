@@ -17,14 +17,14 @@
 
 (deftest test-file-size
   (is (nil? (file-size nil)))
-  (is (= 4757 (file-size "test-resources/dods/xml"))))
+  (is (= 5724 (file-size "test-resources/dods/xml"))))
 
 (deftest test-human-duration
   (is (= "0 s" (human-duration (interval (now) (now)))))
   (is (= "1 s" (human-duration (interval (date-time 2010 12 18 0 0 0) (date-time 2010 12 18 0 0 1))))))
 
 (deftest test-human-file-size
-  (is (= "4757 bytes" (human-file-size "test-resources/dods/xml"))))
+  (is (= "5724 bytes" (human-file-size "test-resources/dods/xml"))))
 
 (deftest test-human-transfer-rate
   (is (= "0.0 KB/s" (human-transfer-rate  0 (interval (now) (now)))))

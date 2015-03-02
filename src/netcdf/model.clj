@@ -7,8 +7,8 @@
 
 (defrecord Model [name description bounding-box dods resolution])
 
-(defn make-model [& {:keys [name description bounding-box dods resolution]}]
-  (Model. name description bounding-box dods resolution))
+(defn make-model [& {:as attrs}]
+  (map->Model attrs))
 
 (defn model?
   "Returns true if arg is a model, otherwise false."
@@ -24,14 +24,15 @@
 
 (defmacro defmodel
   "Define and register the model."
-  [name description & {:keys [bounding-box dods resolution]}]
+  [name description & {:keys [bounding-box dods pattern resolution]}]
   (let [name# name description# description bounding-box# bounding-box dods# dods resolution# resolution]
     `(do (def ~name#
            (make-model
-            :bounding-box ~bounding-box#
+            :bounding-box ~bounding-box
             :description ~description#
             :dods ~dods#
             :name ~(str name#)
+            :pattern ~pattern
             :resolution ~resolution#))
          (register-model ~name#))))
 
@@ -68,6 +69,13 @@
   :bounding-box (make-bounding-box -90.0 0.0 90.0 -0.5)
   :dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
   :resolution {:latitude 0.5 :longitude 0.5})
+
+(defmodel gfs-0p25
+  "Global Forecast Model"
+  :bounding-box (make-bounding-box -90.0 0.0 90.0 -0.5)
+  :dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25"
+  :pattern #"http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs\d{8}/gfs_0p25_\d{2}z"
+  :resolution {:latitude 0.25 :longitude 0.25})
 
 (defmodel nah
   "Regional Atlantic Hurricane Wave Model"
