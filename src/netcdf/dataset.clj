@@ -3,7 +3,7 @@
            [ucar.nc2.dt.grid GridAsPointDataset GridDataset]
            java.io.File
            ucar.nc2.dataset.NetcdfDataset
-           ucar.nc2.geotiff.GeotiffWriter)
+           ucar.nc2.geotiff.GeoTiffWriter2)
   (:require [clj-time.core :refer [year month day hour]]
             [clj-time.coerce :refer [to-date-time]]
             [clj-time.format :refer [formatters unparse]]
@@ -66,21 +66,21 @@
 (defn copy-dataset
   "Copy the NetCDF dataset from source to target."
   ([source target]
-     (with-open [dataset (open-grid-dataset source)]
-       (copy-dataset source target (datatype-names dataset))))
+   (with-open [dataset (open-grid-dataset source)]
+     (copy-dataset source target (datatype-names dataset))))
   ([source target variables]
-     (try
-       (when-not (valid-md5-checksum? target)
-         (with-open [dataset (open-dataset source)]
-           (with-file-writer writer target
-             (write-global-attributes dataset writer)
-             (write-dimensions dataset writer)
-             (write-variables dataset writer variables)))
-         (save-md5-checksum target))
-       target
-       (catch Exception e
-         (delete-file target true)
-         (throw e)))))
+   (try
+     (when-not (valid-md5-checksum? target)
+       (with-open [dataset (open-dataset source)]
+         (with-file-writer writer target
+           (write-global-attributes dataset writer)
+           (write-dimensions dataset writer)
+           (write-variables dataset writer variables)))
+       (save-md5-checksum target))
+     target
+     (catch Exception e
+       (delete-file target true)
+       (throw e)))))
 
 (defmacro with-dataset [[name uri] & body]
   `(with-open [~name (open-dataset ~uri)]
@@ -118,7 +118,7 @@
     (assert index (format "Couldn't find time index for %s." time))
     (make-parents filename)
     (debugf "Writing %s GeoTIFF at %s to %s." variable time filename)
-    (with-open [writer (GeotiffWriter. (str filename))]
+    (with-open [writer (GeoTiffWriter2. (str filename))]
       (let [data (.readVolumeData grid index)]
         (.writeGrid writer dataset grid data (boolean grey-scale))))
     (save-md5-checksum filename)
