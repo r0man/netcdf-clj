@@ -27,7 +27,7 @@
     (. writer writeVariable (.findVariable dataset (str variable)))))
 
 (defmacro with-file-writer [symbol filename & body]
-  `(let [file# (java.io.File. ~filename)]
+  `(let [file# (java.io.File. (str ~filename))]
      (.mkdirs (.getParentFile file#))
      (let [~symbol (FileWriter. (.getPath (.toURI file#)) false)]
        ~@body
@@ -71,7 +71,7 @@
   ([source target variables]
    (try
      (when-not (valid-md5-checksum? target)
-       (with-open [dataset (open-dataset source)]
+       (with-open [dataset (open-dataset (str source))]
          (with-file-writer writer target
            (write-global-attributes dataset writer)
            (write-dimensions dataset writer)
