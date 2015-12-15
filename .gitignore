@@ -21,3 +21,4 @@ netcdf.jar
 /target
 /.nrepl-port
 /pom.xml.asc
+/.lein-repl-history

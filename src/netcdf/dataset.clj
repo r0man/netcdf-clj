@@ -1,17 +1,17 @@
 (ns netcdf.dataset
-  (:import [ucar.nc2 FileWriter NetcdfFile]
-           [ucar.nc2.dt.grid GridAsPointDataset GridDataset]
-           java.io.File
+  (:import java.io.File
+           [ucar.nc2 FileWriter NetcdfFile]
            ucar.nc2.dataset.NetcdfDataset
+           [ucar.nc2.dt.grid GridAsPointDataset GridDataset]
            ucar.nc2.geotiff.GeoTiffWriter2)
-  (:require [clj-time.core :refer [year month day hour]]
-            [clj-time.coerce :refer [to-date-time]]
+  (:require [clj-time.coerce :refer [to-date-time]]
+            [clj-time.core :refer [year month day hour]]
             [clj-time.format :refer [formatters unparse]]
-            [clojure.java.io :refer [delete-file file make-parents]]
+            [clojure.java.io :as io]
             [clojure.tools.logging :refer [debugf]]
             [netcdf.geo-grid :as geogrid]
-            [netcdf.utils :refer [save-md5-checksum valid-md5-checksum? with-out-writer]]
-            netcdf.time))
+            netcdf.time
+            [netcdf.utils :refer [save-md5-checksum valid-md5-checksum? with-out-writer]]))
 
 (defn- write-dimensions [^NetcdfDataset dataset ^FileWriter writer]
   (doseq [dimension (.getDimensions dataset)]
@@ -27,7 +27,7 @@
     (. writer writeVariable (.findVariable dataset (str variable)))))
 
 (defmacro with-file-writer [symbol filename & body]
-  `(let [file# (java.io.File. (str ~filename))]
+  `(let [file# (io/file ~filename)]
      (.mkdirs (.getParentFile file#))
      (let [~symbol (FileWriter. (.getPath (.toURI file#)) false)]
        ~@body
@@ -79,7 +79,7 @@
        (save-md5-checksum target))
      target
      (catch Exception e
-       (delete-file target true)
+       (io/delete-file target true)
        (throw e)))))
 
 (defmacro with-dataset [[name uri] & body]
@@ -116,7 +116,7 @@
         index (geogrid/time-index grid time)]
     (assert grid (format "Couldn't find geo grid %s." variable))
     (assert index (format "Couldn't find time index for %s." time))
-    (make-parents filename)
+    (io/make-parents filename)
     (debugf "Writing %s GeoTIFF at %s to %s." variable time filename)
     (with-open [writer (GeoTiffWriter2. (str filename))]
       (let [data (.readVolumeData grid index)]
@@ -127,7 +127,7 @@
 (defn write-geotiffs
   "Write the `variables of `dataset` to `directory`."
   [^GridDataset dataset variables directory & [grey-scale]]
-  (.mkdirs (file directory))
+  (.mkdirs (io/file directory))
   (doall (for [variable variables, time (valid-times dataset)
-               :let [file (file directory (geotiff-filename variable time))]]
+               :let [file (io/file directory (geotiff-filename variable time))]]
            (write-geotiff dataset variable time file grey-scale))))
