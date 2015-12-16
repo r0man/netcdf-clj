@@ -13,7 +13,7 @@
                  [edu.ucar/unidataCommon "4.2.20"]
                  [incanter/incanter-core "1.4.1"]
                  [javax.media/jai-core "1.1.3"]
-                 [org.clojure/clojure "1.5.1"]
+                 [org.clojure/clojure "1.7.0"]
                  [org.clojure/core.memoize "0.5.8"]
                  [org.clojure/data.zip "0.1.1"]
                  [org.clojure/tools.logging "0.3.1"]]
