@@ -3,6 +3,7 @@
            incanter.Matrix
            org.joda.time.DateTime
            ucar.nc2.dt.GridCoordSystem)
+  (:require [netcdf.bounding-box :as bbox])
   (:use [clj-time.coerce :only (to-date to-date-time to-long)]
         [clj-time.format :only (formatters parse unparse)]
         [clojure.string :only (join)]
@@ -18,7 +19,8 @@
 
 (defn bounding-box
   "Returns the bounding box of the GeoGrid."
-  [^GeoGrid grid] (.getLatLonBoundingBox (coord-system grid)))
+  [^GeoGrid grid]
+  (bbox/to-map (.getLatLonBoundingBox (coord-system grid))))
 
 (defn description
   "Returns the description of the GeoGrid."

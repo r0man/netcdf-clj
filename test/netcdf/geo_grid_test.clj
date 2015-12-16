@@ -23,8 +23,11 @@
 
 (deftest test-bounding-box
   (with-open-geo-grid [grid example-path example-variable]
-    (let [bounds (bounding-box grid)]
-      (is (= (class bounds) ucar.unidata.geoloc.LatLonRect)))))
+    (is (= (bounding-box grid)
+           {:north-west {:longitude 0.0 :latitude 78.0}
+            :north-east {:longitude -1.25 :latitude 78.0}
+            :south-west {:longitude 0.0 :latitude -78.0}
+            :south-east {:longitude -1.25 :latitude -78.0}}))))
 
 (deftest test-coord-system
   (with-open-geo-grid [grid example-path example-variable]
@@ -43,7 +46,7 @@
 
 (deftest test-format-record
   (are [record line]
-    (is (= line (format-record record)))
+      (is (= line (format-record record)))
     {:location (make-location 1 2)
      :variable "htsgwsfc"
      :valid-time (date-time 2010 12 18)
