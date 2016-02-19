@@ -47,11 +47,11 @@
       (Integer/parseInt (str string) radix)
       (catch NumberFormatException e
         (when-not junk-allowed
-          (throw NumberFormatException e))))))
+          (throw e))))))
 
 (defmacro with-out-writer
   "Opens a writer on f, binds it to *out*, and evalutes body.
-Anything printed within body will be written to f."
+  Anything printed within body will be written to f."
   [f & body]
   `(with-open [stream# (writer ~f)]
      (binding [*out* stream#]

@@ -1,4 +1,4 @@
-## NETCDF-CLJ [![Build Status](https://travis-ci.org/r0man/netcdf-clj.png)](https://travis-ci.org/r0man/netcdf-clj)
+## NETCDF-CLJ [![Build Status](https://travis-ci.org/r0man/netcdf-clj.svg)](https://travis-ci.org/r0man/netcdf-clj)
 
 A Clojure wrapper around the NetCDF Java library.
 
