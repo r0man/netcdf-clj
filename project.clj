@@ -1,4 +1,4 @@
-(defproject netcdf-clj "0.0.13"
+(defproject netcdf-clj "0.0.14-SNAPSHOT"
   :description "Clojure NetCDF Library."
   :min-lein-version "2.0.0"
   :url "http://github.com/r0man/netcdf-clj"
