@@ -4,13 +4,11 @@
   :url "http://github.com/r0man/netcdf-clj"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[cascalog "2.1.1"]
-                 [clj-time "0.14.2"]
+  :dependencies [[clj-time "0.14.2"]
                  [digest "1.4.6"]
                  [edu.ucar/netcdf4 "4.6.10"]
                  [edu.ucar/opendap "4.6.10"]
                  [edu.ucar/unidataCommon "4.2.20"]
-                 [incanter/incanter-core "1.4.1"]
                  [javax.media/jai-core "1.1.3"]
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/core.memoize "0.5.9"]
@@ -18,9 +16,11 @@
                  [org.clojure/tools.logging "0.4.0"]]
   :plugins [[lein-junit "1.1.8"]]
   :profiles {:dev {:dependencies [[ch.qos.logback/logback-classic "1.2.3"]
-                                  [ch.qos.logback/logback-core "1.2.3"]]
+                                  [ch.qos.logback/logback-core "1.2.3"]
+                                  [junit "4.10"]]
                    :resource-paths ["test-resources"]}
-             :provided {:dependencies [[org.apache.hadoop/hadoop-core "2.6.0-mr1-cdh5.14.0"]
+             :provided {:dependencies [[cascalog "2.1.1"]
+                                       [org.apache.hadoop/hadoop-core "2.6.0-mr1-cdh5.14.0"]
                                        [org.apache.hadoop/hadoop-client "2.9.0"]
                                        [org.apache.hadoop/hadoop-common "2.9.0"]]}}
   :deploy-repositories [["releases" :clojars]]

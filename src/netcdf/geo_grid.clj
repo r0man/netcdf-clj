@@ -1,15 +1,12 @@
 (ns netcdf.geo-grid
   (:import (ucar.nc2.dt.grid GeoGrid GridDataset)
-           incanter.Matrix
            org.joda.time.DateTime
            ucar.nc2.dt.GridCoordSystem)
   (:require [netcdf.bounding-box :as bbox])
   (:use [clj-time.coerce :only (to-date to-date-time to-long)]
         [clj-time.format :only (formatters parse unparse)]
         [clojure.string :only (join)]
-        [incanter.core :only (matrix ncol nrow sel view)]
         netcdf.coord-system
-        netcdf.interpolation
         netcdf.location
         netcdf.utils))
 
@@ -96,13 +93,6 @@
          :value (.getDouble (. grid readDataSlice t-index z-index y-index x-index) 0)})
       (assoc (meta-data grid) :valid-time valid-time))))
 
-(defn read-matrix
-  "Read the whole GeoGrid as a matrix."
-  [^GeoGrid grid & {:keys [valid-time z-coord]}]
-  (let [sequence (read-seq grid :valid-time valid-time :z-coord z-coord)]
-    (with-meta (.viewRowFlip (matrix (map :value sequence) (:size (:longitude-axis (meta sequence)))))
-      (meta sequence))))
-
 (defn read-index [^GeoGrid grid x y & {:keys [valid-time z-coord]}]
   (if (and x y)
     (let [t-index (time-index grid (or valid-time (first (valid-times grid))))
@@ -118,19 +108,6 @@
 
 (defn read-locations [^GeoGrid grid locations & options]
   (map #(apply read-location grid % options) locations))
-
-(defn interpolate-location [^GeoGrid grid location & {:keys [valid-time z-coord width height]}]
-  (if location
-    (if-let [locations (sample-locations (coord-system grid) location :width width :height height)]
-      (let [values (read-locations grid locations :valid-time valid-time :z-coord z-coord)]
-        (if-not (every? #(Double/isNaN %1) values)
-          (interpolate
-           (matrix (map #(if (Double/isNaN %) 0 %) values) 2)
-           (fraction-of-longitudes (coord-system grid) (first locations) location)
-           (fraction-of-latitudes (coord-system grid) (first locations) location)))))))
-
-(defn interpolate-locations [^GeoGrid grid locations & options]
-  (map #(apply interpolate-location grid % options) locations))
 
 (defn to-csv
   "Returns a geo grid CSV record."
