@@ -3,7 +3,6 @@
   (:use [clj-time.core :only (date-time)]
         [clojure.java.io :only (reader)]
         [clojure.string :only (split)]
-        [incanter.core :only (matrix?)]
         clojure.test
         netcdf.coord-system
         netcdf.geo-grid
@@ -113,17 +112,6 @@
   (with-open-geo-grid [grid example-path example-variable]
     (is (instance? Double (read-index grid 0 0)))))
 
-(deftest test-interpolate-location
-  (with-open-geo-grid [grid example-path example-variable]
-    (= (read-location grid (make-location 77 0))
-       (interpolate-location grid (make-location 77 0)))
-    (nil? (interpolate-location grid (make-location 900 900)))))
-
-(deftest test-interpolate-locations
-  (with-open-geo-grid [grid example-path example-variable]
-    (= [(interpolate-location grid (make-location 77 0))]
-       (interpolate-locations grid [(make-location 77 0)]))))
-
 (deftest test-with-open-geo-grid
   (with-open-geo-grid [geo-grid example-path example-variable]
     (is (instance? ucar.nc2.dt.grid.GeoGrid geo-grid))))
@@ -149,16 +137,6 @@
       (is (= valid-time (:valid-time record)))
       (is (instance? java.lang.Double (:value record))))
     (is (= (count sequence) 45216))))
-
-(deftest test-read-matrix
-  (let [geo-grid (open-example-geo-grid)
-        matrix (read-matrix geo-grid)]
-    (is (matrix? matrix))
-    (is (= (count matrix) 157))
-    (is (every? #(= % 288) (map count matrix)))
-    (let [meta (meta matrix)]
-      (is (= (dissoc meta :valid-time) (meta-data geo-grid)))
-      (is (= (:valid-time meta) (first (valid-times geo-grid)))))))
 
 (deftest test-to-csv
   (is (= "htsgwsfc\t1292630400000\t75.0\t-124.5\t0.5399999618530273"
