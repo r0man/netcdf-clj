@@ -75,10 +75,10 @@ public class GridDatasetConfigurationTest {
     public void testAddTimestamps() {
         DateTime timestamps[] = {new DateTime("2011-08-05T00:00:00Z"), new DateTime("2011-08-05T03:00:00Z")};
         configuration.addTimestamps(timestamps);
-        assertEquals("2011-08-05T02:00:00+02:00#2011-08-05T05:00:00+02:00", configuration.job.get(GridDatasetConfiguration.TIMESTAMPS));
+        assertEquals("2011-08-05T00:00:00Z#2011-08-05T03:00:00Z", configuration.job.get(GridDatasetConfiguration.TIMESTAMPS));
         DateTime timestamps2[] = {new DateTime("2011-08-06T00:00:00Z"), new DateTime("2011-08-06T03:00:00Z")};
         configuration.addTimestamps(timestamps2);
-        assertEquals("2011-08-05T02:00:00+02:00#2011-08-05T05:00:00+02:00,2011-08-06T02:00:00+02:00#2011-08-06T05:00:00+02:00",
+        assertEquals("2011-08-05T00:00:00Z#2011-08-05T03:00:00Z,2011-08-06T00:00:00Z#2011-08-06T03:00:00Z",
                      configuration.job.get(GridDatasetConfiguration.TIMESTAMPS));
     }
 
@@ -149,13 +149,13 @@ public class GridDatasetConfigurationTest {
     public void testSetTimestamps() {
         DateTime timestamps[][] = {{new DateTime("2011-08-05T00:00:00Z"), new DateTime("2011-08-05T03:00:00Z")}};
         configuration.setTimestamps(timestamps);
-        assertEquals("2011-08-05T02:00:00+02:00#2011-08-05T05:00:00+02:00", configuration.job.get(GridDatasetConfiguration.TIMESTAMPS));
+        assertEquals("2011-08-05T00:00:00Z#2011-08-05T03:00:00Z", configuration.job.get(GridDatasetConfiguration.TIMESTAMPS));
         DateTime timestamps2[][] = {
             {new DateTime("2011-08-05T00:00:00Z"), new DateTime("2011-08-05T03:00:00Z")},
             {new DateTime("2011-08-06T00:00:00Z"), new DateTime("2011-08-06T03:00:00Z")}
         };
         configuration.setTimestamps(timestamps2);
-        assertEquals("2011-08-05T02:00:00+02:00#2011-08-05T05:00:00+02:00,2011-08-06T02:00:00+02:00#2011-08-06T05:00:00+02:00",
+        assertEquals("2011-08-05T00:00:00Z#2011-08-05T03:00:00Z,2011-08-06T00:00:00Z#2011-08-06T03:00:00Z",
                      configuration.job.get(GridDatasetConfiguration.TIMESTAMPS));
     }
 
