@@ -15,7 +15,7 @@ import ucar.unidata.util.StringUtil;
 public class TimeHelper {
 
     public static String formatTime(DateTime time) {
-        DateTimeFormatter formatter = ISODateTimeFormat.dateTimeNoMillis();
+        DateTimeFormatter formatter = ISODateTimeFormat.dateTimeNoMillis().withZoneUTC();
         return formatter.print(time.getMillis());
     }
 
