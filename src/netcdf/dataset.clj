@@ -28,7 +28,7 @@
 
 (defmacro with-file-writer [symbol filename & body]
   `(let [file# (io/file ~filename)]
-     (.mkdirs (.getParentFile file#))
+     (.mkdirs (.getParentFile (.getAbsoluteFile file#)))
      (let [~symbol (FileWriter. (.getPath (.toURI file#)) false)]
        ~@body
        (.finish ~symbol))))
