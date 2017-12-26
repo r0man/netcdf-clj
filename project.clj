@@ -1,4 +1,4 @@
-(defproject netcdf-clj "0.0.15"
+(defproject netcdf-clj "0.0.16-SNAPSHOT"
   :description "Clojure NetCDF Library."
   :min-lein-version "2.0.0"
   :url "http://github.com/r0man/netcdf-clj"
@@ -18,6 +18,7 @@
   :profiles {:dev {:dependencies [[ch.qos.logback/logback-classic "1.2.3"]
                                   [ch.qos.logback/logback-core "1.2.3"]
                                   [junit "4.12"]]
+                   :java-source-paths ["test"]
                    :resource-paths ["test-resources"]}
              :provided {:dependencies [[cascalog "2.1.1"]
                                        [org.apache.hadoop/hadoop-core "2.6.0-mr1-cdh5.14.0"]
@@ -28,7 +29,7 @@
                  "jboss-third-party" "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases"
                  "unidata" "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases"}
   :javac-options ["-target" "1.6" "-source" "1.6" "-g"]
-  :java-source-paths ["src" "test"]
+  :java-source-paths ["src"]
   :junit ["test"])
 
 ;; Cascalog uses insecure conjars repo
