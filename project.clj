@@ -6,18 +6,18 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[clj-time "0.14.2"]
                  [digest "1.4.6"]
-                 [edu.ucar/netcdf4 "4.6.10"]
-                 [edu.ucar/opendap "4.6.10"]
+                 [edu.ucar/netcdf4 "4.6.11"]
+                 [edu.ucar/opendap "4.6.11"]
                  [edu.ucar/unidataCommon "4.2.20"]
                  [javax.media/jai-core "1.1.3"]
-                 [org.clojure/clojure "1.8.0"]
+                 [org.clojure/clojure "1.9.0"]
                  [org.clojure/core.memoize "0.5.9"]
                  [org.clojure/data.zip "0.1.2"]
                  [org.clojure/tools.logging "0.4.0"]]
   :plugins [[lein-junit "1.1.8"]]
   :profiles {:dev {:dependencies [[ch.qos.logback/logback-classic "1.2.3"]
                                   [ch.qos.logback/logback-core "1.2.3"]
-                                  [junit "4.10"]]
+                                  [junit "4.12"]]
                    :resource-paths ["test-resources"]}
              :provided {:dependencies [[cascalog "2.1.1"]
                                        [org.apache.hadoop/hadoop-core "2.6.0-mr1-cdh5.14.0"]
@@ -30,3 +30,8 @@
   :javac-options ["-target" "1.6" "-source" "1.6" "-g"]
   :java-source-paths ["src" "test"]
   :junit ["test"])
+
+;; Cascalog uses insecure conjars repo
+(require 'cemerick.pomegranate.aether)
+(cemerick.pomegranate.aether/register-wagon-factory!
+ "http" #(org.apache.maven.wagon.providers.http.HttpWagon.))
