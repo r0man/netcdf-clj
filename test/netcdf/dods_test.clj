@@ -16,9 +16,9 @@
       (let [source (first sources)]
         (is (= "/wave/nww3/nww320101030/nww320101030_00z" (:name source)))
         (is (= "WAVE_nww3 Global wave model fcst from 00Z30oct2010, downloaded Oct 30 04:39 UTC" (:description source)))
-        (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.das" (:das source)))
-        (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.dds" (:dds source)))
-        (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z" (:dods source)))
+        (is (= "https://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.das" (:das source)))
+        (is (= "https://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.dds" (:dds source)))
+        (is (= "https://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z" (:dods source)))
         (is (= (date-time 2010 10 30) (:reference-time source)))))))
 
 (deftest test-datasources-with-pattern
@@ -30,11 +30,11 @@
         (is (= (:description source)
                "GFS 0.25 deg starting from 00Z24feb2015, downloaded Feb 24 04:46 UTC"))
         (is (= (:das source)
-               "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.das"))
+               "https://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.das"))
         (is (= (:dds source)
-               "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.dds"))
+               "https://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.dds"))
         (is (= (:dods source)
-               "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z"))
+               "https://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z"))
         (is (= (date-time 2015 02 24) (:reference-time source)))))))
 
 (deftest test-datasource
@@ -42,9 +42,9 @@
     (let [source (datasource nww3 (date-time 2010 10 30))]
       (is (= "/wave/nww3/nww320101030/nww320101030_00z" (:name source)))
       (is (= "WAVE_nww3 Global wave model fcst from 00Z30oct2010, downloaded Oct 30 04:39 UTC" (:description source)))
-      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.das" (:das source)))
-      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.dds" (:dds source)))
-      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z" (:dods source)))
+      (is (= "https://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.das" (:das source)))
+      (is (= "https://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z.dds" (:dds source)))
+      (is (= "https://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320101030/nww320101030_00z" (:dods source)))
       (is (= (date-time 2010 10 30) (:reference-time source))))
     (let [times (reference-times nww3)]
       (testing "first in inventory"
@@ -84,11 +84,11 @@
       (is (= (:description source)
              "GFS 0.25 deg starting from 00Z24feb2015, downloaded Feb 24 04:46 UTC"))
       (is (= (:das source)
-             "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.das"))
+             "https://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.das"))
       (is (= (:dds source)
-             "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.dds"))
+             "https://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z.dds"))
       (is (= (:dods source)
-             "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z"))
+             "https://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs20150224/gfs_0p25_00z"))
       (is (= (date-time 2015 02 24) (:reference-time source))))))
 
 (deftest test-reference-times
@@ -103,13 +103,13 @@
     (let [dataset (first datasets)]
       (is (= "/wave/akw/akw20101030/akw20101030_00z" (:name dataset)))
       (is (= "WAVE_AKW Regional Alaska Waters wave model fcst from 00Z30oct2010, downloaded Oct 30 04:28 UTC" (:description dataset)))
-      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z.das" (:das dataset)))
-      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z.dds" (:dds dataset)))
-      (is (= "http://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z" (:dods dataset)))
+      (is (= "https://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z.das" (:das dataset)))
+      (is (= "https://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z.dds" (:dds dataset)))
+      (is (= "https://nomads.ncep.noaa.gov:9090/dods/wave/akw/akw20101030/akw20101030_00z" (:dods dataset)))
       (is (= (date-time 2010 10 30) (:reference-time dataset))))))
 
 (deftest test-parse-reference-time
-  (let [url "http://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z"]
+  (let [url "https://nomad5.ncep.noaa.gov:9090/dods/waves/nww3/nww320090907/nww3_00z"]
     (let [time (parse-reference-time url)]
       (is (= time (date-time 2009 9 7 0 0 0))))
     (let [time (parse-reference-time (URI. url))]

@@ -2,14 +2,15 @@
   (:refer-clojure :exclude (replace))
   (:import java.util.Calendar java.io.File java.io.File java.net.URI)
   (:require [clojure.core.memoize :refer [ttl]]
+            [clojure.string :as str]
             [clojure.xml :as xml]
             [clojure.zip :as zip]
             [netcdf.dataset :as dataset])
   (:use [clj-time.coerce :only (to-date-time)]
         [clj-time.core :only (after? date-time day hour month year now )]
-        [clojure.string :only (join replace)]
-        [clojure.data.zip.xml :only (xml-> text)]
         clj-time.format
+        [clojure.data.zip.xml :only (xml-> text)]
+        [clojure.string :only (join replace)]
         clojure.tools.logging
         netcdf.utils))
 
@@ -30,15 +31,20 @@
        (parse-integer hour))
       (catch org.joda.time.IllegalFieldValueException _ nil))))
 
+(defn- rewrite-https
+  "Rewrite the DODS XML inventory url. TODO: Remove when nomads urls are fixed."
+  [url]
+  (some-> url (str/replace #"http://nomads.ncep.noaa.gov" "https://nomads.ncep.noaa.gov")))
+
 (defn parse-inventory* [url]
   (debug (str "Parsing DODS inventory " url " ..."))
   (let [extract (fn [node selector] (first (xml-> node selector text)))]
     (for [dataset (xml-> (feed-to-zip (inventory-url url)) :dataset)]
       {:name (extract dataset :name)
        :description (extract dataset :description)
-       :das (extract dataset :das)
-       :dds (extract dataset :dds)
-       :dods (extract dataset :dods)
+       :das (rewrite-https (extract dataset :das))
+       :dds (rewrite-https (extract dataset :dds))
+       :dods (rewrite-https (extract dataset :dods))
        :reference-time (parse-reference-time (extract dataset :dods))})))
 
 (def parse-inventory

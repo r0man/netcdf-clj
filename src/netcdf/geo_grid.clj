@@ -147,4 +147,4 @@
 ;; (spit "/tmp/matrix" (prn-str [1 2 3]))
 ;; (read-string (slurp "/tmp/matrix"))
 
-;; (def htsgwsfc (open-geo-grid "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320120603/nww320120603_00z" "htsgwsfc"))
+;; (def htsgwsfc (open-geo-grid "https://nomads.ncep.noaa.gov:9090/dods/wave/nww3/nww320120603/nww320120603_00z" "htsgwsfc"))
