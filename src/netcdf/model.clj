@@ -55,50 +55,50 @@
 (defmodel akw
   "Regional Alaska Waters Wave Model"
   :bounding-box (make-bounding-box 44.75 159.5 75.25 -123.5)
-  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/akw"
+  :dods "https://nomads.ncep.noaa.gov:9090/dods/wave/akw"
   :resolution {:latitude 0.25 :longitude 0.5})
 
 (defmodel enp
   "Regional Eastern North Pacific Wave Model"
   :bounding-box (make-bounding-box 4.75 -170.25 60.5 -77.25)
-  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/enp"
+  :dods "https://nomads.ncep.noaa.gov:9090/dods/wave/enp"
   :resolution {:latitude 0.25 :longitude 0.25})
 
 (defmodel gfs-hd
   "Global Forecast Model"
   :bounding-box (make-bounding-box -90.0 0.0 90.0 -0.5)
-  :dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
+  :dods "https://nomads.ncep.noaa.gov:9090/dods/gfs_hd"
   :resolution {:latitude 0.5 :longitude 0.5})
 
 (defmodel gfs-0p25
   "Global Forecast Model"
   :bounding-box (make-bounding-box -90.0 0.0 90.0 -0.5)
-  :dods "http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25"
-  :pattern #"http://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs\d{8}/gfs_0p25_\d{2}z"
+  :dods "https://nomads.ncep.noaa.gov:9090/dods/gfs_0p25"
+  :pattern #"https://nomads.ncep.noaa.gov:9090/dods/gfs_0p25/gfs\d{8}/gfs_0p25_\d{2}z"
   :resolution {:latitude 0.25 :longitude 0.25})
 
 (defmodel nah
   "Regional Atlantic Hurricane Wave Model"
   :bounding-box (make-bounding-box -0.25 -98.25 50.25 -29.75)
-  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nah"
+  :dods "https://nomads.ncep.noaa.gov:9090/dods/wave/nah"
   :resolution {:latitude 0.5 :longitude 0.25})
 
 (defmodel nph
   "Regional North Pacific Hurricane Wave Model"
   :bounding-box (make-bounding-box 4.75 -170.25 60.5 -77.25)
-  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nph"
+  :dods "https://nomads.ncep.noaa.gov:9090/dods/wave/nph"
   :resolution {:latitude 0.25 :longitude 0.5})
 
 (defmodel nww3
   "Global NOAA Wave Watch III Model"
   :bounding-box (make-bounding-box -78.0 0.0 78.0 -1.25)
-  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
+  :dods "https://nomads.ncep.noaa.gov:9090/dods/wave/nww3"
   :resolution {:latitude 1.0 :longitude 1.25})
 
 (defmodel wna
   "Regional Western North Atlantic Wave Model"
   :bounding-box (make-bounding-box -0.25 -98.25 50.25 -29.75)
-  :dods "http://nomads.ncep.noaa.gov:9090/dods/wave/wna"
+  :dods "https://nomads.ncep.noaa.gov:9090/dods/wave/wna"
   :resolution {:latitude 0.5 :longitude 0.5})
 
 (def global-forecast-system-models
