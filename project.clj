@@ -24,7 +24,7 @@
                                        [org.apache.hadoop/hadoop-core "2.6.0-mr1-cdh5.16.99"]
                                        [org.apache.hadoop/hadoop-client "3.3.0"]
                                        [org.apache.hadoop/hadoop-common "3.3.0"]]}}
-  :deploy-repositories [["releases" :clojars]]
+  :deploy-repositories {"releases" {:url "https://repo.clojars.org" :creds :gpg}}
   :repositories {"cloudera" "https://repository.cloudera.com/artifactory/cloudera-repos"
                  "jboss-third-party" "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases"
                  "unidata" "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases"}
