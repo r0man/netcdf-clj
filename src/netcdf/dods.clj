@@ -34,7 +34,7 @@
 (defn- rewrite-https
   "Rewrite the DODS XML inventory url. TODO: Remove when nomads urls are fixed."
   [url]
-  (some-> url (str/replace #"http://nomads.ncep.noaa.gov" "https://nomads.ncep.noaa.gov")))
+  (some-> url (str/replace #"http://nomads.ncep.noaa.gov:\d+" "https://nomads.ncep.noaa.gov")))
 
 (defn parse-inventory* [url]
   (debug (str "Parsing DODS inventory " url " ..."))
